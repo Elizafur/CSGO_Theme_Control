@@ -115,11 +115,11 @@ namespace CSGO_Theme_Control
             string gameT    = (this.GameThemePath == null) ? "High Contrast White" : this.GameThemeName;
 
             this.log(
-                "Version: " + ThemeControl.VERSION_NUM,
-                "Boot on start: " + this.BootOnStart,
-                "Is Enabled: " + this.IsEnabled,
-                "Desktop theme: " + desktopT,
-                "In-game theme: " + gameT
+                "Version:\t\t" + ThemeControl.VERSION_NUM,
+                "Boot on start:\t" + this.BootOnStart,
+                "Is Enabled:\t" + this.IsEnabled,
+                "Desktop theme:\t" + desktopT,
+                "In-game theme:\t" + gameT
             );
         }
 
