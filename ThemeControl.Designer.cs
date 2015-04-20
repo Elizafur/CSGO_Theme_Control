@@ -28,12 +28,19 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ThemeControl));
             this.chkEnabled = new System.Windows.Forms.CheckBox();
             this.chkStartOnBoot = new System.Windows.Forms.CheckBox();
             this.txtStatus = new System.Windows.Forms.RichTextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.NotificationIcon = new System.Windows.Forms.NotifyIcon(this.components);
+            this.contextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.GitHubItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1.SuspendLayout();
+            this.contextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // chkEnabled
@@ -86,6 +93,35 @@
             this.label1.TabIndex = 4;
             this.label1.Text = "PLACEHOLDERGo to Github.com/Eli45/CSGOThemControl to get new updates";
             // 
+            // NotificationIcon
+            // 
+            this.NotificationIcon.BalloonTipText = "CSGO Theme Control is minimized!";
+            this.NotificationIcon.BalloonTipTitle = "CSGO Theme Control";
+            this.NotificationIcon.Visible = true;
+            this.NotificationIcon.MouseClick += new System.Windows.Forms.MouseEventHandler(this.NotificationIcon_MouseClick);
+            // 
+            // contextMenu
+            // 
+            this.contextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.GitHubItemToolStripMenuItem,
+            this.exitToolStripMenuItem});
+            this.contextMenu.Name = "contextMenu";
+            this.contextMenu.Size = new System.Drawing.Size(153, 70);
+            // 
+            // GitHubItemToolStripMenuItem
+            // 
+            this.GitHubItemToolStripMenuItem.Name = "GitHubItemToolStripMenuItem";
+            this.GitHubItemToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.GitHubItemToolStripMenuItem.Text = "Goto Github";
+            this.GitHubItemToolStripMenuItem.Click += new System.EventHandler(this.GitHubItemToolStripMenuItem_Click);
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Text = "Exit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
             // ThemeControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -95,11 +131,14 @@
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.chkStartOnBoot);
             this.Controls.Add(this.chkEnabled);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ThemeControl";
             this.Text = "Theme Control";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ThemeControl_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.Resize += new System.EventHandler(this.ThemeControl_Resize);
             this.groupBox1.ResumeLayout(false);
+            this.contextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -112,6 +151,10 @@
         private System.Windows.Forms.RichTextBox txtStatus;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.NotifyIcon NotificationIcon;
+        private System.Windows.Forms.ContextMenuStrip contextMenu;
+        private System.Windows.Forms.ToolStripMenuItem GitHubItemToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
     }
 }
 

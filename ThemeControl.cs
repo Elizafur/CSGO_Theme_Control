@@ -45,7 +45,7 @@ namespace CSGO_Theme_Control
         public ThemeControl()
         {
             InitializeComponent();
-            //this.ReadConfig();
+            this.NotificationIcon.Icon = new System.Drawing.Icon(this.getExeDirectory() + "resources\\Gaben_santa.ico");
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -111,16 +111,7 @@ namespace CSGO_Theme_Control
 
         private void ReadConfig()
         {
-            string[] programExePath_split = System.Reflection.Assembly.GetEntryAssembly().Location.Split('\\');
-            for (int i = 0; i < programExePath_split.Length; i++)
-            {
-                if (programExePath_split[i].Equals(this.EXE_NAME))
-                {
-                    programExePath_split[i] = "";
-                }
-            }
-
-            string programExePathFolder = String.Join("\\", programExePath_split);
+            string programExePathFolder = this.getExeDirectory();
 
             StreamReader f = new StreamReader(programExePathFolder + "cfg\\Config.ThemeControlCfg");
             try
@@ -170,16 +161,7 @@ namespace CSGO_Theme_Control
 
         private void WriteConfig()
         {
-            string[] programExePath_split = System.Reflection.Assembly.GetEntryAssembly().Location.Split('\\');
-            for (int i = 0; i < programExePath_split.Length; i++)
-            {
-                if (programExePath_split[i].Equals(this.EXE_NAME))
-                {
-                    programExePath_split[i] = "";
-                }
-            }
-
-            string programExePathFolder = String.Join("\\", programExePath_split);
+            string programExePathFolder = this.getExeDirectory();
 
             StreamWriter sw = new StreamWriter(programExePathFolder + "cfg\\Config.ThemeControlCfg");
             try
@@ -195,6 +177,20 @@ namespace CSGO_Theme_Control
             {
                 sw.Close();
             }
+        }
+
+        private string getExeDirectory()
+        {
+            string[] programExePath_split = System.Reflection.Assembly.GetEntryAssembly().Location.Split('\\');
+            for (int i = 0; i < programExePath_split.Length; i++)
+            {
+                if (programExePath_split[i].Equals(ThemeControl.EXE_NAME))
+                {
+                    programExePath_split[i] = "";
+                }
+            }
+
+            return String.Join("\\", programExePath_split);
         }
 
         private void CheckIfRunningForever()
@@ -297,6 +293,39 @@ namespace CSGO_Theme_Control
                 SendMessage(iHandle, WM_SYSCOMMAND, SC_CLOSE, 0);
             }
 
+        }
+
+        private void ThemeControl_Resize(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Minimized)
+            {
+                NotificationIcon.ShowBalloonTip(500);
+                this.Hide();
+            }
+        }
+
+        private void NotificationIcon_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                this.Show();
+                this.WindowState = FormWindowState.Normal;
+            }
+            else if (e.Button == MouseButtons.Right)
+            {
+                //TODO: Check to make sure we should be passing 'this' instead of something else.
+                this.contextMenu.Show(Control.MousePosition);
+            }
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Windows.Forms.Application.Exit();
+        }
+
+        private void GitHubItemToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/Eli45/CSGO_Theme_Control");
         }
 
     }
