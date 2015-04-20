@@ -1,0 +1,3 @@
+As of right now the game tabs out with the program running in the background. Need to figure out how to fix that.
+
+I also would like to add an option to enabled Custom themes eg: choose your own theme for playing and not playing.

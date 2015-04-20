@@ -22,7 +22,7 @@ namespace CSGO_Theme_Control
         private bool BootOnStart        = false;
         private bool shouldChangeTheme  = false;
         private Thread t;
-        private string EXE_NAME         = "CSGO_Theme_Control.exe";
+        private const string EXE_NAME   = "CSGO_Theme_Control.exe";
 
         [DllImport("user32.dll")]
         private static extern int FindWindow(
@@ -184,8 +184,8 @@ namespace CSGO_Theme_Control
             StreamWriter sw = new StreamWriter(programExePathFolder + "cfg\\Config.ThemeControlCfg");
             try
             {
-                sw.WriteLine("IsEnabled" + this.IsEnabled.ToString());
-                sw.WriteLine("BootOnStart" + this.BootOnStart.ToString());
+                sw.WriteLine("IsEnabled " + this.IsEnabled.ToString());
+                sw.WriteLine("BootOnStart " + this.BootOnStart.ToString());
             }
             catch (Exception e)
             {
