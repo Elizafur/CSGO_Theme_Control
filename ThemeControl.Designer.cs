@@ -39,6 +39,10 @@
             this.contextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.GitHubItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.btnChooseDesktop = new System.Windows.Forms.Button();
+            this.btnChooseIngame = new System.Windows.Forms.Button();
+            this.btnClearThemes = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.contextMenu.SuspendLayout();
             this.SuspendLayout();
@@ -106,27 +110,66 @@
             this.GitHubItemToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.contextMenu.Name = "contextMenu";
-            this.contextMenu.Size = new System.Drawing.Size(153, 70);
+            this.contextMenu.Size = new System.Drawing.Size(140, 48);
             // 
             // GitHubItemToolStripMenuItem
             // 
             this.GitHubItemToolStripMenuItem.Name = "GitHubItemToolStripMenuItem";
-            this.GitHubItemToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.GitHubItemToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
             this.GitHubItemToolStripMenuItem.Text = "Goto Github";
             this.GitHubItemToolStripMenuItem.Click += new System.EventHandler(this.GitHubItemToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
+            // openFileDialog
+            // 
+            this.openFileDialog.FileName = "File Dialog";
+            this.openFileDialog.Filter = "Theme Files|*.theme";
+            this.openFileDialog.InitialDirectory = "C:\\Windows\\Resources";
+            // 
+            // btnChooseDesktop
+            // 
+            this.btnChooseDesktop.Location = new System.Drawing.Point(13, 298);
+            this.btnChooseDesktop.Name = "btnChooseDesktop";
+            this.btnChooseDesktop.Size = new System.Drawing.Size(136, 23);
+            this.btnChooseDesktop.TabIndex = 5;
+            this.btnChooseDesktop.Text = "Choose desktop theme";
+            this.btnChooseDesktop.UseVisualStyleBackColor = true;
+            this.btnChooseDesktop.Click += new System.EventHandler(this.btnChooseDesktop_Click);
+            // 
+            // btnChooseIngame
+            // 
+            this.btnChooseIngame.Location = new System.Drawing.Point(12, 327);
+            this.btnChooseIngame.Name = "btnChooseIngame";
+            this.btnChooseIngame.Size = new System.Drawing.Size(137, 23);
+            this.btnChooseIngame.TabIndex = 6;
+            this.btnChooseIngame.Text = "Choose ingame theme";
+            this.btnChooseIngame.UseVisualStyleBackColor = true;
+            this.btnChooseIngame.Click += new System.EventHandler(this.btnChooseIngame_Click);
+            // 
+            // btnClearThemes
+            // 
+            this.btnClearThemes.Location = new System.Drawing.Point(13, 378);
+            this.btnClearThemes.Name = "btnClearThemes";
+            this.btnClearThemes.Size = new System.Drawing.Size(136, 23);
+            this.btnClearThemes.TabIndex = 7;
+            this.btnClearThemes.Text = "Clear themes";
+            this.btnClearThemes.UseVisualStyleBackColor = true;
+            this.btnClearThemes.Click += new System.EventHandler(this.btnClearThemes_Click);
             // 
             // ThemeControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(360, 468);
+            this.Controls.Add(this.btnClearThemes);
+            this.Controls.Add(this.btnChooseIngame);
+            this.Controls.Add(this.btnChooseDesktop);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.chkStartOnBoot);
@@ -155,6 +198,10 @@
         private System.Windows.Forms.ContextMenuStrip contextMenu;
         private System.Windows.Forms.ToolStripMenuItem GitHubItemToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+        private System.Windows.Forms.OpenFileDialog openFileDialog;
+        private System.Windows.Forms.Button btnChooseDesktop;
+        private System.Windows.Forms.Button btnChooseIngame;
+        private System.Windows.Forms.Button btnClearThemes;
     }
 }
 

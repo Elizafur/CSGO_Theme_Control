@@ -12,17 +12,27 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
 using System.Threading;
+using System.Globalization;
 
 namespace CSGO_Theme_Control
 {
     public partial class ThemeControl : Form
     {
 
-        private bool IsEnabled          = true;
-        private bool BootOnStart        = false;
-        private bool shouldChangeTheme  = false;
+        private bool IsEnabled              = true;
+        private bool BootOnStart            = false;
+        private bool shouldChangeTheme      = false;
+        private bool registryBootWritten    = false;
+        private string DesktopThemePath     = null;
+        private string GameThemePath        = null;
+        private string DesktopThemeName     = null;
+        private string GameThemeName        = null;
+        private const string EXE_NAME       = "CSGO_Theme_Control.exe";
+        private const string APP_NAME       = "CSGO_THEME_CONTROL";
+        private const string VERSION_NUM    = "0.9.0.0";
         private Thread t;
-        private const string EXE_NAME   = "CSGO_Theme_Control.exe";
+        private RegistryKey rk              = Registry.CurrentUser.OpenSubKey(
+            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 
         [DllImport("user32.dll")]
         private static extern int FindWindow(
@@ -53,11 +63,19 @@ namespace CSGO_Theme_Control
             //rundll32.exe %SystemRoot%\system32\shell32.dll,Control_RunDLL %SystemRoot%\system32\desk.cpl desk,@Themes /Action:OpenTheme /file:"C:\Windows\Resources\Themes\aero.theme"
             //rundll32.exe %SystemRoot%\system32\shell32.dll,Control_RunDLL %SystemRoot%\system32\desk.cpl desk,@Themes /Action:OpenTheme /file:"C:\Windows\Resources\Ease of Access Themes\hcwhite.theme"
             this.ReadConfig();
-            chkEnabled.Checked      = this.IsEnabled;
-            chkStartOnBoot.Checked  = this.BootOnStart;
+            chkEnabled.Checked = this.IsEnabled;
+
+            if (rk.GetValue(ThemeControl.APP_NAME) == null) 
+                this.registryBootWritten = false;
+            else 
+                this.registryBootWritten = true;
+
+            this.BootOnStart            = registryBootWritten;
+            this.chkStartOnBoot.Checked = registryBootWritten;
 
             t = new Thread(CheckIfRunningForever){ IsBackground = true };
             t.Start();
+
         }
 
         private void ThemeControl_FormClosing(object sender, FormClosingEventArgs e)
@@ -71,42 +89,70 @@ namespace CSGO_Theme_Control
             this.WriteConfig();
             if (this.BootOnStart)
             {
-                //TODO: Make this actually work.
-                this.createStartupShortcut();
+                //TODO: Check if this is even really required as theoretically this key should always already be created if the checkbox is checked.
+                if (!registryBootWritten)
+                    this.createBootStartup();
             }
         }
 
         private void log(string s)
         {
-            this.txtStatus.Text += s+"\n";
+            this.txtStatus.Text += s + "\n";
         }
 
-        private void createStartupShortcut()
+        private void log(params string[] s)
         {
-            string user = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
-            string PATH = "C:\\users\\" + user + "\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup";
-            string ProgramExePath = System.Reflection.Assembly.GetEntryAssembly().Location;
+            foreach (string cur in s)
+            {
+                this.txtStatus.Text += cur + "\n";
+            }
+        }
 
-            Type t = Type.GetTypeFromCLSID(new Guid("72C24DD5-D70A-438B-8A42-98424B88AFB8")); //Windows Script Host Shell Object
-            dynamic shell = Activator.CreateInstance(t);
+        private void logStatus()
+        {
+            this.txtStatus.Text = "";
+            string desktopT = (this.DesktopThemePath == null) ? "Aero" : this.DesktopThemeName;
+            string gameT    = (this.GameThemePath == null) ? "High Contrast White" : this.GameThemeName;
+
+            this.log(
+                "Version: " + ThemeControl.VERSION_NUM,
+                "Boot on start: " + this.BootOnStart,
+                "Is Enabled: " + this.IsEnabled,
+                "Desktop theme: " + desktopT,
+                "In-game theme: " + gameT
+            );
+        }
+
+        private void createCrashDump(string context)
+        {
+            StreamWriter sw = new StreamWriter(this.getExeDirectory() + "CSGO_THEME_CONTROL_" + DateTime.Now.ToString() + ".crashdumplog");
             try
             {
-                var lnk = shell.CreateShortcut("CSGOThemeControl.lnk");
-                try
-                {
-                    lnk.TargetPath = ProgramExePath;
-                    lnk.IconLocation = "shell32.dll, 1";
-                    lnk.Save();
-                }
-                finally
-                {
-                    Marshal.FinalReleaseComObject(lnk);
-                }
+                sw.WriteLine("[CRASH DUMP LOG]");
+                sw.WriteLine("[DATE]{" + DateTime.Now + "}");
+                sw.WriteLine("[VERSION]{" + ThemeControl.VERSION_NUM + "}");
+                sw.WriteLine("[CONTEXT]{");
+                sw.Write(context + "\n}");
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Something incredibly wrong has happened and the program must terminate. Context follows:\n" + e.Message);
             }
             finally
             {
-                Marshal.FinalReleaseComObject(shell);
+                sw.Close();
             }
+        }
+
+        private void createBootStartup()
+        {
+             this.rk.SetValue(ThemeControl.APP_NAME, Application.ExecutablePath.ToString());
+        }
+
+        private void deleteBootStartup()
+        {
+            
+            this.rk.DeleteValue(ThemeControl.APP_NAME, false); 
         }
 
         private void ReadConfig()
@@ -122,28 +168,43 @@ namespace CSGO_Theme_Control
                     string[] split = line.Split(' ');
                     for (int i = 0; i < split.Length; i++)
                     {
-                        if (split[i].ToLower().Equals("IsEnabled"))
+                        var word = split[i].ToLower();
+                        if (word.Equals("isenabled"))
                         {
                             try
                             {
                                 this.IsEnabled = Convert.ToBoolean(split[i + 1].ToLower());
                             }
-                            catch (Exception) //TODO: Replace with arrayoutofbounds exception
+                            catch (IndexOutOfRangeException)
                             {
                                 log("ERROR: CFG is in an invalid format and cannot be read.");
                                 this.IsEnabled = false;
                             }
                         }
-                        else if (split[i].ToLower().Equals("bootonstart"))
+                        else if (word.Equals("desktopthemepath"))
                         {
                             try
                             {
-                                this.BootOnStart = Convert.ToBoolean(split[i + 1].ToLower());
+                                this.DesktopThemePath = split[i + 1].ToLower();
+                                string[] splitTheme   = this.DesktopThemePath.Split('\\');
+                                this.DesktopThemeName = this.UpperCaseFirstChar(splitTheme[splitTheme.Length - 1].Replace(".theme", ""));
                             }
-                            catch (Exception)
+                            catch (IndexOutOfRangeException)
                             {
-                                log("CFG is in an invalid format and cannot be read.");
-                                this.BootOnStart = false;
+                                log("ERROR: CFG is in an invalid format and cannot be read.");
+                            }
+                        }
+                        else if (word.Equals("gamethemepath"))
+                        {
+                            try
+                            {
+                                this.GameThemePath  = split[i + 1].ToLower();
+                                string[] splitTheme = this.GameThemePath.Split('\\');
+                                this.GameThemeName  = this.UpperCaseFirstChar(splitTheme[splitTheme.Length - 1].Replace(".theme", ""));
+                            }
+                            catch (IndexOutOfRangeException)
+                            {
+                                log("ERROR: CFG is in an invalid format and cannot be read.");
                             }
                         }
                     }
@@ -151,12 +212,14 @@ namespace CSGO_Theme_Control
             }
             catch (Exception e)
             {
-                //TODO: Log error in a crash dump file.
+                this.createCrashDump(e.Message);
             }
             finally
             {
                 f.Close();
             }
+
+            this.logStatus();
         }
 
         private void WriteConfig()
@@ -167,11 +230,20 @@ namespace CSGO_Theme_Control
             try
             {
                 sw.WriteLine("IsEnabled " + this.IsEnabled.ToString());
-                sw.WriteLine("BootOnStart " + this.BootOnStart.ToString());
+
+
+                if (this.DesktopThemePath != null)
+                {
+                    sw.WriteLine("DesktopThemePath " + this.DesktopThemePath);
+                }
+                if (this.GameThemePath != null)
+                {
+                    sw.WriteLine("GameThemePath " + this.GameThemePath);
+                }
             }
             catch (Exception e)
             {
-                //TODO: Log error in a crash dump file.
+                createCrashDump(e.Message);
             }
             finally
             {
@@ -202,14 +274,28 @@ namespace CSGO_Theme_Control
                     bool running = this.csgoIsRunning();
                     if (running)
                     {
-                        this.changeTheme(true);
+                        if (this.GameThemePath == null)
+                        {
+                            this.changeTheme(true);
+                        }
+                        else
+                        {
+                            this.changeTheme(this.GameThemePath);
+                        }
                         this.shouldChangeTheme = true;
                     }
                     else
                     {
                         if (this.shouldChangeTheme)
                         {
-                            this.changeTheme(false);
+                            if (this.DesktopThemePath == null)
+                            {
+                                this.changeTheme(false);
+                            }
+                            else
+                            {
+                                this.changeTheme(this.DesktopThemePath);
+                            }
                             this.shouldChangeTheme = false;
                         }
                     }
@@ -221,7 +307,7 @@ namespace CSGO_Theme_Control
                 }
                 catch (System.Threading.ThreadInterruptedException)
                 {
-                    //TODO: log
+                    //Do nothing, only a first chance exception and the program closes immediately after catching this anyway.
                 }
             }
         }
@@ -246,12 +332,22 @@ namespace CSGO_Theme_Control
                         t.Start();
                     }
                 }
+            
             }
+            this.logStatus();
         }
 
         private void chkStartOnBoot_CheckedChanged(object sender, EventArgs e)
         {
-            this.BootOnStart = chkEnabled.Checked;
+            this.BootOnStart = chkStartOnBoot.Checked;
+            if (BootOnStart)
+                this.createBootStartup();
+            else
+            {
+                this.deleteBootStartup();
+            }
+
+            this.logStatus();
         }
 
         private bool csgoIsRunning()
@@ -273,7 +369,7 @@ namespace CSGO_Theme_Control
         private void changeTheme(bool useClassic)
         {
             string PATH;
-            if (useClassic) 
+            if (useClassic)
                 PATH = "\\Ease of Access Themes\\hcwhite";
             else
                 PATH = "\\Themes\\aero";
@@ -295,6 +391,38 @@ namespace CSGO_Theme_Control
 
         }
 
+        //Used for custom themes.
+        private void changeTheme(string themePath)
+        {
+            string PATH = themePath;
+            //PATH should be a full path from the C: directory to the .theme file.
+
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+            startInfo.FileName = "cmd.exe";
+            startInfo.Arguments = "/C rundll32.exe %SystemRoot%\\system32\\shell32.dll,Control_RunDLL %SystemRoot%\\system32\\desk.cpl desk,@Themes /Action:OpenTheme /file:\"" + PATH + "\"";
+            Process process = new Process();
+            process.StartInfo = startInfo;
+            process.Start();
+
+            System.Threading.Thread.Sleep(500); //Sleep program until the dialog is actually open, so that we can close it.
+            int iHandle = FindWindow("CabinetWClass", "Personalization");
+            if (iHandle > 0)
+            {
+                SendMessage(iHandle, WM_SYSCOMMAND, SC_CLOSE, 0);
+            }
+        }
+
+        private string UpperCaseFirstChar(string s)
+        {
+            if (String.IsNullOrEmpty(s))
+            {
+                return String.Empty;
+            }
+
+            return char.ToUpper(s[0]) + s.Substring(1);
+        }
+
         private void ThemeControl_Resize(object sender, EventArgs e)
         {
             if (this.WindowState == FormWindowState.Minimized)
@@ -313,7 +441,6 @@ namespace CSGO_Theme_Control
             }
             else if (e.Button == MouseButtons.Right)
             {
-                //TODO: Check to make sure we should be passing 'this' instead of something else.
                 this.contextMenu.Show(Control.MousePosition);
             }
         }
@@ -326,6 +453,39 @@ namespace CSGO_Theme_Control
         private void GitHubItemToolStripMenuItem_Click(object sender, EventArgs e)
         {
             System.Diagnostics.Process.Start("https://github.com/Eli45/CSGO_Theme_Control");
+        }
+
+        private void btnChooseDesktop_Click(object sender, EventArgs e)
+        {
+            DialogResult result = this.openFileDialog.ShowDialog();
+            if (result == DialogResult.OK)  //User selected a file and clicked ok
+            {
+                string filepath = openFileDialog.FileName;
+                this.DesktopThemePath = filepath;
+                string[] split = filepath.Split('\\');
+                this.DesktopThemeName = this.UpperCaseFirstChar(split[split.Length - 1].Replace(".theme", ""));
+            }
+            this.logStatus();
+        }
+
+        private void btnChooseIngame_Click(object sender, EventArgs e)
+        {
+            DialogResult result = this.openFileDialog.ShowDialog();
+            if (result == DialogResult.OK)  //User selected a file and clicked ok
+            {
+                string filepath = openFileDialog.FileName;
+                this.GameThemePath = filepath;
+                string[] split = filepath.Split('\\');
+                this.GameThemeName = this.UpperCaseFirstChar(split[split.Length - 1].Replace(".theme", ""));
+            }
+            this.logStatus();
+        }
+
+        private void btnClearThemes_Click(object sender, EventArgs e)
+        {
+            this.GameThemePath      = null;
+            this.DesktopThemePath   = null;
+            this.logStatus();
         }
 
     }
