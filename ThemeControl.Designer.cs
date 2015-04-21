@@ -93,9 +93,9 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(9, 446);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(386, 13);
+            this.label1.Size = new System.Drawing.Size(194, 13);
             this.label1.TabIndex = 4;
-            this.label1.Text = "PLACEHOLDERGo to Github.com/Eli45/CSGOThemControl to get new updates";
+            this.label1.Text = "Head over to Eli45.github.io for updates";
             // 
             // NotificationIcon
             // 

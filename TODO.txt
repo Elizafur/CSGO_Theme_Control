@@ -1,4 +1,2 @@
-I also would like to add an option to enabled Custom themes eg: choose your own theme for playing and not playing.
-
 Check this out: http://stackoverflow.com/a/9468968
 That should allow us to alt tab back into CSGO after the theme is done changing automatically.
