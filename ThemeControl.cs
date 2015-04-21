@@ -21,7 +21,8 @@ namespace CSGO_Theme_Control
 
         private bool IsEnabled              = true;
         private bool BootOnStart            = false;
-        private bool shouldChangeTheme      = false;
+        private bool shouldChangeDeskTheme  = false;
+        private bool shouldChangeGameTheme  = false;
         private bool registryBootWritten    = false;
         private string DesktopThemePath     = null;
         private string GameThemePath        = null;
@@ -51,6 +52,28 @@ namespace CSGO_Theme_Control
         private const int WM_SYSCOMMAND = 0x0112;
         private const int SC_CLOSE      = 0xF060;
 
+        //Used to alt-tab back into the CSGO process after changing themes.
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern IntPtr GetWindow(IntPtr hWnd, uint uCmd); 
+
+        [DllImport("user32.dll", ExactSpelling = true, CharSet = CharSet.Auto)]
+        private static extern IntPtr GetParent(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        private enum GetWindowCmd : uint
+        {
+            GW_HWNDFIRST = 0,
+            GW_HWNDLAST = 1,
+            GW_HWNDNEXT = 2,
+            GW_HWNDPREV = 3,
+            GW_OWNER = 4,
+            GW_CHILD = 5,
+            GW_ENABLEDPOPUP = 6
+        }
+
 
         public ThemeControl()
         {
@@ -72,6 +95,18 @@ namespace CSGO_Theme_Control
 
             this.BootOnStart            = registryBootWritten;
             this.chkStartOnBoot.Checked = registryBootWritten;
+
+            this.shouldChangeDeskTheme  = this.csgoIsRunning();
+
+            if (this.shouldChangeDeskTheme)
+            {
+                if (this.GameThemePath != null)
+                    this.changeTheme(this.GameThemePath);
+                else
+                    this.changeTheme(true);
+            }
+
+            this.shouldChangeGameTheme  = !this.shouldChangeDeskTheme;
 
             t = new Thread(CheckIfRunningForever){ IsBackground = true };
             t.Start();
@@ -116,8 +151,8 @@ namespace CSGO_Theme_Control
 
             this.log(
                 "Version:\t\t" + ThemeControl.VERSION_NUM,
-                "Boot on start:\t" + this.BootOnStart,
                 "Is Enabled:\t" + this.IsEnabled,
+                "Boot on start:\t" + this.BootOnStart,
                 "Desktop theme:\t" + desktopT,
                 "In-game theme:\t" + gameT
             );
@@ -274,19 +309,26 @@ namespace CSGO_Theme_Control
                     bool running = this.csgoIsRunning();
                     if (running)
                     {
-                        if (this.GameThemePath == null)
+                        if (this.shouldChangeGameTheme)
                         {
-                            this.changeTheme(true);
+                            if (this.GameThemePath == null)
+                            {
+                                this.changeTheme(true);
+                            }
+                            else
+                            {
+                                this.changeTheme(this.GameThemePath);
+                            }
+                            this.shouldChangeGameTheme = false;
+                            this.shouldChangeDeskTheme = true;
+
+                            System.Threading.Thread.Sleep(500); //Wait so we don't alt tab to fast.
+                            altTabIntoCSGO();
                         }
-                        else
-                        {
-                            this.changeTheme(this.GameThemePath);
-                        }
-                        this.shouldChangeTheme = true;
                     }
                     else
                     {
-                        if (this.shouldChangeTheme)
+                        if (this.shouldChangeDeskTheme)
                         {
                             if (this.DesktopThemePath == null)
                             {
@@ -296,7 +338,8 @@ namespace CSGO_Theme_Control
                             {
                                 this.changeTheme(this.DesktopThemePath);
                             }
-                            this.shouldChangeTheme = false;
+                            this.shouldChangeGameTheme = true;
+                            this.shouldChangeDeskTheme = false;
                         }
                     }
                 
@@ -366,18 +409,13 @@ namespace CSGO_Theme_Control
             return false;
         }
 
-        private void changeTheme(bool useClassic)
+        private void execCMDThemeChange(string PathToFile)
         {
-            string PATH;
-            if (useClassic)
-                PATH = "\\Ease of Access Themes\\hcwhite";
-            else
-                PATH = "\\Themes\\aero";
-
+            //PathToFile should be a full path from the C: directory to the .theme file.
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
             startInfo.FileName = "cmd.exe";
-            startInfo.Arguments = "/C rundll32.exe %SystemRoot%\\system32\\shell32.dll,Control_RunDLL %SystemRoot%\\system32\\desk.cpl desk,@Themes /Action:OpenTheme /file:\"C:\\Windows\\Resources" + PATH + ".theme\"";
+            startInfo.Arguments = "/C rundll32.exe %SystemRoot%\\system32\\shell32.dll,Control_RunDLL %SystemRoot%\\system32\\desk.cpl desk,@Themes /Action:OpenTheme /file:\"" + PathToFile + "\"";
             Process process = new Process();
             process.StartInfo = startInfo;
             process.Start();
@@ -389,28 +427,63 @@ namespace CSGO_Theme_Control
                 SendMessage(iHandle, WM_SYSCOMMAND, SC_CLOSE, 0);
             }
 
+            //Do a second check to make sure we didn't close it too early in the event of a slow computer etc.
+            System.Threading.Thread.Sleep(500);
+            iHandle = FindWindow("CabinetWClass", "Personalization");
+            if (iHandle > 0)
+            {
+                SendMessage(iHandle, WM_SYSCOMMAND, SC_CLOSE, 0);
+            }
+        }
+
+        private void changeTheme(bool useClassic)
+        {
+            string PATH;
+            if (useClassic)
+                PATH = "C:\\Windows\\Resources\\Ease of Access Themes\\hcwhite.theme";
+            else
+                PATH = "C:\\Windows\\Resources\\Themes\\aero.theme";
+
+            execCMDThemeChange(PATH);
         }
 
         //Used for custom themes.
         private void changeTheme(string themePath)
         {
             string PATH = themePath;
-            //PATH should be a full path from the C: directory to the .theme file.
 
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-            startInfo.FileName = "cmd.exe";
-            startInfo.Arguments = "/C rundll32.exe %SystemRoot%\\system32\\shell32.dll,Control_RunDLL %SystemRoot%\\system32\\desk.cpl desk,@Themes /Action:OpenTheme /file:\"" + PATH + "\"";
-            Process process = new Process();
-            process.StartInfo = startInfo;
-            process.Start();
+            execCMDThemeChange(PATH);
+        }
 
-            System.Threading.Thread.Sleep(500); //Sleep program until the dialog is actually open, so that we can close it.
-            int iHandle = FindWindow("CabinetWClass", "Personalization");
-            if (iHandle > 0)
+        private void altTabIntoCSGO()
+        {
+            if (Process.GetCurrentProcess().ProcessName.Equals("csgo")) return;
+
+            IntPtr activeWindow = Process.GetCurrentProcess().MainWindowHandle;
+
+            foreach (Process proc in Process.GetProcesses())
             {
-                SendMessage(iHandle, WM_SYSCOMMAND, SC_CLOSE, 0);
+                if (activeWindow == proc.MainWindowHandle)
+                {
+                    if (proc.ProcessName.Equals("csgo")) return;
+                    else
+                    {
+                        IntPtr csgohWnd = this.getCSGOhWnd();
+                        SetForegroundWindow(csgohWnd);
+                    }
+                }
             }
+            
+        }
+
+        private IntPtr getCSGOhWnd()
+        {
+            foreach (Process proc in Process.GetProcesses())
+            {
+                if (proc.ProcessName.Equals("csgo")) return proc.MainWindowHandle;
+            }
+
+            return IntPtr.Zero;
         }
 
         private string UpperCaseFirstChar(string s)
