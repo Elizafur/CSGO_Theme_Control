@@ -8,6 +8,10 @@ Simply put, Aero sucks. With the Aero theme enabled over a high contrast or clas
 
 This program attempts to remedy this program by automatically changing your Windows theme to a low contrast theme(or custom) whenever the game is active, it will also change it back to Aero after the exe has exited.
 
+# Will This Get You Banned
+--------------------------
+No, it doesn't touch the CSGO process in any way, if you get a VAC ban while using this you cheated.
+
 # General Usage
 --------------------------
 ## UI
