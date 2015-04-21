@@ -14,6 +14,9 @@ This program attempts to remedy this program by automatically changing your Wind
 
 # General Usage
 --------------------------
+## Requirements
+-.NET Framework 4.5.1 ![](http://www.microsoft.com/en-us/download/details.aspx?id=40779 "Download")
+
 ## UI
 With extreme simplicity as a design point I don't think there is much to be said here. The Status text box will change as you modify settings and options.
 
