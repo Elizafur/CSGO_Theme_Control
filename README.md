@@ -10,7 +10,7 @@ This program attempts to remedy this program by automatically changing your Wind
 
 # Will This Get You Banned
 --------------------------
-<b>No</b>, it doesn't touch the CSGO process in any way, if you get a VAC ban while using this you cheated.
+<b>No</b>, it doesn't touch the CSGO process in any way. If you get a VAC ban while using this program then you cheated.
 
 # General Usage
 --------------------------
