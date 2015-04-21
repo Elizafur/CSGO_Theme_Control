@@ -4,3 +4,5 @@ That should allow us to alt tab back into CSGO after the theme is done changing 
 website
 
 remove enum on line 66. We dont use it.
+
+line 458: error check for return value of IntPtr.Zero.
