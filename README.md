@@ -2,7 +2,7 @@
 --------------------------
 A Simple program to manage your current Windows theme when playing or not playing CSGO.
 
-# Why?
+# Why
 --------------------------
 Simply put, Aero sucks. With the Aero theme enabled over a high contrast or classic theme, CSGO ran at nearly 200 fps on my system, almost 100 fps less than the usual along with an added feeling of sluggishness and input delay.
 
