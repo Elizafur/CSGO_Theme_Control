@@ -63,18 +63,6 @@ namespace CSGO_Theme_Control
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool SetForegroundWindow(IntPtr hWnd);
 
-        private enum GetWindowCmd : uint
-        {
-            GW_HWNDFIRST = 0,
-            GW_HWNDLAST = 1,
-            GW_HWNDNEXT = 2,
-            GW_HWNDPREV = 3,
-            GW_OWNER = 4,
-            GW_CHILD = 5,
-            GW_ENABLEDPOPUP = 6
-        }
-
-
         public ThemeControl()
         {
             InitializeComponent();
@@ -115,10 +103,13 @@ namespace CSGO_Theme_Control
 
         private void ThemeControl_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (this.t.IsAlive)
+            if (this.t != null)
             {
-                this.t.Interrupt();
-                this.t.Abort();
+                if (this.t.IsAlive)
+                {
+                    this.t.Interrupt();
+                    this.t.Abort();
+                }
             }
 
             this.WriteConfig();
@@ -181,12 +172,11 @@ namespace CSGO_Theme_Control
 
         private void createBootStartup()
         {
-             this.rk.SetValue(ThemeControl.APP_NAME, Application.ExecutablePath.ToString());
+            this.rk.SetValue(ThemeControl.APP_NAME, Application.ExecutablePath.ToString());
         }
 
         private void deleteBootStartup()
         {
-            
             this.rk.DeleteValue(ThemeControl.APP_NAME, false); 
         }
 
@@ -200,46 +190,67 @@ namespace CSGO_Theme_Control
                 while (!f.EndOfStream)
                 {
                     string line = f.ReadLine();
-                    string[] split = line.Split(' ');
-                    for (int i = 0; i < split.Length; i++)
+                    if (!line.StartsWith("//"))
                     {
-                        var word = split[i].ToLower();
-                        if (word.Equals("isenabled"))
+                        List<string> split = line.Split('"')
+                                                 .Select((element, index) => index % 2 == 0  // If even index
+                                                       ? element.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)  // Split the item
+                                                       : new string[] { element })  // Keep the entire item
+                                                 .SelectMany(element => element).ToList();
+
+                        for (int i = 0; i < split.Count; i++)
                         {
-                            try
+                            if (i != split.Count - 1)   //Must not be the last element in the list
                             {
-                                this.IsEnabled = Convert.ToBoolean(split[i + 1].ToLower());
-                            }
-                            catch (IndexOutOfRangeException)
-                            {
-                                log("ERROR: CFG is in an invalid format and cannot be read.");
-                                this.IsEnabled = false;
+                                if (split[i].StartsWith("\t"))
+                                {
+                                    split[i] = split[i + 1];
+                                    split.Remove(split[i + 1]);
+                                }
                             }
                         }
-                        else if (word.Equals("desktopthemepath"))
+
+
+                        for (int i = 0; i < split.Count; i++)
                         {
-                            try
+                            var word = split[i].ToLower();
+                            if (word.Equals("isenabled"))
                             {
-                                this.DesktopThemePath = split[i + 1].ToLower();
-                                string[] splitTheme   = this.DesktopThemePath.Split('\\');
-                                this.DesktopThemeName = this.UpperCaseFirstChar(splitTheme[splitTheme.Length - 1].Replace(".theme", ""));
+                                try
+                                {
+                                    this.IsEnabled = Convert.ToBoolean(split[i + 1].ToLower());
+                                }
+                                catch (IndexOutOfRangeException)
+                                {
+                                    log("ERROR: CFG is in an invalid format and cannot be read.");
+                                    this.IsEnabled = false;
+                                }
                             }
-                            catch (IndexOutOfRangeException)
+                            else if (word.Equals("desktopthemepath"))
                             {
-                                log("ERROR: CFG is in an invalid format and cannot be read.");
+                                try
+                                {
+                                    this.DesktopThemePath = split[i + 1].ToLower();
+                                    string[] splitTheme = this.DesktopThemePath.Split('\\');
+                                    this.DesktopThemeName = this.UpperCaseFirstChar(splitTheme[splitTheme.Length - 1].Replace(".theme", ""));
+                                }
+                                catch (IndexOutOfRangeException)
+                                {
+                                    log("ERROR: CFG is in an invalid format and cannot be read.");
+                                }
                             }
-                        }
-                        else if (word.Equals("gamethemepath"))
-                        {
-                            try
+                            else if (word.Equals("gamethemepath"))
                             {
-                                this.GameThemePath  = split[i + 1].ToLower();
-                                string[] splitTheme = this.GameThemePath.Split('\\');
-                                this.GameThemeName  = this.UpperCaseFirstChar(splitTheme[splitTheme.Length - 1].Replace(".theme", ""));
-                            }
-                            catch (IndexOutOfRangeException)
-                            {
-                                log("ERROR: CFG is in an invalid format and cannot be read.");
+                                try
+                                {
+                                    this.GameThemePath = split[i + 1].ToLower();
+                                    string[] splitTheme = this.GameThemePath.Split('\\');
+                                    this.GameThemeName = this.UpperCaseFirstChar(splitTheme[splitTheme.Length - 1].Replace(".theme", ""));
+                                }
+                                catch (IndexOutOfRangeException)
+                                {
+                                    log("ERROR: CFG is in an invalid format and cannot be read.");
+                                }
                             }
                         }
                     }
@@ -264,16 +275,17 @@ namespace CSGO_Theme_Control
             StreamWriter sw = new StreamWriter(programExePathFolder + "cfg\\Config.ThemeControlCfg");
             try
             {
-                sw.WriteLine("IsEnabled " + this.IsEnabled.ToString());
+                sw.WriteLine("//Note to those reading:\n//Modifying this file could result in the breaking of your config.");
+                sw.WriteLine("IsEnabled \t\t\t\"" + this.IsEnabled.ToString() + "\"");
 
 
                 if (this.DesktopThemePath != null)
                 {
-                    sw.WriteLine("DesktopThemePath " + this.DesktopThemePath);
+                    sw.WriteLine("DesktopThemePath \t\"" + this.DesktopThemePath + "\"");
                 }
                 if (this.GameThemePath != null)
                 {
-                    sw.WriteLine("GameThemePath " + this.GameThemePath);
+                    sw.WriteLine("GameThemePath \t\t\"" + this.GameThemePath + "\"");
                 }
             }
             catch (Exception e)

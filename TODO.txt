@@ -3,4 +3,5 @@ That should allow us to alt tab back into CSGO after the theme is done changing 
 
 website
 
-remove enum on line 66. We dont use it.
+SEE THIS: http://stackoverflow.com/a/824478
+FOR KEYBOARD HOTKEYS TO SWITCH THEME.
