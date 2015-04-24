@@ -3,5 +3,11 @@ That should allow us to alt tab back into CSGO after the theme is done changing 
 
 website
 
+<<<<<<< HEAD
 SEE THIS: http://stackoverflow.com/a/824478
 FOR KEYBOARD HOTKEYS TO SWITCH THEME.
+=======
+remove enum on line 66. We dont use it.
+
+line 458: error check for return value of IntPtr.Zero.
+>>>>>>> origin/master
