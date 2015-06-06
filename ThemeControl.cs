@@ -109,9 +109,7 @@ namespace CSGO_Theme_Control
             //Register hotkeys.
             if (this.HotKeys != null)
                 foreach(KeyValuePair<HotKey, String> entry in this.HotKeys)
-                {
                     RegisterHotKey(this.Handle, entry.Key.id, entry.Key.keyModifier, entry.Key.keyHashCode);
-                }
 
             DBGRegisterTestHotKey();
 
@@ -193,9 +191,7 @@ namespace CSGO_Theme_Control
 
             if (this.HotKeys != null)
                 foreach (KeyValuePair<HotKey, String> entry in this.HotKeys)
-                {
                     UnregisterHotKey(this.Handle, entry.Key.id);
-                }
         }
 
         private void log(string s)
