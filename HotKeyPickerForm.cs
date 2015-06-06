@@ -43,9 +43,9 @@ namespace CSGO_Theme_Control
             }
 
             this.HKAddress->id          = this.HKID;
-            this.HKAddress->key         = HKKey;
-            this.HKAddress->keyModifier = (int)HKKeyMod;
-            this.HKAddress->keyHashCode = HKKey.GetHashCode();
+            this.HKAddress->key         = this.HKKey;
+            this.HKAddress->keyModifier = (int)this.HKKeyMod;
+            this.HKAddress->keyHashCode = this.HKKey.GetHashCode();
 
             fixed (char* cstr = this.ThemeToExecute)
             {
