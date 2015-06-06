@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -50,6 +51,19 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HotKey.cs" />
+    <Compile Include="HotKeyPickerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="HotKeyPickerForm.Designer.cs">
+      <DependentUpon>HotKeyPickerForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PickHotKeyDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PickHotKeyDialog.Designer.cs">
+      <DependentUpon>PickHotKeyDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="ThemeControl.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -58,6 +72,12 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="HotKeyPickerForm.resx">
+      <DependentUpon>HotKeyPickerForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PickHotKeyDialog.resx">
+      <DependentUpon>PickHotKeyDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ThemeControl.resx">
       <DependentUpon>ThemeControl.cs</DependentUpon>
     </EmbeddedResource>

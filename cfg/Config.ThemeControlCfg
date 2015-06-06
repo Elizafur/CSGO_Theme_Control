@@ -1,1 +1,4 @@
-IsEnabled True
+//Note to those reading:
+//Modifying this file could result in the breaking of your config.
+IsEnabled 			"True"
+Hotkey{ 0 0 T C:\Windows\Resources\Themes\aero.theme }

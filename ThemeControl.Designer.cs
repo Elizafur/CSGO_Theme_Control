@@ -43,6 +43,7 @@
             this.btnChooseDesktop = new System.Windows.Forms.Button();
             this.btnChooseIngame = new System.Windows.Forms.Button();
             this.btnClearThemes = new System.Windows.Forms.Button();
+            this.btnPickHotkeys = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.contextMenu.SuspendLayout();
             this.SuspendLayout();
@@ -162,11 +163,22 @@
             this.btnClearThemes.UseVisualStyleBackColor = true;
             this.btnClearThemes.Click += new System.EventHandler(this.btnClearThemes_Click);
             // 
+            // btnPickHotkeys
+            // 
+            this.btnPickHotkeys.Location = new System.Drawing.Point(233, 251);
+            this.btnPickHotkeys.Name = "btnPickHotkeys";
+            this.btnPickHotkeys.Size = new System.Drawing.Size(102, 23);
+            this.btnPickHotkeys.TabIndex = 8;
+            this.btnPickHotkeys.Text = "Theme hotkeys";
+            this.btnPickHotkeys.UseVisualStyleBackColor = true;
+            this.btnPickHotkeys.Click += new System.EventHandler(this.btnPickHotkeys_Click);
+            // 
             // ThemeControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(360, 468);
+            this.Controls.Add(this.btnPickHotkeys);
             this.Controls.Add(this.btnClearThemes);
             this.Controls.Add(this.btnChooseIngame);
             this.Controls.Add(this.btnChooseDesktop);
@@ -202,6 +214,7 @@
         private System.Windows.Forms.Button btnChooseDesktop;
         private System.Windows.Forms.Button btnChooseIngame;
         private System.Windows.Forms.Button btnClearThemes;
+        private System.Windows.Forms.Button btnPickHotkeys;
     }
 }
 

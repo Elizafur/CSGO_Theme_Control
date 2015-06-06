@@ -1,9 +1,3 @@
-Check this out: http://stackoverflow.com/a/9468968
-That should allow us to alt tab back into CSGO after the theme is done changing automatically.
-
-website
-
-SEE THIS: http://stackoverflow.com/a/824478
-FOR KEYBOARD HOTKEYS TO SWITCH THEME.
-
-line 458: error check for return value of IntPtr.Zero.
+create a simple website?
+Finish keyboard shortcuts form.
+update readmeAssets.

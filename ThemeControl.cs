@@ -19,6 +19,7 @@ namespace CSGO_Theme_Control
     public partial class ThemeControl : Form
     {
 
+        private bool DebugMode;
         private bool IsEnabled              = true;
         private bool BootOnStart            = false;
         private bool shouldChangeDeskTheme  = false;
@@ -30,10 +31,13 @@ namespace CSGO_Theme_Control
         private string GameThemeName        = null;
         private const string EXE_NAME       = "CSGO_Theme_Control.exe";
         private const string APP_NAME       = "CSGO_THEME_CONTROL";
-        private const string VERSION_NUM    = "0.9.0.0";
+        private const string VERSION_NUM    = "0.9.8.5";
         private Thread t;
         private RegistryKey rk              = Registry.CurrentUser.OpenSubKey(
             "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+
+        //The String in this dictionary should be the path to the theme to change to.
+        private Dictionary<HotKey, String> HotKeys = new Dictionary<HotKey, String>();
 
         [DllImport("user32.dll")]
         private static extern int FindWindow(
@@ -48,6 +52,29 @@ namespace CSGO_Theme_Control
             int         wParam,
             int         lParam
         );
+
+        [DllImport("user32.dll")]
+        private static extern bool RegisterHotKey(
+            IntPtr      hWnd, 
+            int         id, 
+            int         fsModifiers, 
+            int         vk
+        );
+
+        [DllImport("user32.dll")]
+        private static extern bool UnregisterHotKey(
+            IntPtr      hWnd, 
+            int         id
+        );
+
+        public enum KeyModifier
+        {
+            NONE    = 0,
+            ALT     = 1,
+            CONTROL = 2,
+            SHIFT   = 4,
+            WINKEY  = 8
+        }
 
         private const int WM_SYSCOMMAND = 0x0112;
         private const int SC_CLOSE      = 0xF060;
@@ -67,6 +94,10 @@ namespace CSGO_Theme_Control
         {
             InitializeComponent();
             this.NotificationIcon.Icon = new System.Drawing.Icon(this.getExeDirectory() + "resources\\Gaben_santa.ico");
+            
+            //TODO: <- dont remove this.
+            //Set DebugMode to false before release.
+            this.DebugMode = false;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -74,8 +105,18 @@ namespace CSGO_Theme_Control
             //rundll32.exe %SystemRoot%\system32\shell32.dll,Control_RunDLL %SystemRoot%\system32\desk.cpl desk,@Themes /Action:OpenTheme /file:"C:\Windows\Resources\Themes\aero.theme"
             //rundll32.exe %SystemRoot%\system32\shell32.dll,Control_RunDLL %SystemRoot%\system32\desk.cpl desk,@Themes /Action:OpenTheme /file:"C:\Windows\Resources\Ease of Access Themes\hcwhite.theme"
             this.ReadConfig();
-            chkEnabled.Checked = this.IsEnabled;
 
+            //Register hotkeys.
+            if (this.HotKeys != null)
+                foreach(KeyValuePair<HotKey, String> entry in this.HotKeys)
+                {
+                    RegisterHotKey(this.Handle, entry.Key.id, entry.Key.keyModifier, entry.Key.keyHashCode);
+                }
+
+            DBGRegisterTestHotKey();
+
+            //Check appropriate boxes on forms that correlate with user settings.
+            chkEnabled.Checked = this.IsEnabled;
             if (rk.GetValue(ThemeControl.APP_NAME) == null) 
                 this.registryBootWritten = false;
             else 
@@ -84,8 +125,8 @@ namespace CSGO_Theme_Control
             this.BootOnStart            = registryBootWritten;
             this.chkStartOnBoot.Checked = registryBootWritten;
 
+            //If CSGO is running when the program is started we should switch themes.
             this.shouldChangeDeskTheme  = this.csgoIsRunning();
-
             if (this.shouldChangeDeskTheme)
             {
                 if (this.GameThemePath != null)
@@ -93,12 +134,42 @@ namespace CSGO_Theme_Control
                 else
                     this.changeTheme(true);
             }
-
             this.shouldChangeGameTheme  = !this.shouldChangeDeskTheme;
 
+            //Create new thread to determine if CSGO is ever started.
             t = new Thread(CheckIfRunningForever){ IsBackground = true };
             t.Start();
 
+        }
+
+        protected override void WndProc(ref Message m)
+        {
+            base.WndProc(ref m);
+ 
+            if (m.Msg == 0x0312)
+            {
+                //Credit to http://www.fluxbytes.com/csharp/how-to-register-a-global-hotkey-for-your-application-in-c/
+                /* Note that the three lines below are not needed if you only want to register one hotkey.
+                 * The below lines are useful in case you want to register multiple keys, which you can use a switch with the id as argument, or if you want to know which key/modifier was pressed for some particular reason. */
+ 
+                Keys key = (Keys)(((int)m.LParam >> 16) & 0xFFFF);                  // The key of the hotkey that was pressed.
+                KeyModifier modifier = (KeyModifier)((int)m.LParam & 0xFFFF);       // The modifier of the hotkey that was pressed.
+                int id = m.WParam.ToInt32();                                        // The id of the hotkey that was pressed.
+
+                HotKey local = new HotKey(id, (int)modifier, key);
+
+                try
+                {
+                    String pathToTheme = this.HotKeys[local];
+                    execCMDThemeChange(pathToTheme);
+                }
+                catch (Exception e)
+                {
+                    //TODO:
+                    //Path does not exist. Make this better later.
+                    createCrashDump(e.Message);
+                }
+            }
         }
 
         private void ThemeControl_FormClosing(object sender, FormClosingEventArgs e)
@@ -119,6 +190,12 @@ namespace CSGO_Theme_Control
                 if (!registryBootWritten)
                     this.createBootStartup();
             }
+
+            if (this.HotKeys != null)
+                foreach (KeyValuePair<HotKey, String> entry in this.HotKeys)
+                {
+                    UnregisterHotKey(this.Handle, entry.Key.id);
+                }
         }
 
         private void log(string s)
@@ -162,7 +239,7 @@ namespace CSGO_Theme_Control
             }
             catch (Exception e)
             {
-                throw new Exception("Something incredibly wrong has happened and the program must terminate. Context follows:\n" + e.Message);
+                throw new Exception("A second exception occured while trying to create a log of a prior exception.\nThis means that something incredibly wrong has happened and the program must terminate. Context follows:\n" + e.Message);
             }
             finally
             {
@@ -192,6 +269,8 @@ namespace CSGO_Theme_Control
                     string line = f.ReadLine();
                     if (!line.StartsWith("//"))
                     {
+                        //Looking back at this I don't know what this does.
+                        //But I assume it is splitting at the quotations and at the whitespace.
                         List<string> split = line.Split('"')
                                                  .Select((element, index) => index % 2 == 0  // If even index
                                                        ? element.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)  // Split the item
@@ -252,6 +331,43 @@ namespace CSGO_Theme_Control
                                     log("ERROR: CFG is in an invalid format and cannot be read.");
                                 }
                             }
+                            else if (word.StartsWith("hotkey{"))
+                            {
+                                try
+                                {
+                                    //using the split line stored in the variable 'split':
+                                    //index 0 should be "Hotkey{" which is our identifier
+                                    //index 1 should be the id of the key to assign.
+                                    //index 2 should be the modifier of the key.
+                                    //index 3 should be the key itself as a string.
+                                    //index 4 should be the string path to the theme which will be activated.
+
+                                    try 
+                                    {
+                                        //Add hotkey to global hotkey list.
+                                        this.HotKeys.Add(new HotKey(
+                                            Convert.ToInt32(split[1]),
+                                            Convert.ToInt32(split[2]),
+                                            (Keys)Enum.Parse(typeof(Keys), split[3], false)
+                                        ), split[4]);
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        if (e is ArgumentNullException || e is ArgumentException || e is OverflowException)
+                                        {
+                                            log("ERROR: CFG is in an invalid format and cannot be read.");
+                                        }
+                                        else
+                                        {
+                                            throw;
+                                        }
+                                    }
+                                }
+                                catch (IndexOutOfRangeException)
+                                {
+                                    log("ERROR: CFG is in an invalid format and cannot be read.");
+                                }
+                            }
                         }
                     }
                 }
@@ -287,6 +403,15 @@ namespace CSGO_Theme_Control
                 {
                     sw.WriteLine("GameThemePath \t\t\"" + this.GameThemePath + "\"");
                 }
+
+                if (this.HotKeys != null)
+                    foreach (KeyValuePair<HotKey, String> entry in this.HotKeys)
+                    {
+                        sw.Write("Hotkey{ ");
+                        sw.Write(entry.Key.id + " " + entry.Key.keyModifier + " " + entry.Key.key);
+                        sw.Write(" " + entry.Value);
+                        sw.Write(" }\n");
+                    }
             }
             catch (Exception e)
             {
@@ -450,21 +575,39 @@ namespace CSGO_Theme_Control
 
         private void changeTheme(bool useClassic)
         {
-            string PATH;
-            if (useClassic)
-                PATH = "C:\\Windows\\Resources\\Ease of Access Themes\\hcwhite.theme";
-            else
-                PATH = "C:\\Windows\\Resources\\Themes\\aero.theme";
+            try
+            {
+                string PATH;
+                if (useClassic)
+                    PATH = "C:\\Windows\\Resources\\Ease of Access Themes\\hcwhite.theme";
+                else
+                    PATH = "C:\\Windows\\Resources\\Themes\\aero.theme";
 
-            execCMDThemeChange(PATH);
+                execCMDThemeChange(PATH);
+            }
+            catch (Exception e)
+            {
+                //TODO:
+                //Path does not exist. Make this better later.
+                createCrashDump(e.Message);
+            }
         }
 
         //Used for custom themes.
         private void changeTheme(string themePath)
         {
-            string PATH = themePath;
+            try
+            {
+                string PATH = themePath;
 
-            execCMDThemeChange(PATH);
+                execCMDThemeChange(PATH);
+            }
+            catch (Exception e)
+            {
+                //TODO:
+                //Path does not exist. Make this better later.
+                createCrashDump(e.Message);
+            }
         }
 
         private void altTabIntoCSGO()
@@ -481,6 +624,9 @@ namespace CSGO_Theme_Control
                     else
                     {
                         IntPtr csgohWnd = this.getCSGOhWnd();
+                        if (csgohWnd == IntPtr.Zero)
+                            return;
+
                         SetForegroundWindow(csgohWnd);
                     }
                 }
@@ -573,5 +719,35 @@ namespace CSGO_Theme_Control
             this.logStatus();
         }
 
+        private void btnPickHotkeys_Click(object sender, EventArgs e)
+        {
+            //Open dialog to pick hotkey.
+            unsafe
+            {
+                HotKeyDataHolder hkdh;
+                ThemeDataHolder tdh;
+                HotKeyPickerForm hkpf = new HotKeyPickerForm(&hkdh, &tdh, this.HotKeys);
+                DialogResult result = hkpf.ShowDialog();
+
+                if (result == DialogResult.OK)
+                {
+                    string themePathFromCSTR = new string(tdh.ThemePath);
+                    //After the form is closed we can make a new KeyValuePair for our dictionary and register the key.
+                    RegisterHotKey(this.Handle, hkdh.id, hkdh.keyModifier, hkdh.keyHashCode);
+                    this.HotKeys.Add(
+                        HotKey.FormNewHotKey(hkdh),
+                        themePathFromCSTR
+                    );
+                }
+            }
+
+        }
+
+        //Debug method
+        private void DBGRegisterTestHotKey()
+        {
+            if (this.DebugMode)
+                RegisterHotKey(this.Handle, 7355608, (int)KeyModifier.NONE, Keys.A.GetHashCode());
+        }
     }
 }
