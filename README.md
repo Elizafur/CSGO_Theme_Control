@@ -28,4 +28,4 @@ The program also includes the ability to setup custom hotkeys to adjust theme at
 ## UI
 With extreme simplicity as a design point I don't think there is much to be said here. The Status text box will change as you modify settings and options.
 
-![](/readmeAssets/UISection/UI.png "A simple UI.")
+![](/readmeAssets/UISection/ProgramUI.png "A simple UI.")
