@@ -1,4 +1,20 @@
-﻿using System;
+﻿//    This file is part of CSGO Theme Control.
+//    Copyright (C) 2015  Elijah Furland      
+//
+//    CSGO Theme Control is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    CSGO Theme Control is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with CSGO Theme Control.  If not, see <http://www.gnu.org/licenses/>.
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -10,16 +26,34 @@ using System.Windows.Forms;
 
 namespace CSGO_Theme_Control
 {
+    /// <summary>
+    /// An unsafe class used to create new globa HotKeys.
+    /// </summary>
     unsafe public partial class HotKeyPickerForm : Form
     {
         private Dictionary<HotKey, String>  HotKeys         = null;
         private String                      ThemeToExecute  = null;
         private Keys                        HKKey;
-        private ThemeControl.KeyModifier    HKKeyMod;
+        private Constants.KeyModifier       HKKeyMod;
         private int                         HKID            = 0;
         private HotKeyDataHolder*           HKAddress       = null;
         private ThemeDataHolder*            ThemeData       = null;
 
+        /// <summary>
+        /// Constructor for HotKeyPickerForm class.
+        /// </summary>
+        /// 
+        /// <param name="_hkAddress">
+        /// A pointer to a HotKeyDataHolder. The members of this struct will be mutated by the form.
+        /// The contents of this pointer will include values selected via user keyboard input on this form.
+        /// </param>
+        /// 
+        /// <param name="_themeData">
+        /// A pointer to a ThemeDataHolder struct. The members of this struct will be mutated by the form.
+        /// The contents of this pointer will be a user selected path to a theme file. 
+        /// </param>
+        /// 
+        /// <param name="existingHotkeys">A dictionary of existing Hotkeys and their corresponding actions.</param>
         public HotKeyPickerForm(HotKeyDataHolder* _hkAddress, ThemeDataHolder* _themeData, Dictionary<HotKey, String> existingHotkeys)
         {
             InitializeComponent();

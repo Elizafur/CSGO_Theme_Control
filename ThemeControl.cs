@@ -1,4 +1,20 @@
-﻿using System;
+﻿//    This file is part of CSGO Theme Control.
+//    Copyright (C) 2015  Elijah Furland      
+//
+//    CSGO Theme Control is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    CSGO Theme Control is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with CSGO Theme Control.  If not, see <http://www.gnu.org/licenses/>.
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -66,15 +82,6 @@ namespace CSGO_Theme_Control
             IntPtr      hWnd, 
             int         id
         );
-
-        public enum KeyModifier
-        {
-            NONE    = 0,
-            ALT     = 1,
-            CONTROL = 2,
-            SHIFT   = 4,
-            WINKEY  = 8
-        }
 
         //Used to alt-tab back into the CSGO process after changing themes.
         [DllImport("user32.dll", SetLastError = true)]
@@ -166,15 +173,15 @@ namespace CSGO_Theme_Control
         {
             base.WndProc(ref m);
  
-            if (m.Msg == 0x0312)
+            if (m.Msg == Constants.HOTKEY_DOWN)
             {
                 //Credit to http://www.fluxbytes.com/csharp/how-to-register-a-global-hotkey-for-your-application-in-c/
                 /* Note that the three lines below are not needed if you only want to register one hotkey.
                  * The below lines are useful in case you want to register multiple keys, which you can use a switch with the id as argument, or if you want to know which key/modifier was pressed for some particular reason. */
  
-                Keys key = (Keys)(((int)m.LParam >> 16) & 0xFFFF);                  // The key of the hotkey that was pressed.
-                KeyModifier modifier = (KeyModifier)((int)m.LParam & 0xFFFF);       // The modifier of the hotkey that was pressed.
-                int id = m.WParam.ToInt32();                                        // The id of the hotkey that was pressed.
+                Keys key = (Keys)(((int)m.LParam >> 16) & 0xFFFF);                                      // The key of the hotkey that was pressed.
+                Constants.KeyModifier modifier = (Constants.KeyModifier)((int)m.LParam & 0xFFFF);       // The modifier of the hotkey that was pressed.
+                int id = m.WParam.ToInt32();                                                            // The id of the hotkey that was pressed.
 
                 HotKey local = new HotKey(id, (int)modifier, key);
 
@@ -766,7 +773,7 @@ namespace CSGO_Theme_Control
             unsafe
             {
                 HotKeyDataHolder hkdh;
-                HotkeyRemovalForm hkrf = new HotkeyRemovalForm(&hkdh, this.HotKeys);
+                HotKeyRemovalForm hkrf = new HotKeyRemovalForm(&hkdh, this.HotKeys);
 
                 DialogResult result = hkrf.ShowDialog();
                 if (result == DialogResult.OK)
