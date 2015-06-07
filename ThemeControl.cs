@@ -142,7 +142,6 @@ namespace CSGO_Theme_Control
             if (this.DebugMode)
             {
                 DBGRunTests();
-                //This has issues for some reason.
             }
 
             if (this.t != null)
