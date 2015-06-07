@@ -173,7 +173,7 @@ namespace CSGO_Theme_Control
         {
             base.WndProc(ref m);
  
-            if (m.Msg == Constants.HOTKEY_DOWN)
+            if (m.Msg == Constants.HOTKEY_DOWN && this.IsEnabled)
             {
                 //Credit to http://www.fluxbytes.com/csharp/how-to-register-a-global-hotkey-for-your-application-in-c/
                 /* Note that the three lines below are not needed if you only want to register one hotkey.
@@ -219,11 +219,11 @@ namespace CSGO_Theme_Control
             string gameT    = (this.GameThemePath == null) ? "High Contrast White" : this.GameThemeName;
 
             this.log(
-                "Version:"       + HelperFunc.CreateWhiteSpace(8) + ThemeControl.VERSION_NUM,
+                "Version:"       + HelperFunc.CreateWhiteSpace(7) + ThemeControl.VERSION_NUM,
                 "Is Enabled:"    + HelperFunc.CreateWhiteSpace(4) + this.IsEnabled,
-                "Boot on start:" + HelperFunc.CreateWhiteSpace(4) + this.BootOnStart,
-                "Desktop theme:" + HelperFunc.CreateWhiteSpace(4) + desktopT,
-                "In-game theme:" + HelperFunc.CreateWhiteSpace(4) + gameT
+                "Boot on start:" + HelperFunc.CreateWhiteSpace(1) + this.BootOnStart,
+                "Desktop theme:" + HelperFunc.CreateWhiteSpace(1) + desktopT,
+                "In-game theme:" + HelperFunc.CreateWhiteSpace(1) + gameT
             );
 
             this.log("Hotkeys<Key, Theme>:" + HelperFunc.CreateWhiteSpace(4) + "{");
@@ -764,6 +764,10 @@ namespace CSGO_Theme_Control
                     HotKey hk = new HotKey(hkdh.id, hkdh.keyModifier, hkdh.key);
                     this.HotKeys.Remove(hk);
                     UnregisterHotKey(this.Handle, hk.id);
+                }
+                else if (result == DialogResult.Yes)
+                {
+                    this.HotKeys = new Dictionary<HotKey, String>();
                 }
             }
 

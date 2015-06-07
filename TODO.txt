@@ -2,4 +2,6 @@ create a simple website?
 
 make hotkey forms prettier.
 
+fix using function keys as hotkeys.
+
 update readmeAssets.

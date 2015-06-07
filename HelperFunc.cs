@@ -15,11 +15,13 @@ namespace CSGO_Theme_Control
         /// <summary>
         /// Used to create whitespace of various amounts
         /// </summary>
+        /// 
         /// <param name="amount">An unsigned integer representing the number of whitespaces you wish.</param>
+        /// 
         /// <returns>A String containing variable amounts of whitespace.</returns>
-        public static String CreateWhiteSpace(uint amount)
+        public static string CreateWhiteSpace(uint amount)
         {
-            String s = "";
+            string s = "";
             for (int i = 0; i < amount; i++)
             {
                 s += " ";
@@ -28,13 +30,28 @@ namespace CSGO_Theme_Control
             return s;
         }
 
-        public static String createShortHandTheme(string FullThemePath)
+        /// <summary>
+        /// Creates a shorthand filename for an absolute path.
+        /// <example>C:\\Windows\\Resources\\Ease of Access Themes\\hc1.theme => hc1.theme</example>
+        /// </summary>
+        /// 
+        /// <param name="FullThemePath">Absolute path to the theme starting from the C: or equivalent drive.</param>
+        /// 
+        /// <returns>A new string created at the last index of '.'</returns>
+        public static string createShortHandTheme(string FullThemePath)
         {
             int index = FullThemePath.LastIndexOf("\\");
             return FullThemePath.Substring(index + 1);
         }
 
-        public static String UpperCaseFirstChar(string s)
+        /// <summary>
+        /// Creates a string with the first character turned to uppercase.
+        /// </summary>
+        /// 
+        /// <param name="s">String to make the first character uppercase.</param>
+        /// 
+        /// <returns>A new string with the first character uppercase.</returns>
+        public static string UpperCaseFirstChar(string s)
         {
             if (String.IsNullOrEmpty(s))
             {

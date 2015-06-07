@@ -47,12 +47,13 @@ namespace CSGO_Theme_Control
             this.label1 = new System.Windows.Forms.Label();
             this.btnFinish = new System.Windows.Forms.Button();
             this.lblError = new System.Windows.Forms.Label();
+            this.btnRemoveAllHotKeys = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // cmbHotkeys
             // 
             this.cmbHotkeys.FormattingEnabled = true;
-            this.cmbHotkeys.Location = new System.Drawing.Point(109, 129);
+            this.cmbHotkeys.Location = new System.Drawing.Point(87, 36);
             this.cmbHotkeys.Name = "cmbHotkeys";
             this.cmbHotkeys.Size = new System.Drawing.Size(121, 21);
             this.cmbHotkeys.TabIndex = 0;
@@ -60,9 +61,10 @@ namespace CSGO_Theme_Control
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 129);
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(73, 9);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(91, 13);
+            this.label1.Size = new System.Drawing.Size(157, 24);
             this.label1.TabIndex = 1;
             this.label1.Text = "Hotkey to remove";
             // 
@@ -85,16 +87,27 @@ namespace CSGO_Theme_Control
             this.lblError.Size = new System.Drawing.Size(0, 13);
             this.lblError.TabIndex = 3;
             // 
-            // HotkeyRemovalForm
+            // btnRemoveAllHotKeys
+            // 
+            this.btnRemoveAllHotKeys.Location = new System.Drawing.Point(12, 266);
+            this.btnRemoveAllHotKeys.Name = "btnRemoveAllHotKeys";
+            this.btnRemoveAllHotKeys.Size = new System.Drawing.Size(75, 23);
+            this.btnRemoveAllHotKeys.TabIndex = 4;
+            this.btnRemoveAllHotKeys.Text = "Remove all";
+            this.btnRemoveAllHotKeys.UseVisualStyleBackColor = true;
+            this.btnRemoveAllHotKeys.Click += new System.EventHandler(this.btnRemoveAllHotKeys_Click);
+            // 
+            // HotKeyRemovalForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(322, 301);
+            this.Controls.Add(this.btnRemoveAllHotKeys);
             this.Controls.Add(this.lblError);
             this.Controls.Add(this.btnFinish);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.cmbHotkeys);
-            this.Name = "HotkeyRemovalForm";
+            this.Name = "HotKeyRemovalForm";
             this.Text = "HotkeyRemovalForm";
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -107,5 +120,6 @@ namespace CSGO_Theme_Control
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnFinish;
         private System.Windows.Forms.Label lblError;
+        private System.Windows.Forms.Button btnRemoveAllHotKeys;
     }
 }

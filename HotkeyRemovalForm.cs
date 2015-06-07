@@ -75,6 +75,14 @@ namespace CSGO_Theme_Control
             this.DialogResult = DialogResult.OK;
         }
 
+        /// <summary>
+        /// Returns a DialogResult of Yes. This is a signal that all hotkeys should be removed from the parent list.
+        /// </summary>
+        private void btnRemoveAllHotKeys_Click(object sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.Yes;
+        }
+
         
     }
 }

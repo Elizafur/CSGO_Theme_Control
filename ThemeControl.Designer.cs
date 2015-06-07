@@ -90,9 +90,10 @@ namespace CSGO_Theme_Control
             // txtStatus
             // 
             this.txtStatus.Enabled = false;
+            this.txtStatus.Font = new System.Drawing.Font("Courier New", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtStatus.Location = new System.Drawing.Point(6, 19);
             this.txtStatus.Name = "txtStatus";
-            this.txtStatus.Size = new System.Drawing.Size(311, 208);
+            this.txtStatus.Size = new System.Drawing.Size(324, 208);
             this.txtStatus.TabIndex = 2;
             this.txtStatus.Text = "";
             // 
@@ -101,7 +102,7 @@ namespace CSGO_Theme_Control
             this.groupBox1.Controls.Add(this.txtStatus);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(323, 233);
+            this.groupBox1.Size = new System.Drawing.Size(336, 233);
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Program Status";
