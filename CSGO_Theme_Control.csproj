@@ -58,6 +58,12 @@
     <Compile Include="HotKeyPickerForm.Designer.cs">
       <DependentUpon>HotKeyPickerForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="HotkeyRemovalForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="HotkeyRemovalForm.Designer.cs">
+      <DependentUpon>HotkeyRemovalForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="PickHotKeyDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -74,6 +80,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="HotKeyPickerForm.resx">
       <DependentUpon>HotKeyPickerForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HotkeyRemovalForm.resx">
+      <DependentUpon>HotkeyRemovalForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="PickHotKeyDialog.resx">
       <DependentUpon>PickHotKeyDialog.cs</DependentUpon>

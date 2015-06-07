@@ -81,5 +81,28 @@ namespace CSGO_Theme_Control
             return new HotKey(hkdh.id, hkdh.keyModifier, hkdh.key);
         }
 
+        public static String KeyModToString(ThemeControl.KeyModifier km)
+        {
+            if (km == ThemeControl.KeyModifier.ALT)
+                return "ALT";
+            else if (km == ThemeControl.KeyModifier.CONTROL)
+                return "CONTROL";
+            else if (km == ThemeControl.KeyModifier.SHIFT)
+                return "SHIFT";
+            else
+                return "";
+        }
+
+        public override string ToString()
+        {
+            string s = KeyModToString((ThemeControl.KeyModifier)this.keyModifier);
+            if (s != "")
+                s += " ";
+
+            s += ((char)this.key).ToString();
+
+            return s;
+        }
+
     }
 }

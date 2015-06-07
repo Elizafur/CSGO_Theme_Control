@@ -37,7 +37,6 @@ namespace CSGO_Theme_Control
             //Not the best way since we're using strings but whatever.
             if (lblKeyOK.Text == "Not Finished" || lblThemeOK.Text == "Not Finished")
             {
-                //TODO: Make this message more informative.
                 this.lblError.Text = "A required field was not selected.";
                 return;
             }
@@ -77,7 +76,7 @@ namespace CSGO_Theme_Control
             DialogResult result = this.openFileDialog.ShowDialog();
             if (result == DialogResult.OK)
             {
-                this.ThemeToExecute = openFileDialog.FileName;  //TODO: Make sure this returns the full path.
+                this.ThemeToExecute = openFileDialog.FileName;
                 this.lblThemeOK.Text = "Finished";
                 this.lblThemeOK.ForeColor = Color.Green;
             }

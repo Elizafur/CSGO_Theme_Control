@@ -1,3 +1,5 @@
 create a simple website?
-Finish keyboard shortcuts form.
+
+make hotkey forms prettier.
+
 update readmeAssets.

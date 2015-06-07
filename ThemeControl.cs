@@ -107,11 +107,9 @@ namespace CSGO_Theme_Control
             this.ReadConfig();
 
             //Register hotkeys.
-            if (this.HotKeys != null)
+            if (this.HotKeys != null || this.HotKeys.Count > 0)
                 foreach(KeyValuePair<HotKey, String> entry in this.HotKeys)
                     RegisterHotKey(this.Handle, entry.Key.id, entry.Key.keyModifier, entry.Key.keyHashCode);
-
-            DBGRegisterTestHotKey();
 
             //Check appropriate boxes on forms that correlate with user settings.
             chkEnabled.Checked = this.IsEnabled;
@@ -137,7 +135,35 @@ namespace CSGO_Theme_Control
             //Create new thread to determine if CSGO is ever started.
             t = new Thread(CheckIfRunningForever){ IsBackground = true };
             t.Start();
+        }
 
+        private void ThemeControl_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (this.DebugMode)
+            {
+                DBGRunTests();
+                //This has issues for some reason.
+            }
+
+            if (this.t != null)
+            {
+                if (this.t.IsAlive)
+                {
+                    this.t.Interrupt();
+                    this.t.Abort();
+                }
+            }
+
+            this.WriteConfig();
+            if (this.BootOnStart)
+            {
+                if (!registryBootWritten)
+                    this.createBootStartup();
+            }
+
+            if (this.HotKeys != null || this.HotKeys.Count > 0)
+                foreach (KeyValuePair<HotKey, String> entry in this.HotKeys)
+                    UnregisterHotKey(this.Handle, entry.Key.id);
         }
 
         protected override void WndProc(ref Message m)
@@ -170,30 +196,6 @@ namespace CSGO_Theme_Control
             }
         }
 
-        private void ThemeControl_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (this.t != null)
-            {
-                if (this.t.IsAlive)
-                {
-                    this.t.Interrupt();
-                    this.t.Abort();
-                }
-            }
-
-            this.WriteConfig();
-            if (this.BootOnStart)
-            {
-                //TODO: Check if this is even really required as theoretically this key should always already be created if the checkbox is checked.
-                if (!registryBootWritten)
-                    this.createBootStartup();
-            }
-
-            if (this.HotKeys != null)
-                foreach (KeyValuePair<HotKey, String> entry in this.HotKeys)
-                    UnregisterHotKey(this.Handle, entry.Key.id);
-        }
-
         private void log(string s)
         {
             this.txtStatus.Text += s + "\n";
@@ -220,11 +222,34 @@ namespace CSGO_Theme_Control
                 "Desktop theme:\t" + desktopT,
                 "In-game theme:\t" + gameT
             );
+
+            this.log("Hotkeys<Key, Theme>:\t{");
+            if (this.HotKeys != null || this.HotKeys.Count > 0)
+            {
+                foreach (KeyValuePair<HotKey, String> entry in this.HotKeys)
+                {
+                    this.log("\t[" + entry.Key.ToString() + ", " + createShortHandTheme(entry.Value.ToString()) + "]");
+                }
+            }
+            this.log("}");
+            
+        }
+
+        private string createShortHandTheme(string FullThemePath)
+        {
+            int index = FullThemePath.LastIndexOf("\\");
+            return FullThemePath.Substring(index + 1);
         }
 
         private void createCrashDump(string context)
         {
-            StreamWriter sw = new StreamWriter(this.getExeDirectory() + "CSGO_THEME_CONTROL_" + DateTime.Now.ToString() + ".crashdumplog");
+            string programExePathFolder = this.getExeDirectory();
+
+            String Date = (DateTime.Now.Year.ToString() + "-" + DateTime.Now.Month.ToString() + "-" + DateTime.Now.Day.ToString() + "_" + DateTime.Now.TimeOfDay.ToString()).Replace(":", "-");
+            Date = Date.Remove(Date.LastIndexOf("."));
+            Date += DateTime.Now.ToString("tt");
+
+            StreamWriter sw = new StreamWriter(programExePathFolder + "CSGO_THEME_CONTROL_" + Date + ".crashdumplog");
             try
             {
                 sw.WriteLine("[CRASH DUMP LOG]");
@@ -267,6 +292,7 @@ namespace CSGO_Theme_Control
                     {
                         //Looking back at this I don't know what this does.
                         //But I assume it is splitting at the quotations and at the whitespace.
+                        //It works is what's important. (I feel awful writing that).
                         List<string> split = line.Split('"')
                                                  .Select((element, index) => index % 2 == 0  // If even index
                                                        ? element.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)  // Split the item
@@ -717,7 +743,6 @@ namespace CSGO_Theme_Control
 
         private void btnPickHotkeys_Click(object sender, EventArgs e)
         {
-            //Open dialog to pick hotkey.
             unsafe
             {
                 HotKeyDataHolder hkdh;
@@ -737,13 +762,32 @@ namespace CSGO_Theme_Control
                 }
             }
 
+            this.logStatus();
+        }
+
+        private void btnRemoveHotkey_Click(object sender, EventArgs e)
+        {
+            unsafe
+            {
+                HotKeyDataHolder hkdh;
+                HotkeyRemovalForm hkrf = new HotkeyRemovalForm(&hkdh, this.HotKeys);
+
+                DialogResult result = hkrf.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    HotKey hk = new HotKey(hkdh.id, hkdh.keyModifier, hkdh.key);
+                    this.HotKeys.Remove(hk);
+                }
+            }
+
+            this.logStatus();
         }
 
         //Debug method
-        private void DBGRegisterTestHotKey()
+        private void DBGRunTests()
         {
-            if (this.DebugMode)
-                RegisterHotKey(this.Handle, 7355608, (int)KeyModifier.NONE, Keys.A.GetHashCode());
+            createCrashDump("This is just a test crash dump. You should not be seeing this!");
+            //TODO: Some other stuff should be here.
         }
     }
 }
