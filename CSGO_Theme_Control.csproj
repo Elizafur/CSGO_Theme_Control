@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
+    <Compile Include="HelperFunc.cs" />
     <Compile Include="HotKey.cs" />
     <Compile Include="HotKeyPickerForm.cs">
       <SubType>Form</SubType>

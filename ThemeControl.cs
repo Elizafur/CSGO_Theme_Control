@@ -219,29 +219,23 @@ namespace CSGO_Theme_Control
             string gameT    = (this.GameThemePath == null) ? "High Contrast White" : this.GameThemeName;
 
             this.log(
-                "Version:\t\t" + ThemeControl.VERSION_NUM,
-                "Is Enabled:\t" + this.IsEnabled,
-                "Boot on start:\t" + this.BootOnStart,
-                "Desktop theme:\t" + desktopT,
-                "In-game theme:\t" + gameT
+                "Version:"       + HelperFunc.CreateWhiteSpace(8) + ThemeControl.VERSION_NUM,
+                "Is Enabled:"    + HelperFunc.CreateWhiteSpace(4) + this.IsEnabled,
+                "Boot on start:" + HelperFunc.CreateWhiteSpace(4) + this.BootOnStart,
+                "Desktop theme:" + HelperFunc.CreateWhiteSpace(4) + desktopT,
+                "In-game theme:" + HelperFunc.CreateWhiteSpace(4) + gameT
             );
 
-            this.log("Hotkeys<Key, Theme>:\t{");
+            this.log("Hotkeys<Key, Theme>:" + HelperFunc.CreateWhiteSpace(4) + "{");
             if (this.HotKeys != null || this.HotKeys.Count > 0)
             {
                 foreach (KeyValuePair<HotKey, String> entry in this.HotKeys)
                 {
-                    this.log("\t[" + entry.Key.ToString() + ", " + createShortHandTheme(entry.Value.ToString()) + "]");
+                    this.log(HelperFunc.CreateWhiteSpace(4) + "[" + entry.Key.ToString() + ", " + HelperFunc.createShortHandTheme(entry.Value.ToString()) + "]");
                 }
             }
             this.log("}");
             
-        }
-
-        private string createShortHandTheme(string FullThemePath)
-        {
-            int index = FullThemePath.LastIndexOf("\\");
-            return FullThemePath.Substring(index + 1);
         }
 
         private void createCrashDump(string context)
@@ -293,7 +287,7 @@ namespace CSGO_Theme_Control
                     string line = f.ReadLine();
                     if (!line.StartsWith("//"))
                     {
-                        //Looking back at this I don't know what this does.
+                        //Looking back at this I don't know what this does other than the fact that we somehow end up with a split String.
                         //But I assume it is splitting at the quotations and at the whitespace.
                         //It works is what's important. (I feel awful writing that).
                         List<string> split = line.Split('"')
@@ -336,7 +330,7 @@ namespace CSGO_Theme_Control
                                 {
                                     this.DesktopThemePath = split[i + 1].ToLower();
                                     string[] splitTheme = this.DesktopThemePath.Split('\\');
-                                    this.DesktopThemeName = this.UpperCaseFirstChar(splitTheme[splitTheme.Length - 1].Replace(".theme", ""));
+                                    this.DesktopThemeName = HelperFunc.UpperCaseFirstChar(splitTheme[splitTheme.Length - 1].Replace(".theme", ""));
                                 }
                                 catch (IndexOutOfRangeException)
                                 {
@@ -349,7 +343,7 @@ namespace CSGO_Theme_Control
                                 {
                                     this.GameThemePath = split[i + 1].ToLower();
                                     string[] splitTheme = this.GameThemePath.Split('\\');
-                                    this.GameThemeName = this.UpperCaseFirstChar(splitTheme[splitTheme.Length - 1].Replace(".theme", ""));
+                                    this.GameThemeName = HelperFunc.UpperCaseFirstChar(splitTheme[splitTheme.Length - 1].Replace(".theme", ""));
                                 }
                                 catch (IndexOutOfRangeException)
                                 {
@@ -416,17 +410,16 @@ namespace CSGO_Theme_Control
             StreamWriter sw = new StreamWriter(programExePathFolder + Constants.APP_CONFIG_LOCATION);
             try
             {
-                sw.WriteLine("//Note to those reading:\n//Modifying this file could result in the breaking of your config.");
-                sw.WriteLine("IsEnabled \t\t\t\"" + this.IsEnabled.ToString() + "\"");
-
+                sw.WriteLine("//Note to those reading:\n//Modifying this file could result in the breaking of your config.\n");
+                sw.WriteLine("IsEnabled " + HelperFunc.CreateWhiteSpace(8) + "\"" + this.IsEnabled.ToString() + "\"");
 
                 if (this.DesktopThemePath != null)
                 {
-                    sw.WriteLine("DesktopThemePath \t\"" + this.DesktopThemePath + "\"");
+                    sw.WriteLine("DesktopThemePath " + HelperFunc.CreateWhiteSpace(4) + "\"" + this.DesktopThemePath + "\"");
                 }
                 if (this.GameThemePath != null)
                 {
-                    sw.WriteLine("GameThemePath \t\t\"" + this.GameThemePath + "\"");
+                    sw.WriteLine("GameThemePath " + HelperFunc.CreateWhiteSpace(8) + "\"" + this.GameThemePath + "\"");
                 }
 
                 if (this.HotKeys != null)
@@ -669,16 +662,6 @@ namespace CSGO_Theme_Control
             return IntPtr.Zero;
         }
 
-        private string UpperCaseFirstChar(string s)
-        {
-            if (String.IsNullOrEmpty(s))
-            {
-                return String.Empty;
-            }
-
-            return char.ToUpper(s[0]) + s.Substring(1);
-        }
-
         private void ThemeControl_Resize(object sender, EventArgs e)
         {
             if (this.WindowState == FormWindowState.Minimized)
@@ -719,7 +702,7 @@ namespace CSGO_Theme_Control
                 string filepath = openFileDialog.FileName;
                 this.DesktopThemePath = filepath;
                 string[] split = filepath.Split('\\');
-                this.DesktopThemeName = this.UpperCaseFirstChar(split[split.Length - 1].Replace(".theme", ""));
+                this.DesktopThemeName = HelperFunc.UpperCaseFirstChar(split[split.Length - 1].Replace(".theme", ""));
             }
             this.logStatus();
         }
@@ -732,7 +715,7 @@ namespace CSGO_Theme_Control
                 string filepath = openFileDialog.FileName;
                 this.GameThemePath = filepath;
                 string[] split = filepath.Split('\\');
-                this.GameThemeName = this.UpperCaseFirstChar(split[split.Length - 1].Replace(".theme", ""));
+                this.GameThemeName = HelperFunc.UpperCaseFirstChar(split[split.Length - 1].Replace(".theme", ""));
             }
             this.logStatus();
         }
