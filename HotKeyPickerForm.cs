@@ -28,7 +28,6 @@ namespace CSGO_Theme_Control
             this.lblHKID.Text += HKID;
             this.HKAddress = _hkAddress;
             this.ThemeData = _themeData;
-
         }
 
         private void btnFinish_Click(object sender, EventArgs e)
@@ -41,14 +40,14 @@ namespace CSGO_Theme_Control
                 return;
             }
 
-            this.HKAddress->id          = this.HKID;
-            this.HKAddress->key         = this.HKKey;
-            this.HKAddress->keyModifier = (int)this.HKKeyMod;
-            this.HKAddress->keyHashCode = this.HKKey.GetHashCode();
+            HKAddress->id          = this.HKID;
+            HKAddress->key         = this.HKKey;
+            HKAddress->keyModifier = (int)this.HKKeyMod;
+            HKAddress->keyHashCode = this.HKKey.GetHashCode();
 
             fixed (char* cstr = this.ThemeToExecute)
             {
-                this.ThemeData->ThemePath = cstr;
+                ThemeData->ThemePath = cstr;
             }
 
             this.DialogResult = DialogResult.OK;
@@ -84,17 +83,16 @@ namespace CSGO_Theme_Control
 
         private void btnPickHotKey_Click(object sender, EventArgs e)
         {
-            using(PickHotKeyDialog phkd = new PickHotKeyDialog())
-            {
-                DialogResult result = phkd.ShowDialog();
-                if (result == DialogResult.OK)
-                {
-                    this.HKKey    = phkd.Key;
-                    this.HKKeyMod = phkd.KeyMod;
+            PickHotKeyDialog phkd = new PickHotKeyDialog();
+            DialogResult result = phkd.ShowDialog();
 
-                    this.lblKeyOK.Text = "Finished";
-                    this.lblKeyOK.ForeColor = Color.Green;
-                }
+            if (result == DialogResult.OK)
+            {
+                this.HKKey    = phkd.Key;
+                this.HKKeyMod = phkd.KeyMod;
+
+                this.lblKeyOK.Text = "Finished";
+                this.lblKeyOK.ForeColor = Color.Green;
             }
         }
 

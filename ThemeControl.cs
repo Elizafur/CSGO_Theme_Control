@@ -32,8 +32,8 @@ namespace CSGO_Theme_Control
         private const string EXE_NAME       = "CSGO_Theme_Control.exe";
         private const string APP_NAME       = "CSGO_THEME_CONTROL";
         private const string VERSION_NUM    = "0.9.8.5";
-        private Thread t;
-        private RegistryKey rk              = Registry.CurrentUser.OpenSubKey(
+        private Thread t_IsCSGORunning;
+        private RegistryKey rk_StartupKey   = Registry.CurrentUser.OpenSubKey(
             "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 
         //The String in this dictionary should be the path to the theme to change to.
@@ -76,9 +76,6 @@ namespace CSGO_Theme_Control
             WINKEY  = 8
         }
 
-        private const int WM_SYSCOMMAND = 0x0112;
-        private const int SC_CLOSE      = 0xF060;
-
         //Used to alt-tab back into the CSGO process after changing themes.
         [DllImport("user32.dll", SetLastError = true)]
         private static extern IntPtr GetWindow(IntPtr hWnd, uint uCmd); 
@@ -113,7 +110,7 @@ namespace CSGO_Theme_Control
 
             //Check appropriate boxes on forms that correlate with user settings.
             chkEnabled.Checked = this.IsEnabled;
-            if (rk.GetValue(ThemeControl.APP_NAME) == null) 
+            if (rk_StartupKey.GetValue(ThemeControl.APP_NAME) == null) 
                 this.registryBootWritten = false;
             else 
                 this.registryBootWritten = true;
@@ -133,8 +130,8 @@ namespace CSGO_Theme_Control
             this.shouldChangeGameTheme  = !this.shouldChangeDeskTheme;
 
             //Create new thread to determine if CSGO is ever started.
-            t = new Thread(CheckIfRunningForever){ IsBackground = true };
-            t.Start();
+            t_IsCSGORunning = new Thread(CheckIfRunningForever) { IsBackground = true };
+            t_IsCSGORunning.Start();
         }
 
         private void ThemeControl_FormClosing(object sender, FormClosingEventArgs e)
@@ -144,12 +141,12 @@ namespace CSGO_Theme_Control
                 DBGRunTests();
             }
 
-            if (this.t != null)
+            if (t_IsCSGORunning != null)
             {
-                if (this.t.IsAlive)
+                if (t_IsCSGORunning.IsAlive)
                 {
-                    this.t.Interrupt();
-                    this.t.Abort();
+                    t_IsCSGORunning.Interrupt();
+                    t_IsCSGORunning.Abort();
                 }
             }
 
@@ -189,7 +186,7 @@ namespace CSGO_Theme_Control
                 catch (Exception e)
                 {
                     //TODO:
-                    //Path does not exist. Make this better later.
+                    //Path does not exist. Make this better later by narrowing Exception to a specific few.
                     createCrashDump(e.Message);
                 }
             }
@@ -269,19 +266,19 @@ namespace CSGO_Theme_Control
 
         private void createBootStartup()
         {
-            this.rk.SetValue(ThemeControl.APP_NAME, Application.ExecutablePath.ToString());
+            rk_StartupKey.SetValue(ThemeControl.APP_NAME, Application.ExecutablePath.ToString());
         }
 
         private void deleteBootStartup()
         {
-            this.rk.DeleteValue(ThemeControl.APP_NAME, false); 
+            rk_StartupKey.DeleteValue(ThemeControl.APP_NAME, false); 
         }
 
         private void ReadConfig()
         {
             string programExePathFolder = this.getExeDirectory();
 
-            StreamReader f = new StreamReader(programExePathFolder + "cfg\\Config.ThemeControlCfg");
+            StreamReader f = new StreamReader(programExePathFolder + Constants.APP_CONFIG_LOCATION);
             try
             {
                 while (!f.EndOfStream)
@@ -293,14 +290,14 @@ namespace CSGO_Theme_Control
                         //But I assume it is splitting at the quotations and at the whitespace.
                         //It works is what's important. (I feel awful writing that).
                         List<string> split = line.Split('"')
-                                                 .Select((element, index) => index % 2 == 0  // If even index
-                                                       ? element.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)  // Split the item
-                                                       : new string[] { element })  // Keep the entire item
+                                                 .Select((element, index) => index % 2 == 0                                     // If even index
+                                                       ? element.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)    // Split the item
+                                                       : new string[] { element })                                              // Keep the entire item
                                                  .SelectMany(element => element).ToList();
 
                         for (int i = 0; i < split.Count; i++)
                         {
-                            if (i != split.Count - 1)   //Must not be the last element in the list
+                            if (i != split.Count - 1)
                             {
                                 if (split[i].StartsWith("\t"))
                                 {
@@ -409,7 +406,7 @@ namespace CSGO_Theme_Control
         {
             string programExePathFolder = this.getExeDirectory();
 
-            StreamWriter sw = new StreamWriter(programExePathFolder + "cfg\\Config.ThemeControlCfg");
+            StreamWriter sw = new StreamWriter(programExePathFolder + Constants.APP_CONFIG_LOCATION);
             try
             {
                 sw.WriteLine("//Note to those reading:\n//Modifying this file could result in the breaking of your config.");
@@ -518,19 +515,19 @@ namespace CSGO_Theme_Control
             this.IsEnabled = chkEnabled.Checked;
             if (!this.IsEnabled)
             {
-                if (t != null)
+                if (t_IsCSGORunning != null)
                 {
-                    t.Abort();
+                    t_IsCSGORunning.Abort();
                 }
             }
             else
             {
-                if (t != null)
+                if (t_IsCSGORunning != null)
                 {
-                    if (!t.IsAlive)
+                    if (!t_IsCSGORunning.IsAlive)
                     {
-                        t = new Thread(CheckIfRunningForever) { IsBackground = true };
-                        t.Start();
+                        t_IsCSGORunning = new Thread(CheckIfRunningForever) { IsBackground = true };
+                        t_IsCSGORunning.Start();
                     }
                 }
             
@@ -558,7 +555,7 @@ namespace CSGO_Theme_Control
             {
                 string name = proc.ProcessName;
                 
-                if (name.Equals("csgo"))
+                if (name.Equals(Constants.CSGO_PROC_NAME))
                 {
                     return true;
                 }
@@ -573,7 +570,7 @@ namespace CSGO_Theme_Control
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
             startInfo.FileName = "cmd.exe";
-            startInfo.Arguments = "/C rundll32.exe %SystemRoot%\\system32\\shell32.dll,Control_RunDLL %SystemRoot%\\system32\\desk.cpl desk,@Themes /Action:OpenTheme /file:\"" + PathToFile + "\"";
+            startInfo.Arguments = String.Format(Constants.CMD_CHANGE_THEME, PathToFile);
             Process process = new Process();
             process.StartInfo = startInfo;
             process.Start();
@@ -582,7 +579,7 @@ namespace CSGO_Theme_Control
             int iHandle = FindWindow("CabinetWClass", "Personalization");
             if (iHandle > 0)
             {
-                SendMessage(iHandle, WM_SYSCOMMAND, SC_CLOSE, 0);
+                SendMessage(iHandle, Constants.WM_SYSCOMMAND, Constants.SC_CLOSE, 0);
             }
 
             //Do a second check to make sure we didn't close it too early in the event of a slow computer etc.
@@ -590,7 +587,7 @@ namespace CSGO_Theme_Control
             iHandle = FindWindow("CabinetWClass", "Personalization");
             if (iHandle > 0)
             {
-                SendMessage(iHandle, WM_SYSCOMMAND, SC_CLOSE, 0);
+                SendMessage(iHandle, Constants.WM_SYSCOMMAND, Constants.SC_CLOSE, 0);
             }
         }
 
@@ -600,16 +597,16 @@ namespace CSGO_Theme_Control
             {
                 string PATH;
                 if (useClassic)
-                    PATH = "C:\\Windows\\Resources\\Ease of Access Themes\\hcwhite.theme";
+                    PATH = Constants.WIN_CLASSIC_THEME;
                 else
-                    PATH = "C:\\Windows\\Resources\\Themes\\aero.theme";
+                    PATH = Constants.WIN_AERO_THEME;
 
                 execCMDThemeChange(PATH);
             }
             catch (Exception e)
             {
                 //TODO:
-                //Path does not exist. Make this better later.
+                //Path does not exist. Make this better later by narrowing Exception to a specific few.
                 createCrashDump(e.Message);
             }
         }
@@ -626,7 +623,7 @@ namespace CSGO_Theme_Control
             catch (Exception e)
             {
                 //TODO:
-                //Path does not exist. Make this better later.
+                //Path does not exist. Make this better later by narrowing Exception to a specific few.
                 createCrashDump(e.Message);
             }
         }
@@ -641,7 +638,7 @@ namespace CSGO_Theme_Control
             {
                 if (activeWindow == proc.MainWindowHandle)
                 {
-                    if (proc.ProcessName.Equals("csgo")) return;
+                    if (proc.ProcessName.Equals(Constants.CSGO_PROC_NAME)) return;
                     else
                     {
                         IntPtr csgohWnd = this.getCSGOhWnd();
@@ -659,7 +656,7 @@ namespace CSGO_Theme_Control
         {
             foreach (Process proc in Process.GetProcesses())
             {
-                if (proc.ProcessName.Equals("csgo")) return proc.MainWindowHandle;
+                if (proc.ProcessName.Equals(Constants.CSGO_PROC_NAME)) return proc.MainWindowHandle;
             }
 
             return IntPtr.Zero;
@@ -776,6 +773,7 @@ namespace CSGO_Theme_Control
                 {
                     HotKey hk = new HotKey(hkdh.id, hkdh.keyModifier, hkdh.key);
                     this.HotKeys.Remove(hk);
+                    UnregisterHotKey(this.Handle, hk.id);
                 }
             }
 

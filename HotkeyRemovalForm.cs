@@ -35,7 +35,6 @@ namespace CSGO_Theme_Control
                 return;
             }
 
-
             HotKey selected = (HotKey)cmbHotkeys.Items[cmbHotkeys.SelectedIndex];
 
             //Sends all the hotkeys information to a selected address which will then be used to remove from the
