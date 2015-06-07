@@ -2,6 +2,15 @@
 --------------------------
 A Simple program to manage your current Windows theme when playing or not playing CSGO.
 
+# Download
+--------------------------
+## Requirements
+- [.NET Framework 4.5.1](http://www.microsoft.com/en-us/download/details.aspx?id=40779 "Download Link")
+
+## Link
+- [CSGO Theme Control can be downloaded at this link. Once downloaded simply unzip the file and run the exe.](https://www.dropbox.com/s/spaczmuk2slp36o/CSGO_Theme_Control_Release.rar?dl=1 "Download Link")
+
+
 # Why
 --------------------------
 Simply put, Aero sucks. With the Aero theme enabled over a high contrast or classic theme, CSGO ran at nearly 200 fps on my system, almost 100 fps less than the usual along with an added feeling of sluggishness and input delay.
@@ -16,9 +25,6 @@ The program also includes the ability to setup custom hotkeys to adjust theme at
 
 # General Usage
 --------------------------
-## Requirements
-- [.NET Framework 4.5.1](http://www.microsoft.com/en-us/download/details.aspx?id=40779 "Download Link")
-
 ## UI
 With extreme simplicity as a design point I don't think there is much to be said here. The Status text box will change as you modify settings and options.
 
