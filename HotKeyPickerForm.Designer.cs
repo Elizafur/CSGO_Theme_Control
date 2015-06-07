@@ -44,6 +44,7 @@ namespace CSGO_Theme_Control
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HotKeyPickerForm));
             this.label1 = new System.Windows.Forms.Label();
             this.lblHKID = new System.Windows.Forms.Label();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
@@ -152,6 +153,7 @@ namespace CSGO_Theme_Control
             this.Controls.Add(this.btnThemeTriggerDialog);
             this.Controls.Add(this.lblHKID);
             this.Controls.Add(this.label1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "HotKeyPickerForm";
             this.Text = "HotKeyPickerForm";
             this.ResumeLayout(false);

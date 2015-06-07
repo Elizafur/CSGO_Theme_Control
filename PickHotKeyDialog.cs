@@ -53,7 +53,6 @@ namespace CSGO_Theme_Control
             }
         }
 
-
         private void PickHotKeyDialog_KeyDown(object sender, KeyEventArgs e)
         {
             this.lblPickKey.Text = "";
@@ -85,7 +84,5 @@ namespace CSGO_Theme_Control
             this.KeyPressed = true;
 
         }
-
-
     }
 }

@@ -81,8 +81,6 @@ namespace CSGO_Theme_Control
         private void btnRemoveAllHotKeys_Click(object sender, EventArgs e)
         {
             this.DialogResult = DialogResult.Yes;
-        }
-
-        
+        } 
     }
 }

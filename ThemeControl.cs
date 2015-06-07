@@ -34,7 +34,6 @@ namespace CSGO_Theme_Control
 {
     public partial class ThemeControl : Form
     {
-
         private bool DebugMode;
         private bool IsEnabled              = true;
         private bool BootOnStart            = false;
@@ -734,6 +733,9 @@ namespace CSGO_Theme_Control
                 HotKeyDataHolder hkdh;
                 ThemeDataHolder tdh;
                 HotKeyPickerForm hkpf = new HotKeyPickerForm(&hkdh, &tdh, this.HotKeys);
+                hkpf.StartPosition = FormStartPosition.Manual;
+                hkpf.Location = new Point(this.Left + this.Width, this.Top);
+
                 DialogResult result = hkpf.ShowDialog();
 
                 if (result == DialogResult.OK)
@@ -757,6 +759,8 @@ namespace CSGO_Theme_Control
             {
                 HotKeyDataHolder hkdh;
                 HotKeyRemovalForm hkrf = new HotKeyRemovalForm(&hkdh, this.HotKeys);
+                hkrf.StartPosition = FormStartPosition.Manual;
+                hkrf.Location = new Point(this.Left + this.Width, this.Top);
 
                 DialogResult result = hkrf.ShowDialog();
                 if (result == DialogResult.OK)

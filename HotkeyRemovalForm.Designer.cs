@@ -43,6 +43,7 @@ namespace CSGO_Theme_Control
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HotKeyRemovalForm));
             this.cmbHotkeys = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.btnFinish = new System.Windows.Forms.Button();
@@ -107,6 +108,7 @@ namespace CSGO_Theme_Control
             this.Controls.Add(this.btnFinish);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.cmbHotkeys);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "HotKeyRemovalForm";
             this.Text = "HotkeyRemovalForm";
             this.ResumeLayout(false);
