@@ -62,19 +62,19 @@ namespace CSGO_Theme_Control
         /// (formerly known as the system or control menu) or when the user chooses the maximize button, minimize button, restore button, or close button."
         /// src: https://msdn.microsoft.com/en-us/library/windows/desktop/ms646360%28v=vs.85%29.aspx
         /// </summary>
-        public const int WIN_MSG_WM_SYSCOMMAND          = 0x0112;
+        public const int WIN_MSG_WM_SYSCOMMAND   = 0x0112;
 
         /// <summary>
         /// Windows message to close the window.
         /// </summary>
-        public const int WIN_MSG_SC_CLOSE               = 0xF060;
+        public const int WIN_MSG_SC_CLOSE        = 0xF060;
 
         /// <summary>
         /// Posted when the user presses a hot key registered by the RegisterHotKey function. 
         /// The message is placed at the top of the message queue associated with the thread that registered the hot key.        
         /// src: https://msdn.microsoft.com/en-us/library/windows/desktop/ms646279%28v=vs.85%29.aspx
         /// </summary>
-        public const int WIN_MSG_HOTKEY_DOWN            = 0x0312;
+        public const int WIN_MSG_HOTKEY_DOWN     = 0x0312;
 
         /// <summary>
         /// Key enumeration to represent modifier (alt, control, shift, windows key) keys as integers.
