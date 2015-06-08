@@ -79,6 +79,15 @@ namespace CSGO_Theme_Control
             return char.ToUpper(s[0]) + s.Substring(1);
         }
 
+        /// <summary>
+        /// Mutates a provided forms location to the direct right of a parent if
+        /// the parent is located in the left side of the screen
+        /// otherwise it mutates the location to the direct left.
+        /// </summary>
+        /// 
+        /// <param name="child">The child form which will be mutated.</param>
+        /// 
+        /// <param name="parent">The parent form to base the child's location on.</param>
         public static void CreateFormStartPosition(ref Form child, Form parent)
         {
             child.StartPosition = FormStartPosition.Manual;

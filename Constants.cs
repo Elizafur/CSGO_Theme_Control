@@ -36,9 +36,9 @@ namespace CSGO_Theme_Control
 
         public const string APP_CONFIG_LOCATION = "cfg\\Config.ThemeControlCfg";
 
-        public const int WM_SYSCOMMAND          = 0x0112;
-        public const int SC_CLOSE               = 0xF060;
-        public const int HOTKEY_DOWN            = 0x0312;
+        public const int WIN_MSG_WM_SYSCOMMAND          = 0x0112;
+        public const int WIN_MSG_SC_CLOSE               = 0xF060;
+        public const int WIN_MSG_HOTKEY_DOWN            = 0x0312;
 
         public enum KeyModifier
         {

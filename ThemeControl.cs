@@ -172,7 +172,7 @@ namespace CSGO_Theme_Control
         {
             base.WndProc(ref m);
  
-            if (m.Msg == Constants.HOTKEY_DOWN && this.IsEnabled)
+            if (m.Msg == Constants.WIN_MSG_HOTKEY_DOWN && this.IsEnabled)
             {
                 //Credit to http://www.fluxbytes.com/csharp/how-to-register-a-global-hotkey-for-your-application-in-c/
                 /* Note that the three lines below are not needed if you only want to register one hotkey.
@@ -578,7 +578,7 @@ namespace CSGO_Theme_Control
             int iHandle = FindWindow("CabinetWClass", "Personalization");
             if (iHandle > 0)
             {
-                SendMessage(iHandle, Constants.WM_SYSCOMMAND, Constants.SC_CLOSE, 0);
+                SendMessage(iHandle, Constants.WIN_MSG_WM_SYSCOMMAND, Constants.WIN_MSG_SC_CLOSE, 0);
             }
 
             //Do a second check to make sure we didn't close it too early in the event of a slow computer etc.
@@ -586,7 +586,7 @@ namespace CSGO_Theme_Control
             iHandle = FindWindow("CabinetWClass", "Personalization");
             if (iHandle > 0)
             {
-                SendMessage(iHandle, Constants.WM_SYSCOMMAND, Constants.SC_CLOSE, 0);
+                SendMessage(iHandle, Constants.WIN_MSG_WM_SYSCOMMAND, Constants.WIN_MSG_SC_CLOSE, 0);
             }
         }
 
