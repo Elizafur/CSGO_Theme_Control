@@ -51,7 +51,7 @@ namespace CSGO_Theme_Control
         private RegistryKey rk_StartupKey   = Registry.CurrentUser.OpenSubKey(
             "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 
-        //The String in this dictionary should be the path to the theme to change to.
+        //Note(Eli): The value in this dictionary should be the absolute path to the theme to change to.
         private Dictionary<HotKey, String> HotKeys = new Dictionary<HotKey, String>();
 
         [DllImport("user32.dll")]
@@ -591,9 +591,9 @@ namespace CSGO_Theme_Control
             {
                 string PATH;
                 if (useClassic)
-                    PATH = Constants.WIN_CLASSIC_THEME;
+                    PATH = Constants.WIN_THEME_CLASSIC  ;
                 else
-                    PATH = Constants.WIN_AERO_THEME;
+                    PATH = Constants.WIN_THEME_AERO;
 
                 execCMDThemeChange(PATH);
             }

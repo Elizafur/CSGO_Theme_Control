@@ -27,7 +27,7 @@ using System.Windows.Forms;
 namespace CSGO_Theme_Control
 {
     /// <summary>
-    /// An unsafe class used to create new globa HotKeys.
+    /// An unsafe class used to create new global HotKeys.
     /// </summary>
     unsafe public partial class HotKeyPickerForm : Form
     {
@@ -35,7 +35,7 @@ namespace CSGO_Theme_Control
         private String                      ThemeToExecute  = null;
         private Keys                        HKKey;
         private Constants.KeyModifier       HKKeyMod;
-        private int                         HKID            = 0;
+        private Int32                       HKID            = 0;
         private HotKeyDataHolder*           HKAddress       = null;
         private ThemeDataHolder*            ThemeData       = null;
 
@@ -64,6 +64,25 @@ namespace CSGO_Theme_Control
             this.ThemeData = _themeData;
         }
 
+        /// <summary>
+        /// Method to get the next available HotKey ID for your application.
+        /// </summary>
+        /// <returns>The next hotkey ID available for use in your program. (Usually last registered hotkey id + 1).</returns>
+        public int getNextHKID()
+        {
+            if (this.HotKeys == null || this.HotKeys.Count < 1)
+                return 0;
+
+            List<int> HKIDList = new List<int>();
+
+            foreach(KeyValuePair<HotKey, String> entry in this.HotKeys)
+                HKIDList.Add(entry.Key.id);
+
+            int max = HKIDList.Max();
+
+            return max + 1;
+        }
+
         private void btnFinish_Click(object sender, EventArgs e)
         {
             //Used to make sure we have all things filled out;
@@ -87,21 +106,6 @@ namespace CSGO_Theme_Control
             this.DialogResult = DialogResult.OK;
             this.Close();
 
-        }
-
-        private int getNextHKID()
-        {
-            if (this.HotKeys == null || this.HotKeys.Count < 1)
-                return 0;
-
-            List<int> HKIDList = new List<int>();
-
-            foreach(KeyValuePair<HotKey, String> entry in this.HotKeys)
-                HKIDList.Add(entry.Key.id);
-
-            int max = HKIDList.Max();
-
-            return max + 1;
         }
 
         private void btnThemeTriggerDialog_Click(object sender, EventArgs e)

@@ -28,6 +28,9 @@ namespace CSGO_Theme_Control
     /// This struct is primarily to retrieve data from different forms via use of
     /// 'unsafe' pointers to instances of these structs.
     /// </summary>
+    /// <remarks>
+    /// ThemePath: A c_string representation of an absolute path to a theme.
+    /// </remarks>
     unsafe public struct ThemeDataHolder
     {
         public char* ThemePath;
@@ -38,6 +41,12 @@ namespace CSGO_Theme_Control
     /// This is valuable as it is able to be used as a pointer.
     /// This allows us to transfer data about HotKeys between forms.
     /// </summary>
+    /// <remarks>
+    /// id: A signed int32 representation of the hotkeys windows ID.
+    /// keyModifier: A signed int32 representation of the modifer key in this hotkey. <seealso cref="Constants.KeyModifier"/>
+    /// keyHashCode: A signed int32 hash code of the key.
+    /// key: A Keys representation of they key pressed. <seealso cref="Keys"/>
+    /// </remarks>
     public struct HotKeyDataHolder
     {
         public int id;
@@ -52,12 +61,16 @@ namespace CSGO_Theme_Control
     /// as they are not registered within the HotKey class itself.
     /// </summary>
     /// 
+    /// <see cref="HotKeyDataHolder"/>
+    /// 
     /// <example>
+    /// <c>
     /// HotKey MyHotKey = new HotKey(0, 0, Keys.T);
     /// RegisterHotkey(MyHotKey.id, MyHotKey.keyModifier, MyHotKey.key.getHashCode());
     /// //This will register a global hotkey with windows which will send your form
     /// //a system message whenever pressed.
     /// //This message can be intercepted via overriding WndProc and searching for the message '0x0312'.
+    /// </c>
     /// </example>
     public class HotKey
     {
@@ -158,6 +171,10 @@ namespace CSGO_Theme_Control
                 return "";
         }
 
+        /// <summary>
+        /// Used to get a string representation of this HotKey instance's key member. 
+        /// </summary>
+        /// <returns>A string representation of the HotKey instance's key member. </returns>
         public override string ToString()
         {
             string s = KeyModToString((Constants.KeyModifier)this.keyModifier);
