@@ -55,10 +55,9 @@ namespace CSGO_Theme_Control
 
         private void PickHotKeyDialog_KeyDown(object sender, KeyEventArgs e)
         {
-            this.lblPickKey.Text = "";
+            this.lblPickKey.Text    = "";
             this.lblKeyPressed.Text = ((char)e.KeyValue).ToString();
-            //TODO: Make sure this is casting correctly.
-            this.Key = (Keys)e.KeyValue;
+            this.Key                = (Keys)e.KeyValue;
 
             if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift)
             {

@@ -99,7 +99,7 @@ namespace CSGO_Theme_Control
             this.NotificationIcon.Icon = new System.Drawing.Icon(this.getExeDirectory() + "resources\\Gaben_santa.ico");
             
             //TODO: <- dont remove this.
-            //Set DebugMode to false before release.
+            //Always set DebugMode to false before release.
             this.DebugMode = false;
         }
 
@@ -144,7 +144,7 @@ namespace CSGO_Theme_Control
         {
             if (this.DebugMode)
             {
-                DBGRunTests();
+                DebugRunTests();
             }
 
             if (t_IsCSGORunning != null)
@@ -175,25 +175,21 @@ namespace CSGO_Theme_Control
             if (m.Msg == Constants.WIN_MSG_HOTKEY_DOWN && this.IsEnabled)
             {
                 //Credit to http://www.fluxbytes.com/csharp/how-to-register-a-global-hotkey-for-your-application-in-c/
-                /* Note that the three lines below are not needed if you only want to register one hotkey.
-                 * The below lines are useful in case you want to register multiple keys, which you can use a switch with the id as argument, or if you want to know which key/modifier was pressed for some particular reason. */
- 
-                Keys key = (Keys)(((int)m.LParam >> 16) & 0xFFFF);                                      // The key of the hotkey that was pressed.
-                Constants.KeyModifier modifier = (Constants.KeyModifier)((int)m.LParam & 0xFFFF);       // The modifier of the hotkey that was pressed.
-                int id = m.WParam.ToInt32();                                                            // The id of the hotkey that was pressed.
+
+                Keys key                        = (Keys)(((int)m.LParam >> 16) & 0xFFFF);
+                Constants.KeyModifier modifier  = (Constants.KeyModifier)((int)m.LParam & 0xFFFF);
+                int id                          = m.WParam.ToInt32();
 
                 HotKey local = new HotKey(id, (int)modifier, key);
 
                 try
                 {
-                    String pathToTheme = this.HotKeys[local];
+                    string pathToTheme = this.HotKeys[local];
                     execCMDThemeChange(pathToTheme);
                 }
-                catch (Exception e)
+                catch (Win32Exception e)
                 {
-                    //TODO:
-                    //Path does not exist. Make this better later by narrowing Exception to a specific few.
-                    createCrashDump(e.Message);
+                    createCrashDump("File could not be accessed. Context:\n" + e.Message);
                 }
             }
         }
@@ -495,8 +491,7 @@ namespace CSGO_Theme_Control
                             this.shouldChangeGameTheme = true;
                             this.shouldChangeDeskTheme = false;
                         }
-                    }
-                
+                    }          
                 }
                 try
                 {
@@ -565,7 +560,7 @@ namespace CSGO_Theme_Control
 
         private void execCMDThemeChange(string PathToFile)
         {
-            //PathToFile should be a full path from the C: directory to the .theme file.
+            //Note(Eli): PathToFile should be a full path from the C: directory to the .theme file.
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
             startInfo.FileName = "cmd.exe";
@@ -602,11 +597,9 @@ namespace CSGO_Theme_Control
 
                 execCMDThemeChange(PATH);
             }
-            catch (Exception e)
+            catch (Win32Exception e)
             {
-                //TODO:
-                //Path does not exist. Make this better later by narrowing Exception to a specific few.
-                createCrashDump(e.Message);
+                createCrashDump("File could not be accessed. Context:\n" + e.Message);
             }
         }
 
@@ -619,11 +612,9 @@ namespace CSGO_Theme_Control
 
                 execCMDThemeChange(PATH);
             }
-            catch (Exception e)
+            catch (Win32Exception e)
             {
-                //TODO:
-                //Path does not exist. Make this better later by narrowing Exception to a specific few.
-                createCrashDump(e.Message);
+                createCrashDump("File could not be accessed. Context:\n" + e.Message);
             }
         }
 
@@ -780,11 +771,10 @@ namespace CSGO_Theme_Control
             this.logStatus();
         }
 
-        //Debug method
-        private void DBGRunTests()
+        private void DebugRunTests()
         {
             createCrashDump("This is just a test crash dump. You should not be seeing this!");
-            //TODO: Some other stuff should be here.
+            //Note(Eli): There really should be some other stuff here but I just don't know what else we could test due to the nature of the program.
         }
     }
 }
