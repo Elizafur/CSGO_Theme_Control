@@ -118,8 +118,9 @@ namespace CSGO_Theme_Control
         private void btnPickHotKey_Click(object sender, EventArgs e)
         {
             PickHotKeyDialog phkd = new PickHotKeyDialog();
-            phkd.StartPosition = FormStartPosition.Manual;
-            phkd.Location = new Point(this.Left + this.Width, this.Top);
+            Form casted = (Form)phkd;
+            HelperFunc.CreateFormStartPosition(ref casted, this);
+            phkd = (PickHotKeyDialog)casted;
 
             DialogResult result = phkd.ShowDialog();
 

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Drawing;
 
 namespace CSGO_Theme_Control
 {
@@ -38,7 +40,7 @@ namespace CSGO_Theme_Control
         /// <param name="FullThemePath">Absolute path to the theme starting from the C: or equivalent drive.</param>
         /// 
         /// <returns>A new string created at the last index of '.'</returns>
-        public static string createShortHandTheme(string FullThemePath)
+        public static string CreateShortHandTheme(string FullThemePath)
         {
             int index = FullThemePath.LastIndexOf("\\");
             return FullThemePath.Substring(index + 1);
@@ -61,5 +63,16 @@ namespace CSGO_Theme_Control
             return char.ToUpper(s[0]) + s.Substring(1);
         }
 
+        public static void CreateFormStartPosition(ref Form child, Form parent)
+        {
+            child.StartPosition = FormStartPosition.Manual;
+            Point pLoc = parent.Location;
+            //Since pLoc is the upper left hand corner and we want a point in the center of the window we divide the width
+            //of the parent container by 2 and add to that X coordinate to get something near the center of the form.
+            if (pLoc.X + (parent.Width / 2) < System.Windows.SystemParameters.FullPrimaryScreenWidth / 2)
+                child.Location = new Point(parent.Left + parent.Width, parent.Top);
+            else
+                child.Location = new Point(parent.Left - (child.Width), parent.Top);
+        }
     }
 }

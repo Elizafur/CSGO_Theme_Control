@@ -155,7 +155,7 @@ namespace CSGO_Theme_Control
             this.Controls.Add(this.label1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "HotKeyPickerForm";
-            this.Text = "HotKeyPickerForm";
+            this.Text = "Pick Hotkey";
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -39,7 +39,7 @@ namespace CSGO_Theme_Control
         private bool BootOnStart            = false;
         private bool shouldChangeDeskTheme  = false;
         private bool shouldChangeGameTheme  = false;
-        private bool registryBootWritten    = false;
+        private bool registryBootWritten    = false; 
         private string DesktopThemePath     = null;
         private string GameThemePath        = null;
         private string DesktopThemeName     = null;
@@ -230,7 +230,7 @@ namespace CSGO_Theme_Control
             {
                 foreach (KeyValuePair<HotKey, String> entry in this.HotKeys)
                 {
-                    this.log(HelperFunc.CreateWhiteSpace(4) + "[" + entry.Key.ToString() + ", " + HelperFunc.createShortHandTheme(entry.Value.ToString()) + "]");
+                    this.log(HelperFunc.CreateWhiteSpace(4) + "[" + entry.Key.ToString() + ", " + HelperFunc.CreateShortHandTheme(entry.Value.ToString()) + "]");
                 }
             }
             this.log("}");
@@ -733,8 +733,9 @@ namespace CSGO_Theme_Control
                 HotKeyDataHolder hkdh;
                 ThemeDataHolder tdh;
                 HotKeyPickerForm hkpf = new HotKeyPickerForm(&hkdh, &tdh, this.HotKeys);
-                hkpf.StartPosition = FormStartPosition.Manual;
-                hkpf.Location = new Point(this.Left + this.Width, this.Top);
+                Form casted = (Form)hkpf;
+                HelperFunc.CreateFormStartPosition(ref casted, this);
+                hkpf = (HotKeyPickerForm)casted;
 
                 DialogResult result = hkpf.ShowDialog();
 
@@ -759,8 +760,9 @@ namespace CSGO_Theme_Control
             {
                 HotKeyDataHolder hkdh;
                 HotKeyRemovalForm hkrf = new HotKeyRemovalForm(&hkdh, this.HotKeys);
-                hkrf.StartPosition = FormStartPosition.Manual;
-                hkrf.Location = new Point(this.Left + this.Width, this.Top);
+                Form casted = (Form)hkrf;
+                HelperFunc.CreateFormStartPosition(ref casted, (Form)this);
+                hkrf = (HotKeyRemovalForm)casted;
 
                 DialogResult result = hkrf.ShowDialog();
                 if (result == DialogResult.OK)

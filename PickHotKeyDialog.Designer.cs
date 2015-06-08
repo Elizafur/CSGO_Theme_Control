@@ -136,7 +136,7 @@ namespace CSGO_Theme_Control
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.Name = "PickHotKeyDialog";
-            this.Text = "PickHotKeyDialog";
+            this.Text = "Press A Key";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.PickHotKeyDialog_KeyDown);
             this.ResumeLayout(false);
             this.PerformLayout();

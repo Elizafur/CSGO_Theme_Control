@@ -110,7 +110,7 @@ namespace CSGO_Theme_Control
             this.Controls.Add(this.cmbHotkeys);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "HotKeyRemovalForm";
-            this.Text = "HotkeyRemovalForm";
+            this.Text = "Remove Hotkey";
             this.ResumeLayout(false);
             this.PerformLayout();
 
