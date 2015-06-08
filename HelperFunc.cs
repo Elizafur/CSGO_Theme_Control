@@ -50,12 +50,13 @@ namespace CSGO_Theme_Control
 
         /// <summary>
         /// Creates a shorthand filename for an absolute path.
-        /// <example>C:\\Windows\\Resources\\Ease of Access Themes\\hc1.theme => hc1.theme</example>
         /// </summary>
         /// 
         /// <param name="FullThemePath">Absolute path to the theme starting from the C: or equivalent drive.</param>
         /// 
         /// <returns>A new string created at the last index of '.'</returns>
+        /// 
+        /// <example>C:\\Windows\\Resources\\Ease of Access Themes\\hc1.theme => hc1.theme</example>
         public static string CreateShortHandTheme(string FullThemePath)
         {
             int index = FullThemePath.LastIndexOf("\\");
