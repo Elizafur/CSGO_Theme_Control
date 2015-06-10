@@ -24,10 +24,10 @@ namespace CSGO_Theme_Control
 
         public string GetNextTheme()
         {
-            //Ternary operator because C# is dumb and apparantly cannot implicitly convert from bool to int without long drawn out code.
             if (Themes[1] == null || Themes[1] == String.Empty)
                 return Themes[0];
 
+            //Ternary operator because C# is dumb and apparantly cannot implicitly convert from bool to int without long drawn out code.
             return Themes[CurrentlySelectedTheme = (CurrentlySelectedTheme == 0) ? 1 : 0];
         }
 
