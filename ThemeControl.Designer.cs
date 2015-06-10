@@ -89,13 +89,14 @@ namespace CSGO_Theme_Control
             // 
             // txtStatus
             // 
-            this.txtStatus.Enabled = false;
             this.txtStatus.Font = new System.Drawing.Font("Courier New", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtStatus.Location = new System.Drawing.Point(6, 19);
             this.txtStatus.Name = "txtStatus";
+            this.txtStatus.ReadOnly = true;
             this.txtStatus.Size = new System.Drawing.Size(324, 208);
             this.txtStatus.TabIndex = 2;
             this.txtStatus.Text = "";
+            this.txtStatus.WordWrap = false;
             // 
             // groupBox1
             // 

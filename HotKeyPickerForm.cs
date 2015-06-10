@@ -16,12 +16,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace CSGO_Theme_Control
@@ -31,13 +27,14 @@ namespace CSGO_Theme_Control
     /// </summary>
     unsafe public partial class HotKeyPickerForm : Form
     {
-        private Dictionary<HotKey, String>  HotKeys         = null;
-        private String                      ThemeToExecute  = null;
-        private Keys                        HKKey;
-        private Constants.KeyModifier       HKKeyMod;
-        private Int32                       HKID            = 0;
-        private HotKeyDataHolder*           HKAddress       = null;
-        private ThemeDataHolder*            ThemeData       = null;
+        private Dictionary<HotKey, ThemePathContainer>  HotKeys         = null;
+        private String                                  ThemeToExecute  = null;
+        private String                                  Theme2ToExecute = null;
+        private Keys                                    HKKey;
+        private Constants.KeyModifier                   HKKeyMod;
+        private Int32                                   HKID            = 0;
+        private HotKeyDataHolder*                       HKAddress       = null;
+        private ThemeDataHolder*                        ThemeData       = null;
 
         /// <summary>
         /// Constructor for HotKeyPickerForm class.
@@ -54,7 +51,7 @@ namespace CSGO_Theme_Control
         /// </param>
         /// 
         /// <param name="existingHotkeys">A dictionary of existing Hotkeys and their corresponding actions.</param>
-        public HotKeyPickerForm(HotKeyDataHolder* _hkAddress, ThemeDataHolder* _themeData, Dictionary<HotKey, String> existingHotkeys)
+        public HotKeyPickerForm(HotKeyDataHolder* _hkAddress, ThemeDataHolder* _themeData, Dictionary<HotKey, ThemePathContainer> existingHotkeys)
         {
             InitializeComponent();
             this.HotKeys = existingHotkeys;
@@ -62,6 +59,9 @@ namespace CSGO_Theme_Control
             this.lblHKID.Text += HKID;
             this.HKAddress = _hkAddress;
             this.ThemeData = _themeData;
+
+            this.btnSecondTheme.Hide();
+            this.lblTheme2OK.Hide();
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace CSGO_Theme_Control
 
             List<int> HKIDList = new List<int>();
 
-            foreach(KeyValuePair<HotKey, String> entry in this.HotKeys)
+            foreach(KeyValuePair<HotKey, ThemePathContainer> entry in this.HotKeys)
                 HKIDList.Add(entry.Key.id);
 
             int max = HKIDList.Max();
@@ -87,7 +87,7 @@ namespace CSGO_Theme_Control
         {
             //Used to make sure we have all things filled out;
             //Not the best way since we're using strings but whatever.
-            if (lblKeyOK.Text == "Not Finished" || lblThemeOK.Text == "Not Finished")
+            if ((lblKeyOK.Text == "Not Finished" || lblThemeOK.Text == "Not Finished") || (chkToggle.Checked && lblTheme2OK.Text == "Not Finished"))
             {
                 this.lblError.Text = "A required field was not selected.";
                 return;
@@ -100,7 +100,15 @@ namespace CSGO_Theme_Control
 
             fixed (char* cstr = this.ThemeToExecute)
             {
-                ThemeData->ThemePath = cstr;
+                ThemeData->ThemePath1 = cstr;
+            }
+
+            if (chkToggle.Checked)
+            {
+                fixed (char* cstr = this.Theme2ToExecute)
+                {
+                    ThemeData->ThemePath2 = cstr;
+                }
             }
 
             this.DialogResult = DialogResult.OK;
@@ -110,10 +118,10 @@ namespace CSGO_Theme_Control
 
         private void btnThemeTriggerDialog_Click(object sender, EventArgs e)
         {
-            DialogResult result = this.openFileDialog.ShowDialog();
+            DialogResult result = this.fileFirstTheme.ShowDialog();
             if (result == DialogResult.OK)
             {
-                this.ThemeToExecute = openFileDialog.FileName;
+                this.ThemeToExecute = fileFirstTheme.FileName;
                 this.lblThemeOK.Text = "Finished";
                 this.lblThemeOK.ForeColor = Color.Green;
             }
@@ -135,6 +143,31 @@ namespace CSGO_Theme_Control
 
                 this.lblKeyOK.Text = "Finished";
                 this.lblKeyOK.ForeColor = Color.Green;
+            }
+        }
+
+        private void chkToggle_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkToggle.Checked)
+            {
+                btnSecondTheme.Show();
+                lblTheme2OK.Show();
+            }
+            else
+            {
+                btnSecondTheme.Hide();
+                lblTheme2OK.Hide();
+            }
+        }
+
+        private void btnSecondTheme_Click(object sender, EventArgs e)
+        {
+            DialogResult result = this.fileFirstTheme.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                this.Theme2ToExecute = fileFirstTheme.FileName;
+                this.lblTheme2OK.Text = "Finished";
+                this.lblTheme2OK.ForeColor = Color.Green;
             }
         }
     }

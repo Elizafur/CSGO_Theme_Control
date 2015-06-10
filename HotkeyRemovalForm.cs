@@ -16,12 +16,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace CSGO_Theme_Control
@@ -31,7 +25,7 @@ namespace CSGO_Theme_Control
     /// </summary>
     unsafe public partial class HotKeyRemovalForm : Form
     {
-        private Dictionary<HotKey, String>  HotKeys         = null;
+        private Dictionary<HotKey, ThemePathContainer>  HotKeys         = null;
         private HotKeyDataHolder*           HKAddress       = null;
 
         /// <summary>
@@ -44,13 +38,13 @@ namespace CSGO_Theme_Control
         /// </param>
         /// 
         /// <param name="existingHotkeys">A dictionary of existing Hotkeys and their corresponding actions.</param>
-        public HotKeyRemovalForm(HotKeyDataHolder* _hkAddress, Dictionary<HotKey, String> existingHotkeys)
+        public HotKeyRemovalForm(HotKeyDataHolder* _hkAddress, Dictionary<HotKey, ThemePathContainer> existingHotkeys)
         {
             InitializeComponent();
             this.HotKeys = existingHotkeys;
             this.HKAddress = _hkAddress;
 
-            foreach (KeyValuePair<HotKey, String> entry in this.HotKeys)
+            foreach (KeyValuePair<HotKey, ThemePathContainer> entry in this.HotKeys)
             {
                 this.cmbHotkeys.Items.Add(entry.Key);
             }

@@ -47,13 +47,16 @@ namespace CSGO_Theme_Control
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HotKeyPickerForm));
             this.label1 = new System.Windows.Forms.Label();
             this.lblHKID = new System.Windows.Forms.Label();
-            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.fileFirstTheme = new System.Windows.Forms.OpenFileDialog();
             this.btnThemeTriggerDialog = new System.Windows.Forms.Button();
             this.btnFinish = new System.Windows.Forms.Button();
             this.btnPickHotKey = new System.Windows.Forms.Button();
             this.lblKeyOK = new System.Windows.Forms.Label();
             this.lblThemeOK = new System.Windows.Forms.Label();
             this.lblError = new System.Windows.Forms.Label();
+            this.chkToggle = new System.Windows.Forms.CheckBox();
+            this.btnSecondTheme = new System.Windows.Forms.Button();
+            this.lblTheme2OK = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -75,11 +78,11 @@ namespace CSGO_Theme_Control
             this.lblHKID.TabIndex = 1;
             this.lblHKID.Text = "Hotkey ID: ";
             // 
-            // openFileDialog
+            // fileFirstTheme
             // 
-            this.openFileDialog.FileName = "openFileDialog";
-            this.openFileDialog.Filter = "Theme Files|*.theme";
-            this.openFileDialog.InitialDirectory = "C:\\Windows\\Resources";
+            this.fileFirstTheme.FileName = "Pick Theme";
+            this.fileFirstTheme.Filter = "Theme Files|*.theme";
+            this.fileFirstTheme.InitialDirectory = "C:\\Windows\\Resources";
             // 
             // btnThemeTriggerDialog
             // 
@@ -140,11 +143,45 @@ namespace CSGO_Theme_Control
             this.lblError.Size = new System.Drawing.Size(0, 13);
             this.lblError.TabIndex = 8;
             // 
+            // chkToggle
+            // 
+            this.chkToggle.AutoSize = true;
+            this.chkToggle.Location = new System.Drawing.Point(16, 162);
+            this.chkToggle.Name = "chkToggle";
+            this.chkToggle.Size = new System.Drawing.Size(91, 17);
+            this.chkToggle.TabIndex = 9;
+            this.chkToggle.Text = "Theme toggle";
+            this.chkToggle.UseVisualStyleBackColor = true;
+            this.chkToggle.CheckedChanged += new System.EventHandler(this.chkToggle_CheckedChanged);
+            // 
+            // btnSecondTheme
+            // 
+            this.btnSecondTheme.Location = new System.Drawing.Point(16, 186);
+            this.btnSecondTheme.Name = "btnSecondTheme";
+            this.btnSecondTheme.Size = new System.Drawing.Size(152, 23);
+            this.btnSecondTheme.TabIndex = 10;
+            this.btnSecondTheme.Text = "Select Second Theme";
+            this.btnSecondTheme.UseVisualStyleBackColor = true;
+            this.btnSecondTheme.Click += new System.EventHandler(this.btnSecondTheme_Click);
+            // 
+            // lblTheme2OK
+            // 
+            this.lblTheme2OK.AutoSize = true;
+            this.lblTheme2OK.ForeColor = System.Drawing.Color.Red;
+            this.lblTheme2OK.Location = new System.Drawing.Point(174, 191);
+            this.lblTheme2OK.Name = "lblTheme2OK";
+            this.lblTheme2OK.Size = new System.Drawing.Size(66, 13);
+            this.lblTheme2OK.TabIndex = 12;
+            this.lblTheme2OK.Text = "Not Finished";
+            // 
             // HotKeyPickerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(334, 333);
+            this.Controls.Add(this.lblTheme2OK);
+            this.Controls.Add(this.btnSecondTheme);
+            this.Controls.Add(this.chkToggle);
             this.Controls.Add(this.lblError);
             this.Controls.Add(this.lblThemeOK);
             this.Controls.Add(this.lblKeyOK);
@@ -165,12 +202,15 @@ namespace CSGO_Theme_Control
 
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label lblHKID;
-        private System.Windows.Forms.OpenFileDialog openFileDialog;
+        private System.Windows.Forms.OpenFileDialog fileFirstTheme;
         private System.Windows.Forms.Button btnThemeTriggerDialog;
         private System.Windows.Forms.Button btnFinish;
         private System.Windows.Forms.Button btnPickHotKey;
         private System.Windows.Forms.Label lblKeyOK;
         private System.Windows.Forms.Label lblThemeOK;
         private System.Windows.Forms.Label lblError;
+        private System.Windows.Forms.CheckBox chkToggle;
+        private System.Windows.Forms.Button btnSecondTheme;
+        private System.Windows.Forms.Label lblTheme2OK;
     }
 }

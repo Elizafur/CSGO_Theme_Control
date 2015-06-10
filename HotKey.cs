@@ -15,10 +15,6 @@
 //    along with CSGO Theme Control.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace CSGO_Theme_Control
@@ -33,7 +29,8 @@ namespace CSGO_Theme_Control
     /// </remarks>
     unsafe public struct ThemeDataHolder
     {
-        public char* ThemePath;
+        public char* ThemePath1;
+        public char* ThemePath2;
     }
     
     /// <summary>

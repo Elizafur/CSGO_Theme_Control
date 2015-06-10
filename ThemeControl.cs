@@ -18,17 +18,13 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
 using System.Threading;
-using System.Globalization;
 
 namespace CSGO_Theme_Control
 {
@@ -52,7 +48,7 @@ namespace CSGO_Theme_Control
             "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 
         //Note(Eli): The value in this dictionary should be the absolute path to the theme to change to.
-        private Dictionary<HotKey, String> HotKeys = new Dictionary<HotKey, String>();
+        private Dictionary<HotKey, ThemePathContainer> HotKeys = new Dictionary<HotKey, ThemePathContainer>();
 
         [DllImport("user32.dll")]
         private static extern int FindWindow(
@@ -111,7 +107,7 @@ namespace CSGO_Theme_Control
 
             //Register hotkeys.
             if (this.HotKeys != null || this.HotKeys.Count > 0)
-                foreach(KeyValuePair<HotKey, String> entry in this.HotKeys)
+                foreach(KeyValuePair<HotKey, ThemePathContainer> entry in this.HotKeys)
                     RegisterHotKey(this.Handle, entry.Key.id, entry.Key.keyModifier, entry.Key.keyHashCode);
 
             //Check appropriate boxes on forms that correlate with user settings.
@@ -164,7 +160,7 @@ namespace CSGO_Theme_Control
             }
 
             if (this.HotKeys != null || this.HotKeys.Count > 0)
-                foreach (KeyValuePair<HotKey, String> entry in this.HotKeys)
+                foreach (KeyValuePair<HotKey, ThemePathContainer> entry in this.HotKeys)
                     UnregisterHotKey(this.Handle, entry.Key.id);
         }
 
@@ -181,15 +177,15 @@ namespace CSGO_Theme_Control
                 int id                          = m.WParam.ToInt32();
 
                 HotKey local = new HotKey(id, (int)modifier, key);
+                string pathToTheme = this.HotKeys[local].GetNextTheme();
 
                 try
                 {
-                    string pathToTheme = this.HotKeys[local];
                     execCMDThemeChange(pathToTheme);
                 }
                 catch (Win32Exception e)
                 {
-                    createCrashDump("File could not be accessed. Context:\n" + e.Message);
+                    createCrashDump(String.Format("File to theme could not be accessed.\nTheme: {0}\n", pathToTheme) + e.Message);
                 }
             }
         }
@@ -224,9 +220,9 @@ namespace CSGO_Theme_Control
             this.log("Hotkeys<Key, Theme>:" + HelperFunc.CreateWhiteSpace(4) + "{");
             if (this.HotKeys != null || this.HotKeys.Count > 0)
             {
-                foreach (KeyValuePair<HotKey, String> entry in this.HotKeys)
+                foreach (KeyValuePair<HotKey, ThemePathContainer> entry in this.HotKeys)
                 {
-                    this.log(HelperFunc.CreateWhiteSpace(4) + "[" + entry.Key.ToString() + ", " + HelperFunc.CreateShortHandTheme(entry.Value.ToString()) + "]");
+                    this.log(HelperFunc.CreateWhiteSpace(4) + "[" + entry.Key.ToString() + ", " + entry.Value.ToString() + "]");
                 }
             }
             this.log("}");
@@ -252,11 +248,12 @@ namespace CSGO_Theme_Control
             }
             catch (Exception e)
             {
-                throw new Exception("A second exception occured while trying to create a log of a prior exception.\nThis means that something incredibly wrong has happened and the program must terminate. Context follows:\n" + e.Message);
+                throw new Exception("A second exception occured while trying to create a log of a prior exception.\nThis means that something incredibly wrong has happened and the program must terminate, please report this.\nContext follows:\n" + e.Message);
             }
             finally
             {
                 sw.Close();
+                Application.Exit();
             }
         }
 
@@ -282,9 +279,7 @@ namespace CSGO_Theme_Control
                     string line = f.ReadLine();
                     if (!line.StartsWith("//"))
                     {
-                        //Looking back at this I don't know what this does other than the fact that we somehow end up with a split String.
-                        //But I assume it is splitting at the quotations and at the whitespace.
-                        //It works is what's important. (I feel awful writing that).
+                        //This LINQ will only split the lien at whitespace OUTSIDE of quotation marks.
                         List<string> split = line.Split('"')
                                                  .Select((element, index) => index % 2 == 0                                     // If even index
                                                        ? element.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)    // Split the item
@@ -315,7 +310,7 @@ namespace CSGO_Theme_Control
                                 }
                                 catch (IndexOutOfRangeException)
                                 {
-                                    log("ERROR: CFG is in an invalid format and cannot be read.");
+                                    log("ERROR: CFG is in an invalid format and cannot be read.\nLine: " + line);
                                     this.IsEnabled = false;
                                 }
                             }
@@ -329,7 +324,7 @@ namespace CSGO_Theme_Control
                                 }
                                 catch (IndexOutOfRangeException)
                                 {
-                                    log("ERROR: CFG is in an invalid format and cannot be read.");
+                                    log("ERROR: CFG is in an invalid format and cannot be read.\nLine: " + line);
                                 }
                             }
                             else if (word.Equals("gamethemepath"))
@@ -342,7 +337,7 @@ namespace CSGO_Theme_Control
                                 }
                                 catch (IndexOutOfRangeException)
                                 {
-                                    log("ERROR: CFG is in an invalid format and cannot be read.");
+                                    log("ERROR: CFG is in an invalid format and cannot be read.\nLine: " + line);
                                 }
                             }
                             else if (word.StartsWith("hotkey{"))
@@ -355,6 +350,7 @@ namespace CSGO_Theme_Control
                                     //index 2 should be the modifier of the key.
                                     //index 3 should be the key itself as a string.
                                     //index 4 should be the string path to the theme which will be activated.
+                                    //index 5 should be the string path to the second theme or null.
 
                                     try 
                                     {
@@ -363,13 +359,13 @@ namespace CSGO_Theme_Control
                                             Convert.ToInt32(split[1]),
                                             Convert.ToInt32(split[2]),
                                             (Keys)Enum.Parse(typeof(Keys), split[3], false)
-                                        ), split[4]);
+                                        ), new ThemePathContainer(split[4], (split[5] == "null") ? "" : split[5]));
                                     }
                                     catch (Exception e)
                                     {
                                         if (e is ArgumentNullException || e is ArgumentException || e is OverflowException)
                                         {
-                                            log("ERROR: CFG is in an invalid format and cannot be read.");
+                                            log("ERROR: CFG is in an invalid format and cannot be read.\nLine: " + line);
                                         }
                                         else
                                         {
@@ -379,8 +375,13 @@ namespace CSGO_Theme_Control
                                 }
                                 catch (IndexOutOfRangeException)
                                 {
-                                    log("ERROR: CFG is in an invalid format and cannot be read.");
+                                    log("ERROR: CFG is in an invalid format and cannot be read.\nLine: " + line);
                                 }
+                            }
+                            else
+                            {
+                                //TODO: Look into why this isn't working.
+                                log("ERROR: CFG is in an invalid format and cannot be read.\nLine: " + line);
                             }
                         }
                     }
@@ -388,7 +389,10 @@ namespace CSGO_Theme_Control
             }
             catch (Exception e)
             {
-                this.createCrashDump(e.Message);
+                if (e is IOException || e is OutOfMemoryException)
+                    createCrashDump(e.Message);
+
+                createCrashDump("Unknown exception caught while reading config file." + e.Message);
             }
             finally
             {
@@ -418,17 +422,20 @@ namespace CSGO_Theme_Control
                 }
 
                 if (this.HotKeys != null)
-                    foreach (KeyValuePair<HotKey, String> entry in this.HotKeys)
+                    foreach (KeyValuePair<HotKey, ThemePathContainer> entry in this.HotKeys)
                     {
                         sw.Write("Hotkey{ ");
                         sw.Write(entry.Key.id + " " + entry.Key.keyModifier + " " + entry.Key.key);
-                        sw.Write(" " + entry.Value);
+                        sw.Write(" " + entry.Value.AbsoluteToString());
                         sw.Write(" }\n");
                     }
             }
             catch (Exception e)
             {
-                createCrashDump(e.Message);
+                if (e is IOException)
+                    createCrashDump(e.Message);
+
+                createCrashDump("Unknown exception caught while reading config file." + e.Message);
             }
             finally
             {
@@ -587,34 +594,35 @@ namespace CSGO_Theme_Control
 
         private void changeTheme(bool useClassic)
         {
+            string PATH;
+            if (useClassic)
+                PATH = Constants.WIN_THEME_CLASSIC;
+            else
+                PATH = Constants.WIN_THEME_AERO;
+
             try
             {
-                string PATH;
-                if (useClassic)
-                    PATH = Constants.WIN_THEME_CLASSIC  ;
-                else
-                    PATH = Constants.WIN_THEME_AERO;
-
                 execCMDThemeChange(PATH);
             }
             catch (Win32Exception e)
             {
-                createCrashDump("File could not be accessed. Context:\n" + e.Message);
+                createCrashDump(String.Format("File to theme could not be accessed.\nTheme: {0}\n", PATH) + e.Message);
             }
         }
 
         //Used for custom themes.
         private void changeTheme(string themePath)
         {
+            string PATH = themePath;
+
             try
             {
-                string PATH = themePath;
 
                 execCMDThemeChange(PATH);
             }
             catch (Win32Exception e)
             {
-                createCrashDump("File could not be accessed. Context:\n" + e.Message);
+                createCrashDump(String.Format("File to theme could not be accessed.\nTheme: {0}\n", PATH) + e.Message);
             }
         }
 
@@ -732,12 +740,14 @@ namespace CSGO_Theme_Control
 
                 if (result == DialogResult.OK)
                 {
-                    string themePathFromCSTR = new string(tdh.ThemePath);
+                    string themePathFromCSTR1 = new string(tdh.ThemePath1);
+                    //TODO: Check if I even need to test for null here or if the string constructor will take null as an arg.
+                    string themePathFromCSTR2 = new string(tdh.ThemePath2);
                     //After the form is closed we can make a new KeyValuePair for our dictionary and register the key.
                     RegisterHotKey(this.Handle, hkdh.id, hkdh.keyModifier, hkdh.keyHashCode);
                     this.HotKeys.Add(
                         HotKey.FormNewHotKey(hkdh),
-                        themePathFromCSTR
+                        new ThemePathContainer(themePathFromCSTR1, themePathFromCSTR2)
                     );
                 }
             }
@@ -764,7 +774,7 @@ namespace CSGO_Theme_Control
                 }
                 else if (result == DialogResult.Yes)
                 {
-                    this.HotKeys = new Dictionary<HotKey, String>();
+                    this.HotKeys = new Dictionary<HotKey, ThemePathContainer>();
                 }
             }
 
