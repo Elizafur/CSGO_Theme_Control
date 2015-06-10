@@ -46,11 +46,44 @@ namespace CSGO_Theme_Control
             }
         }
 
+        private string getKeyString(Keys k)
+        {
+            switch (Key)
+            {
+                case Keys.F1:
+                    return "F1";
+                case Keys.F2:
+                    return "F2";
+                case Keys.F3:
+                    return "F3";
+                case Keys.F4:
+                    return "F4";
+                case Keys.F5:
+                    return "F5";
+                case Keys.F6:
+                    return "F6";
+                case Keys.F7:
+                    return "F7";
+                case Keys.F8:
+                    return "F8";
+                case Keys.F9:
+                    return "F9";
+                case Keys.F10:
+                    return "F10";
+                case Keys.F11:
+                    return "F11";
+                case Keys.F12:
+                    return "F12";
+                default:
+                    return ((char)k).ToString();
+            }
+        }
+
         private void PickHotKeyDialog_KeyDown(object sender, KeyEventArgs e)
         {
             this.lblPickKey.Text    = "";
-            this.lblKeyPressed.Text = ((char)e.KeyValue).ToString();
             this.Key                = (Keys)e.KeyValue;
+            this.lblKeyPressed.Text = getKeyString(Key);
 
             if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift)
             {
