@@ -42,7 +42,7 @@ namespace CSGO_Theme_Control
         private string GameThemeName        = null;
         private const string EXE_NAME       = "CSGO_Theme_Control.exe";
         private const string APP_NAME       = "CSGO_THEME_CONTROL";
-        private const string VERSION_NUM    = "1.0.0.5";
+        private const string VERSION_NUM    = "1.1.0.5";
         private Thread t_IsCSGORunning;
         private RegistryKey rk_StartupKey   = Registry.CurrentUser.OpenSubKey(
             "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
