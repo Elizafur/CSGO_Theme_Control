@@ -25,6 +25,8 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
 using System.Threading;
+using CSGO_Theme_Control.Base_Classes.HotKey;
+using CSGO_Theme_Control.Base_Classes.Themes;
 
 namespace CSGO_Theme_Control
 {
@@ -42,7 +44,8 @@ namespace CSGO_Theme_Control
         private string GameThemeName        = null;
         private const string EXE_NAME       = "CSGO_Theme_Control.exe";
         private const string APP_NAME       = "CSGO_THEME_CONTROL";
-        private const string VERSION_NUM    = "1.1.0.5";
+        public const string VERSION_NUM     = "1.2.0.0";
+        public const string LOG_DIRECTORY   = "log";
         private Thread t_IsCSGORunning;
         private RegistryKey rk_StartupKey   = Registry.CurrentUser.OpenSubKey(
             "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
@@ -92,17 +95,15 @@ namespace CSGO_Theme_Control
         public ThemeControl()
         {
             InitializeComponent();
-            this.NotificationIcon.Icon = new System.Drawing.Icon(this.getExeDirectory() + "resources\\Gaben_santa.ico");
+            this.NotificationIcon.Icon = new System.Drawing.Icon(ThemeControl.getExeDirectory() + "resources\\Gaben_santa.ico");
             
             //TODO: <- dont remove this.
             //Always set DebugMode to false before release.
-            this.DebugMode = false;
+            this.DebugMode = true;
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            //rundll32.exe %SystemRoot%\system32\shell32.dll,Control_RunDLL %SystemRoot%\system32\desk.cpl desk,@Themes /Action:OpenTheme /file:"C:\Windows\Resources\Themes\aero.theme"
-            //rundll32.exe %SystemRoot%\system32\shell32.dll,Control_RunDLL %SystemRoot%\system32\desk.cpl desk,@Themes /Action:OpenTheme /file:"C:\Windows\Resources\Ease of Access Themes\hcwhite.theme"
             this.ReadConfig();
 
             //Register hotkeys.
@@ -185,7 +186,8 @@ namespace CSGO_Theme_Control
                 }
                 catch (Win32Exception e)
                 {
-                    createCrashDump(String.Format("File to theme could not be accessed.\nTheme: {0}\n", pathToTheme) + e.Message);
+                    FileLogger.Log(String.Format("File to theme could not be accessed.\nTheme: {0}\n", pathToTheme) + e.Message, false);
+                    this.log(String.Format("Theme file: {0} could not be accessed.", pathToTheme));
                 }
             }
         }
@@ -229,34 +231,6 @@ namespace CSGO_Theme_Control
             
         }
 
-        private void createCrashDump(string context)
-        {
-            string programExePathFolder = this.getExeDirectory();
-
-            String Date = (DateTime.Now.Year.ToString() + "-" + DateTime.Now.Month.ToString() + "-" + DateTime.Now.Day.ToString() + "_" + DateTime.Now.TimeOfDay.ToString()).Replace(":", "-");
-            Date = Date.Remove(Date.LastIndexOf("."));
-            Date += DateTime.Now.ToString("tt");
-
-            StreamWriter sw = new StreamWriter(programExePathFolder + "CSGO_THEME_CONTROL_" + Date + ".crashdumplog");
-            try
-            {
-                sw.WriteLine("[CRASH DUMP LOG]");
-                sw.WriteLine("[DATE]{" + DateTime.Now + "}");
-                sw.WriteLine("[VERSION]{" + ThemeControl.VERSION_NUM + "}");
-                sw.WriteLine("[CONTEXT]{");
-                sw.Write(context + "\n}");
-            }
-            catch (Exception e)
-            {
-                throw new Exception("A second exception occured while trying to create a log of a prior exception.\nThis means that something incredibly wrong has happened and the program must terminate, please report this.\nContext follows:\n" + e.Message);
-            }
-            finally
-            {
-                sw.Close();
-                Application.Exit();
-            }
-        }
-
         private void createBootStartup()
         {
             rk_StartupKey.SetValue(ThemeControl.APP_NAME, Application.ExecutablePath.ToString());
@@ -269,7 +243,7 @@ namespace CSGO_Theme_Control
 
         private void ReadConfig()
         {
-            string programExePathFolder = this.getExeDirectory();
+            string programExePathFolder = ThemeControl.getExeDirectory();
 
             StreamReader f = new StreamReader(programExePathFolder + Constants.APP_CONFIG_LOCATION);
             try
@@ -390,9 +364,9 @@ namespace CSGO_Theme_Control
             catch (Exception e)
             {
                 if (e is IOException || e is OutOfMemoryException)
-                    createCrashDump(e.Message);
-
-                createCrashDump("Unknown exception caught while reading config file." + e.Message);
+                    FileLogger.Log("Could not read CFG file: " + e.Message, false);
+                else
+                    FileLogger.Log("Unknown exception caught while reading config file." + e.Message, true);
             }
             finally
             {
@@ -404,7 +378,7 @@ namespace CSGO_Theme_Control
 
         private void WriteConfig()
         {
-            string programExePathFolder = this.getExeDirectory();
+            string programExePathFolder = ThemeControl.getExeDirectory();
 
             StreamWriter sw = new StreamWriter(programExePathFolder + Constants.APP_CONFIG_LOCATION);
             try
@@ -433,9 +407,9 @@ namespace CSGO_Theme_Control
             catch (Exception e)
             {
                 if (e is IOException)
-                    createCrashDump(e.Message);
-
-                createCrashDump("Unknown exception caught while reading config file." + e.Message);
+                    FileLogger.Log("Could not read CFG file: " + e.Message, false);
+                else
+                    FileLogger.Log("Unknown exception caught while reading config file." + e.Message, true);
             }
             finally
             {
@@ -443,7 +417,7 @@ namespace CSGO_Theme_Control
             }
         }
 
-        private string getExeDirectory()
+        public static string getExeDirectory()
         {
             string[] programExePath_split = System.Reflection.Assembly.GetEntryAssembly().Location.Split('\\');
             for (int i = 0; i < programExePath_split.Length; i++)
@@ -606,7 +580,7 @@ namespace CSGO_Theme_Control
             }
             catch (Win32Exception e)
             {
-                createCrashDump(String.Format("File to theme could not be accessed.\nTheme: {0}\n", PATH) + e.Message);
+               FileLogger.Log((String.Format("File to theme could not be accessed.\nTheme: {0}\n", PATH) + e.Message), false);
             }
         }
 
@@ -622,7 +596,7 @@ namespace CSGO_Theme_Control
             }
             catch (Win32Exception e)
             {
-                createCrashDump(String.Format("File to theme could not be accessed.\nTheme: {0}\n", PATH) + e.Message);
+                FileLogger.Log((String.Format("File to theme could not be accessed.\nTheme: {0}\n", PATH) + e.Message), false);
             }
         }
 
@@ -783,7 +757,8 @@ namespace CSGO_Theme_Control
 
         private void DebugRunTests()
         {
-            createCrashDump("This is just a test crash dump. You should not be seeing this!");
+            FileLogger.Log("This is just a test crash dump. You should not be seeing this!", false);
+            FileLogger.Log("This is just a test crash dump. You should not be seeing this! This was thrown!", true);
             //Note(Eli): There really should be some other stuff here but I just don't know what else we could test due to the nature of the program.
         }
     }

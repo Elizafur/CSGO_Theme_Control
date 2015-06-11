@@ -14,6 +14,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with CSGO Theme Control.  If not, see <http://www.gnu.org/licenses/>.
 
+using CSGO_Theme_Control.Base_Classes.HotKey;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -26,7 +27,7 @@ namespace CSGO_Theme_Control
     unsafe public partial class HotKeyRemovalForm : Form
     {
         private Dictionary<HotKey, ThemePathContainer>  HotKeys         = null;
-        private HotKeyDataHolder*           HKAddress       = null;
+        private HotKeyDataHolder*                       HKAddress       = null;
 
         /// <summary>
         /// Constructor for HotKeyRemovalForm class.

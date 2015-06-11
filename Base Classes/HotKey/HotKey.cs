@@ -14,43 +14,13 @@
 //    You should have received a copy of the GNU General Public License
 //    along with CSGO Theme Control.  If not, see <http://www.gnu.org/licenses/>.
 
+using CSGO_Theme_Control.Base_Classes.HotKey;
 using System;
 using System.Windows.Forms;
 
 namespace CSGO_Theme_Control
 {
-    /// <summary>
-    /// An unsafe struct which holds a char*.
-    /// This struct is primarily to retrieve data from different forms via use of
-    /// 'unsafe' pointers to instances of these structs.
-    /// </summary>
-    /// <remarks>
-    /// ThemePath: A c_string representation of an absolute path to a theme.
-    /// </remarks>
-    unsafe public struct ThemeDataHolder
-    {
-        public char* ThemePath1;
-        public char* ThemePath2;
-    }
-    
-    /// <summary>
-    /// A struct representation of a HotKey.
-    /// This is valuable as it is able to be used as a pointer.
-    /// This allows us to transfer data about HotKeys between forms.
-    /// </summary>
-    /// <remarks>
-    /// id: A signed int32 representation of the hotkeys windows ID.
-    /// keyModifier: A signed int32 representation of the modifer key in this hotkey. <seealso cref="Constants.KeyModifier"/>
-    /// keyHashCode: A signed int32 hash code of the key.
-    /// key: A Keys representation of they key pressed. <seealso cref="Keys"/>
-    /// </remarks>
-    public struct HotKeyDataHolder
-    {
-        public int id;
-        public int keyModifier;
-        public int keyHashCode;
-        public Keys key;
-    }
+
 
     /// <summary>
     /// A class used to represent a global hotkey for Windows.

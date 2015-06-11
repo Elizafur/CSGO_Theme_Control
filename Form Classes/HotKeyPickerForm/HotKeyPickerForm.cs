@@ -14,6 +14,8 @@
 //    You should have received a copy of the GNU General Public License
 //    along with CSGO Theme Control.  If not, see <http://www.gnu.org/licenses/>.
 
+using CSGO_Theme_Control.Base_Classes.HotKey;
+using CSGO_Theme_Control.Base_Classes.Themes;
 using System;
 using System.Collections.Generic;
 using System.Drawing;

@@ -29,6 +29,10 @@ namespace CSGO_Theme_Control
         private String[] Themes = new String[2] { null, null };
         private int CurrentlySelectedTheme = 1; //Note(Eli): Set to 1 so our method GetNextTheme will return the first element in Themes on first run.
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="themes"></param>
         public ThemePathContainer(params string[] themes)
         {
             if (themes.Count() > 2)
@@ -38,6 +42,10 @@ namespace CSGO_Theme_Control
                 Themes[i] = themes[i];
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public string GetNextTheme()
         {
             if (Themes[1] == null || Themes[1] == String.Empty)
@@ -47,11 +55,19 @@ namespace CSGO_Theme_Control
             return Themes[CurrentlySelectedTheme = (CurrentlySelectedTheme == 0) ? 1 : 0];
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return HelperFunc.CreateShortHandTheme(Themes[0]) + ((Themes[1] == String.Empty || Themes[1] == null) ? "" : " " + HelperFunc.CreateShortHandTheme(Themes[1]));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public string AbsoluteToString()
         {
             return "\"" + Themes[0] + "\" " + ((Themes[1] == String.Empty || Themes[1] == null) ? "\"null\"" : "\"" +  Themes[1] + "\"");
