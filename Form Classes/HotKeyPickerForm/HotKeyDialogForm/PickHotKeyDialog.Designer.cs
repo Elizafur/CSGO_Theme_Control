@@ -14,7 +14,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with CSGO Theme Control.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace CSGO_Theme_Control
+namespace CSGO_Theme_Control.Form_Classes.HotKeyPickerForm.HotKeyDialogForm
 {
     partial class PickHotKeyDialog
     {

@@ -25,15 +25,15 @@ namespace CSGO_Theme_Control.Base_Classes.HotKey
     /// </summary>
     /// <remarks>
     /// id: A signed int32 representation of the hotkeys windows ID.
-    /// keyModifier: A signed int32 representation of the modifer key in this hotkey. <seealso cref="Constants.KeyModifier"/>
+    /// keyModifier: A signed int32 representation of the modifer key in this hotkey. <seealso cref="Constants.Constants.KeyModifier"/>
     /// keyHashCode: A signed int32 hash code of the key.
     /// key: A Keys representation of they key pressed. <seealso cref="Keys"/>
     /// </remarks>
     public struct HotKeyDataHolder
     {
-        public int id;
-        public int keyModifier;
-        public int keyHashCode;
+        public int  id;
+        public int  keyModifier;
+        public int  keyHashCode;
         public Keys key;
     }
 }

@@ -16,9 +16,9 @@
 
 using System;
 using System.Linq;
-using CSGO_Theme_Control.Base_Classes.Themes;
+using CSGO_Theme_Control.Base_Classes.Helper;
 
-namespace CSGO_Theme_Control
+namespace CSGO_Theme_Control.Base_Classes.Themes
 {
     /// <summary>
     /// The idea of this class is to act as a container for multiple themes. 
@@ -27,7 +27,7 @@ namespace CSGO_Theme_Control
     /// </summary>
     public class ThemePathContainer
     {
-        private String[] Themes = new String[2] { null, null };
+        private readonly string[] Themes = new string[] { null, null };
         private int CurrentlySelectedTheme = 1; //Note(Eli): Set to 1 so our method GetNextTheme will return the first element in Themes on first run.
 
         /// <summary>
@@ -60,11 +60,12 @@ namespace CSGO_Theme_Control
         /// </returns>
         public string GetNextTheme()
         {
-            if (Themes[1] == null || Themes[1] == String.Empty)
+            if (Themes[1] == null || Themes[1] == string.Empty)
             {
-                if (Themes[0] == null || Themes[0] == String.Empty)
+                if (Themes[0] == null || Themes[0] == string.Empty)
                     throw new ThemeDoesNotExistException("Both themes initialized in this instance were null or empty and thus none were deemed usable." +
-                        String.Format("\nThemes: {}", this.ToAbsoluteString()));
+                                                         // ReSharper disable once ArrangeThisQualifier 
+                                                         $"\nThemes: {this.ToAbsoluteString()}");
 
                 return Themes[0];
             }
@@ -79,7 +80,7 @@ namespace CSGO_Theme_Control
         /// <returns>A shorthand string representation of the contents held within this instance.</returns>
         public override string ToString()
         {
-            return HelperFunc.CreateShortHandTheme(Themes[0]) + ((Themes[1] == String.Empty || Themes[1] == null) ? "" : " " + HelperFunc.CreateShortHandTheme(Themes[1]));
+            return HelperFunc.CreateShortHandTheme(Themes[0]) + ((Themes[1] == string.Empty || Themes[1] == null) ? "" : " " + HelperFunc.CreateShortHandTheme(Themes[1]));
         }
 
         /// <summary>
@@ -88,7 +89,7 @@ namespace CSGO_Theme_Control
         /// <returns>An absolute path of each theme held within this instance as a string.</returns>
         public string ToAbsoluteString()
         {
-            return "\"" + Themes[0] + "\" " + ((Themes[1] == String.Empty || Themes[1] == null) ? "\"null\"" : "\"" +  Themes[1] + "\"");
+            return "\"" + Themes[0] + "\" " + ((Themes[1] == string.Empty || Themes[1] == null) ? "\"null\"" : "\"" +  Themes[1] + "\"");
         }
     }
 }

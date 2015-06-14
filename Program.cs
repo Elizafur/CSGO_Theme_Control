@@ -16,6 +16,8 @@
 using System;
 using System.Windows.Forms;
 using CSGO_Theme_Control.Base_Classes.AssertionClass;
+using CSGO_Theme_Control.Base_Classes.Logger;
+using CSGO_Theme_Control.Form_Classes.ThemeControlForm;
 
 namespace CSGO_Theme_Control
 {

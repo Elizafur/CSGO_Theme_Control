@@ -15,10 +15,10 @@
 //    along with CSGO Theme Control.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
-using System.Windows.Forms;
 using System.Drawing;
+using System.Windows.Forms;
 
-namespace CSGO_Theme_Control
+namespace CSGO_Theme_Control.Base_Classes.Helper
 {
     /// <summary>
     /// Class containing various methods that do not fit into any other class used to help with simple actions.
@@ -55,7 +55,7 @@ namespace CSGO_Theme_Control
         /// <example>C:\\Windows\\Resources\\Ease of Access Themes\\hc1.theme => hc1.theme</example>
         public static string CreateShortHandTheme(string FullThemePath)
         {
-            int index = FullThemePath.LastIndexOf("\\");
+            int index = FullThemePath.LastIndexOf("\\", StringComparison.Ordinal);
             return FullThemePath.Substring(index + 1);
         }
 
@@ -68,7 +68,7 @@ namespace CSGO_Theme_Control
         /// <returns>A new string created at the last index of '.' which results in the extension of the given file.</returns>
         public static string GetFileExtension(string file)
         {
-            int index = file.LastIndexOf(".");
+            int index = file.LastIndexOf(".", StringComparison.Ordinal);
             return file.Substring(index);
         }
 

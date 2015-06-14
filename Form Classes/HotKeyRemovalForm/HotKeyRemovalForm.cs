@@ -18,16 +18,16 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using CSGO_Theme_Control.Base_Classes.HotKey;
+using CSGO_Theme_Control.Base_Classes.Themes;
 
-namespace CSGO_Theme_Control
+namespace CSGO_Theme_Control.Form_Classes.HotKeyRemovalForm
 {
     /// <summary>
     /// An unsafe class used to remove global hotkeys.
     /// </summary>
     unsafe public partial class HotKeyRemovalForm : Form
     {
-        private Dictionary<HotKey, ThemePathContainer>  HotKeys         = null;
-        private HotKeyDataHolder*                       HKAddress       = null;
+        private readonly HotKeyDataHolder* HKAddress;
 
         /// <summary>
         /// Constructor for HotKeyRemovalForm class.
@@ -42,20 +42,19 @@ namespace CSGO_Theme_Control
         public HotKeyRemovalForm(HotKeyDataHolder* _hkAddress, Dictionary<HotKey, ThemePathContainer> existingHotkeys)
         {
             InitializeComponent();
-            this.HotKeys = existingHotkeys;
-            this.HKAddress = _hkAddress;
+            HKAddress = _hkAddress;
 
-            foreach (KeyValuePair<HotKey, ThemePathContainer> entry in this.HotKeys)
+            foreach (KeyValuePair<HotKey, ThemePathContainer> entry in existingHotkeys)
             {
-                this.cmbHotkeys.Items.Add(entry.Key);
+                cmbHotkeys.Items.Add(entry.Key);
             }
         }
 
         private void btnFinish_Click(object sender, EventArgs e)
         {
-            if (this.cmbHotkeys.SelectedIndex == -1)
+            if (cmbHotkeys.SelectedIndex == -1)
             {
-                this.lblError.Text = "No hotkey was selected.";
+                lblError.Text = @"No hotkey was selected.";
                 return;
             }
 
@@ -67,7 +66,7 @@ namespace CSGO_Theme_Control
             HKAddress->keyModifier      = selected.keyModifier;
             HKAddress->key              = selected.key;
             HKAddress->keyHashCode      = selected.key.GetHashCode();
-            this.DialogResult = DialogResult.OK;
+            DialogResult = DialogResult.OK;
         }
 
         /// <summary>
@@ -75,7 +74,7 @@ namespace CSGO_Theme_Control
         /// </summary>
         private void btnRemoveAllHotKeys_Click(object sender, EventArgs e)
         {
-            this.DialogResult = DialogResult.Yes;
+            DialogResult = DialogResult.Yes;
         } 
     }
 }

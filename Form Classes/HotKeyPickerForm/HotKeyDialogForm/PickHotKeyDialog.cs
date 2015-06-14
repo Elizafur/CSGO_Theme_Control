@@ -16,8 +16,9 @@
 
 using System;
 using System.Windows.Forms;
+using CSGO_Theme_Control.Base_Classes.Constants;
 
-namespace CSGO_Theme_Control
+namespace CSGO_Theme_Control.Form_Classes.HotKeyPickerForm.HotKeyDialogForm
 {
     /// <summary>
     /// A Form used to pick a new global hotkey.
@@ -25,9 +26,9 @@ namespace CSGO_Theme_Control
     /// </summary>
     public partial class PickHotKeyDialog : Form
     {
-        public Keys Key;
-        public Constants.KeyModifier KeyMod;
-        private bool KeyPressed = false;
+        public Keys                     Key;
+        public Constants.KeyModifier    KeyMod;
+        private bool                    KeyPressed;
 
         public PickHotKeyDialog()
         {
@@ -36,13 +37,13 @@ namespace CSGO_Theme_Control
 
         private void btnFinish_Click(object sender, EventArgs e)
         {
-            if (this.KeyPressed)
+            if (KeyPressed)
             {
-                this.DialogResult = DialogResult.OK;
+                DialogResult = DialogResult.OK;
             }
             else
             {
-                lblError.Text = "A Key was not chosen.";
+                lblError.Text = @"A Key was not chosen.";
             }
         }
 
@@ -81,32 +82,32 @@ namespace CSGO_Theme_Control
 
         private void PickHotKeyDialog_KeyDown(object sender, KeyEventArgs e)
         {
-            this.lblPickKey.Text    = "";
-            this.Key                = (Keys)e.KeyValue;
-            this.lblKeyPressed.Text = getKeyString(Key);
+            lblPickKey.Text    = "";
+            Key                = (Keys)e.KeyValue;
+            lblKeyPressed.Text = getKeyString(Key);
 
-            if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift)
+            if ((ModifierKeys & Keys.Shift) == Keys.Shift)
             {
-                this.lblKeyMod.Text = "SHIFT";
-                this.KeyMod = Constants.KeyModifier.SHIFT;
+                lblKeyMod.Text = @"SHIFT";
+                KeyMod = Constants.KeyModifier.SHIFT;
             }
-            else if ((Control.ModifierKeys & Keys.Alt) == Keys.Alt)
+            else if ((ModifierKeys & Keys.Alt) == Keys.Alt)
             {
-                this.lblKeyMod.Text = "ALT";
-                this.KeyMod = Constants.KeyModifier.ALT;
+                lblKeyMod.Text = @"ALT";
+                KeyMod = Constants.KeyModifier.ALT;
             }
-            else if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
+            else if ((ModifierKeys & Keys.Control) == Keys.Control)
             {
-                this.lblKeyMod.Text = "CONTROL";
-                this.KeyMod = Constants.KeyModifier.CONTROL;
+                lblKeyMod.Text = @"CONTROL";
+                KeyMod = Constants.KeyModifier.CONTROL;
             }
             else
             {
-                this.lblKeyMod.Text = "NONE";
-                this.KeyMod = Constants.KeyModifier.NONE;
+                lblKeyMod.Text = @"NONE";
+                KeyMod = Constants.KeyModifier.NONE;
             }
 
-            this.KeyPressed = true;
+            KeyPressed = true;
 
         }
     }

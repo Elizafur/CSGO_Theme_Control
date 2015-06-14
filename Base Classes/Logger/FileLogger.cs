@@ -19,8 +19,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using CSGO_Theme_Control.Base_Classes.Helper;
+using CSGO_Theme_Control.Form_Classes.ThemeControlForm;
 
-namespace CSGO_Theme_Control
+namespace CSGO_Theme_Control.Base_Classes.Logger
 {
     public sealed class FileLogger
     {
@@ -34,14 +36,14 @@ namespace CSGO_Theme_Control
 
         public static string CreateLogFullPath(bool logThrown)
         {
-            string extension = (logThrown ? FileLogger.THROWN_LOG_EXT : FileLogger.NORMAL_LOG_EXT);
+            string extension = (logThrown ? THROWN_LOG_EXT : NORMAL_LOG_EXT);
             string thrown = (logThrown ? "THROWN_" : "");
 
-            String Date;
+            string Date;
             if (logThrown)    //Create a specific log if we are exiting the application.
             {
                 Date = (DateTime.Now.Year.ToString() + "-" + DateTime.Now.Month.ToString() + "-" + DateTime.Now.Day.ToString() + "_" + DateTime.Now.TimeOfDay.ToString()).Replace(":", "-");
-                Date = Date.Remove(Date.LastIndexOf("."));
+                Date = Date.Remove(Date.LastIndexOf(".", StringComparison.Ordinal));
                 Date += DateTime.Now.ToString("tt");
             }
             else
@@ -56,11 +58,8 @@ namespace CSGO_Theme_Control
         {
             string fullpath = CreateLogFullPath(shouldThrow);
 
-            //if (!File.Exists(fullpath))
-            //    File.Create(fullpath);
-
-            //If we are going to close the program we should not.
-            StreamWriter sw = new StreamWriter(fullpath, (shouldThrow ? false : true));
+            //If we are going to throw after writing it should not be appended.
+            StreamWriter sw = new StreamWriter(fullpath, !shouldThrow);
             try
             {
                 sw.WriteLine("[LOG]");
@@ -86,18 +85,17 @@ namespace CSGO_Theme_Control
 
         public static void CleanLogsFolder(bool cleanupThrownLogs=false)
         {
-            string logFileToday = CreateLogFullPath(false);
             string logDirectory = GetLogDirectory();
             string[] files      = Directory.GetFiles(logDirectory);
 
-            for (int i = 0; i < files.Length; i++)
+            foreach (string file in files)
             {
-                string ext = HelperFunc.GetFileExtension(files[i]);
+                string ext = HelperFunc.GetFileExtension(file);
                 if (cleanupThrownLogs && (ext == NORMAL_LOG_EXT || ext == THROWN_LOG_EXT))
-                    File.Delete(files[i]);
+                    File.Delete(file);
                 else
                     if (ext == NORMAL_LOG_EXT)
-                        File.Delete(files[i]);
+                        File.Delete(file);
             }
         }
 
@@ -116,6 +114,9 @@ namespace CSGO_Theme_Control
                     string line = sr.ReadLine();
                     string startOfLine = line;
                     string lineAfterBrace = line;
+
+                    if (line == null)
+                        continue;
 
                     if (line.Contains("{"))
                     {
@@ -188,11 +189,9 @@ namespace CSGO_Theme_Control
         public static bool ExportLogToCSV(string filepath, string endpath)
         {
             bool succeeded = true;
-            bool append    = false;
-            if (File.Exists(endpath))
-                append = true;
+            bool append    = File.Exists(endpath);
 
-            List<string> fileData = new List<string>();
+            List<string> fileData;
             try { fileData = ReadLog(filepath); } catch { return false; }
 
             StreamWriter sw = new StreamWriter(endpath, append);

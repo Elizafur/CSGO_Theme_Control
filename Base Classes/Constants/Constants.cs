@@ -17,7 +17,7 @@
 using System;
 using System.IO;
 
-namespace CSGO_Theme_Control
+namespace CSGO_Theme_Control.Base_Classes.Constants
 {
     /// <summary>
     /// A class containing representations of various string and int constants used throughout the program as variables.

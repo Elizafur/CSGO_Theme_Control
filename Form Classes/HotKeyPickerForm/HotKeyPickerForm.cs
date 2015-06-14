@@ -19,24 +19,27 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using CSGO_Theme_Control.Base_Classes.Constants;
+using CSGO_Theme_Control.Base_Classes.Helper;
 using CSGO_Theme_Control.Base_Classes.HotKey;
 using CSGO_Theme_Control.Base_Classes.Themes;
+using CSGO_Theme_Control.Form_Classes.HotKeyPickerForm.HotKeyDialogForm;
 
-namespace CSGO_Theme_Control
+namespace CSGO_Theme_Control.Form_Classes.HotKeyPickerForm
 {
     /// <summary>
     /// An unsafe class used to create new global HotKeys.
     /// </summary>
     unsafe public partial class HotKeyPickerForm : Form
     {
-        private Dictionary<HotKey, ThemePathContainer>  HotKeys         = null;
-        private String                                  ThemeToExecute  = null;
-        private String                                  Theme2ToExecute = null;
-        private Keys                                    HKKey;
-        private Constants.KeyModifier                   HKKeyMod;
-        private Int32                                   HKID            = 0;
-        private HotKeyDataHolder*                       HKAddress       = null;
-        private ThemeDataHolder*                        ThemeData       = null;
+        private readonly Dictionary<HotKey, ThemePathContainer> HotKeys;
+        private string                                          ThemeToExecute;
+        private string                                          Theme2ToExecute;
+        private Keys                                            HKKey;
+        private Constants.KeyModifier                           HKKeyMod;
+        private readonly Int32                                  HKID;
+        private readonly HotKeyDataHolder*                      HKAddress;
+        private readonly ThemeDataHolder*                       ThemeData;
 
         /// <summary>
         /// Constructor for HotKeyPickerForm class.
@@ -56,14 +59,14 @@ namespace CSGO_Theme_Control
         public HotKeyPickerForm(HotKeyDataHolder* _hkAddress, ThemeDataHolder* _themeData, Dictionary<HotKey, ThemePathContainer> existingHotkeys)
         {
             InitializeComponent();
-            this.HotKeys = existingHotkeys;
-            this.HKID = this.getNextHKID();
-            this.lblHKID.Text += HKID;
-            this.HKAddress = _hkAddress;
-            this.ThemeData = _themeData;
+            HotKeys         = existingHotkeys;
+            HKID            = getNextHKID();
+            lblHKID.Text    += HKID;
+            HKAddress       = _hkAddress;
+            ThemeData       = _themeData;
 
-            this.btnSecondTheme.Hide();
-            this.lblTheme2OK.Hide();
+            btnSecondTheme.Hide();
+            lblTheme2OK.Hide();
         }
 
         /// <summary>
@@ -72,12 +75,12 @@ namespace CSGO_Theme_Control
         /// <returns>The next hotkey ID available for use in your program. (Usually last registered hotkey id + 1).</returns>
         public int getNextHKID()
         {
-            if (this.HotKeys == null || this.HotKeys.Count < 1)
+            if (HotKeys == null || HotKeys.Count < 1)
                 return 0;
 
             List<int> HKIDList = new List<int>();
 
-            foreach(KeyValuePair<HotKey, ThemePathContainer> entry in this.HotKeys)
+            foreach(KeyValuePair<HotKey, ThemePathContainer> entry in HotKeys)
                 HKIDList.Add(entry.Key.id);
 
             int max = HKIDList.Max();
@@ -89,63 +92,63 @@ namespace CSGO_Theme_Control
         {
             //Used to make sure we have all things filled out;
             //Not the best way since we're using strings but whatever.
-            if ((lblKeyOK.Text == "Not Finished" || lblThemeOK.Text == "Not Finished") || (chkToggle.Checked && lblTheme2OK.Text == "Not Finished"))
+            if ((lblKeyOK.Text == @"Not Finished" || lblThemeOK.Text == @"Not Finished") || (chkToggle.Checked && lblTheme2OK.Text == @"Not Finished"))
             {
-                this.lblError.Text = "A required field was not selected.";
+                lblError.Text = @"A required field was not selected.";
                 return;
             }
 
-            HKAddress->id          = this.HKID;
-            HKAddress->key         = this.HKKey;
-            HKAddress->keyModifier = (int)this.HKKeyMod;
-            HKAddress->keyHashCode = this.HKKey.GetHashCode();
+            HKAddress->id          = HKID;
+            HKAddress->key         = HKKey;
+            HKAddress->keyModifier = (int)HKKeyMod;
+            HKAddress->keyHashCode = HKKey.GetHashCode();
 
-            fixed (char* cstr = this.ThemeToExecute)
+            fixed (char* cstr = ThemeToExecute)
             {
                 ThemeData->ThemePath1 = cstr;
             }
 
             if (chkToggle.Checked)
             {
-                fixed (char* cstr = this.Theme2ToExecute)
+                fixed (char* cstr = Theme2ToExecute)
                 {
                     ThemeData->ThemePath2 = cstr;
                 }
             }
 
-            this.DialogResult = DialogResult.OK;
-            this.Close();
+            DialogResult = DialogResult.OK;
+            Close();
 
         }
 
         private void btnThemeTriggerDialog_Click(object sender, EventArgs e)
         {
-            DialogResult result = this.fileFirstTheme.ShowDialog();
+            DialogResult result = fileFirstTheme.ShowDialog();
             if (result == DialogResult.OK)
             {
-                this.ThemeToExecute = fileFirstTheme.FileName;
-                this.lblThemeOK.Text = "Finished";
-                this.lblThemeOK.ForeColor = Color.Green;
+                ThemeToExecute = fileFirstTheme.FileName;
+                lblThemeOK.Text = @"Finished";
+                lblThemeOK.ForeColor = Color.Green;
             }
         }
 
         private void btnPickHotKey_Click(object sender, EventArgs e)
         {
             PickHotKeyDialog phkd = new PickHotKeyDialog();
-            Form casted = (Form)phkd;
+            Form casted = phkd;
             HelperFunc.CreateFormStartPosition(ref casted, this);
             phkd = (PickHotKeyDialog)casted;
 
             DialogResult result = phkd.ShowDialog();
 
-            if (result == DialogResult.OK)
-            {
-                this.HKKey    = phkd.Key;
-                this.HKKeyMod = phkd.KeyMod;
+            if (result != DialogResult.OK)
+                return;
 
-                this.lblKeyOK.Text = "Finished";
-                this.lblKeyOK.ForeColor = Color.Green;
-            }
+            HKKey    = phkd.Key;
+            HKKeyMod = phkd.KeyMod;
+
+            lblKeyOK.Text = @"Finished";
+            lblKeyOK.ForeColor = Color.Green;
         }
 
         private void chkToggle_CheckedChanged(object sender, EventArgs e)
@@ -164,12 +167,12 @@ namespace CSGO_Theme_Control
 
         private void btnSecondTheme_Click(object sender, EventArgs e)
         {
-            DialogResult result = this.fileFirstTheme.ShowDialog();
+            DialogResult result = fileFirstTheme.ShowDialog();
             if (result == DialogResult.OK)
             {
-                this.Theme2ToExecute = fileFirstTheme.FileName;
-                this.lblTheme2OK.Text = "Finished";
-                this.lblTheme2OK.ForeColor = Color.Green;
+                Theme2ToExecute = fileFirstTheme.FileName;
+                lblTheme2OK.Text = @"Finished";
+                lblTheme2OK.ForeColor = Color.Green;
             }
         }
     }

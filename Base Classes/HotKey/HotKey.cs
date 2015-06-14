@@ -14,11 +14,9 @@
 //    You should have received a copy of the GNU General Public License
 //    along with CSGO Theme Control.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
 using System.Windows.Forms;
-using CSGO_Theme_Control.Base_Classes.HotKey;
 
-namespace CSGO_Theme_Control
+namespace CSGO_Theme_Control.Base_Classes.HotKey
 {
 
 
@@ -41,10 +39,10 @@ namespace CSGO_Theme_Control
     /// </example>
     public class HotKey
     {
-        public int id;
-        public int keyModifier;
-        public int keyHashCode;
-        public Keys key;
+        public readonly int  id;
+        public readonly int  keyModifier;
+        public readonly int  keyHashCode;
+        public readonly Keys key;
 
         /// <summary>
         /// Constructor for HotKey class.
@@ -52,13 +50,13 @@ namespace CSGO_Theme_Control
         /// <param name="_hotkeyID">An ID to be given to the hotkey. This ID should not be taken by any currently registered hotkeys of the program.</param>
         /// <param name="_keyModifier">Int thats represents the modifier to the key. For a list of key modifiers see Constants.KeyModifier</param>
         /// <param name="_key">The Keys enumeration value of the key represented by the Hotkey.</param>
-        /// <seealso cref="Constants.KeyModifier"/>
+        /// <seealso cref="CSGO_Theme_Control.Base_Classes.Constants.Constants.KeyModifier"/>
         public HotKey(int _hotkeyID, int _keyModifier, Keys _key)
         {
-            this.id          = _hotkeyID;
-            this.keyModifier = _keyModifier;
-            this.key         = _key;
-            this.keyHashCode = _key.GetHashCode();
+            id          = _hotkeyID;
+            keyModifier = _keyModifier;
+            key         = _key;
+            keyHashCode = _key.GetHashCode();
         }
 
         public static bool operator==(HotKey h1, HotKey h2)
@@ -96,8 +94,11 @@ namespace CSGO_Theme_Control
         /// <returns>The hash code of an instance of class HotKey.</returns>
         public override int GetHashCode()
         {
+/*
+            TODO: Figure out if this is actually needed.
             if (this == null)
                 return 0;
+*/
 
             int hash = 11;
             hash += (hash * 4) + id.GetHashCode();
@@ -126,16 +127,19 @@ namespace CSGO_Theme_Control
         /// <param name="km">A KeyModifier enumeration value</param>
         /// 
         /// <returns>A string representation of the KeyModifer</returns>
-        public static String KeyModToString(Constants.KeyModifier km)
+        public static string KeyModToString(Constants.Constants.KeyModifier km)
         {
-            if (km == Constants.KeyModifier.ALT)
-                return "ALT";
-            else if (km == Constants.KeyModifier.CONTROL)
-                return "CONTROL";
-            else if (km == Constants.KeyModifier.SHIFT)
-                return "SHIFT";
-            else
-                return "";
+            switch (km)
+            {
+                case Constants.Constants.KeyModifier.ALT:
+                    return "ALT";
+                case Constants.Constants.KeyModifier.CONTROL:
+                    return "CONTROL";
+                case Constants.Constants.KeyModifier.SHIFT:
+                    return "SHIFT";
+                default:
+                    return "";
+            }
         }
 
         /// <summary>
@@ -144,11 +148,11 @@ namespace CSGO_Theme_Control
         /// <returns>A string representation of the HotKey instance's key member. </returns>
         public override string ToString()
         {
-            string s = KeyModToString((Constants.KeyModifier)this.keyModifier);
+            string s = KeyModToString((Constants.Constants.KeyModifier)keyModifier);
             if (s != "")
                 s += " ";
 
-            s += ((char)this.key).ToString();
+            s += ((char)key).ToString();
 
             return s;
         }

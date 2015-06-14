@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using CSGO_Theme_Control.Base_Classes.Helper;
 
 namespace CSGO_Theme_Control.Base_Classes.AssertionClass
 {
@@ -7,7 +8,7 @@ namespace CSGO_Theme_Control.Base_Classes.AssertionClass
     /// </summary>
     public static class Assert
     {
-        private static bool IsStrict = true;
+        private static bool  IsStrict = true;
         private const string ASSERTION_FAILED = "Assertion Failed: ";
 
         public static bool FileExists(string path)
@@ -65,7 +66,7 @@ namespace CSGO_Theme_Control.Base_Classes.AssertionClass
                 return true;
 
             if (IsStrict)
-                throw new AssertionFailedException(ASSERTION_FAILED + "");
+                throw new AssertionFailedException(ASSERTION_FAILED + "Boolean did not evaluate to true.");
 
             return false;
         }
@@ -77,7 +78,7 @@ namespace CSGO_Theme_Control.Base_Classes.AssertionClass
         /// Strictness level of either true or false. True means that an exception is thrown when a condition fails. 
         /// False means that it will return a boolean after evaluation and will not throw in the event of failure.
         /// </param>
-        public static void setStrictness(bool strict)
+        public static void SetStrictness(bool strict)
         {
             IsStrict = strict;
         }
