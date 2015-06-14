@@ -12,6 +12,8 @@
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <TargetFrameworkProfile />
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -24,10 +26,8 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -72,12 +72,15 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Base Classes\AssertionClass\Assert.cs" />
+    <Compile Include="Base Classes\AssertionClass\AssertionFailedException.cs" />
     <Compile Include="Base Classes\Constants\Constants.cs" />
     <Compile Include="Base Classes\HotKey\HotKeyDataHolder.cs" />
     <Compile Include="Base Classes\Logger\FileLogger.cs" />
     <Compile Include="Base Classes\Helper\HelperFunc.cs" />
     <Compile Include="Base Classes\HotKey\HotKey.cs" />
     <Compile Include="Base Classes\Themes\ThemeDataHolder.cs" />
+    <Compile Include="Base Classes\Themes\ThemeDoesNotExistException.cs" />
     <Compile Include="Form Classes\HotKeyPickerForm\HotKeyPickerForm.cs">
       <SubType>Form</SubType>
     </Compile>

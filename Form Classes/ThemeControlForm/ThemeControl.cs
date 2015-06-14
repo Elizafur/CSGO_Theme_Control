@@ -99,7 +99,7 @@ namespace CSGO_Theme_Control
             
             //TODO: <- dont remove this.
             //Always set DebugMode to false before release.
-            this.DebugMode = true;
+            this.DebugMode = false;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -400,7 +400,7 @@ namespace CSGO_Theme_Control
                     {
                         sw.Write("Hotkey{ ");
                         sw.Write(entry.Key.id + " " + entry.Key.keyModifier + " " + entry.Key.key);
-                        sw.Write(" " + entry.Value.AbsoluteToString());
+                        sw.Write(" " + entry.Value.ToAbsoluteString());
                         sw.Write(" }\n");
                     }
             }
@@ -715,8 +715,8 @@ namespace CSGO_Theme_Control
                 if (result == DialogResult.OK)
                 {
                     string themePathFromCSTR1 = new string(tdh.ThemePath1);
-                    //TODO: Check if I even need to test for null here or if the string constructor will take null as an arg.
                     string themePathFromCSTR2 = new string(tdh.ThemePath2);
+
                     //After the form is closed we can make a new KeyValuePair for our dictionary and register the key.
                     RegisterHotKey(this.Handle, hkdh.id, hkdh.keyModifier, hkdh.keyHashCode);
                     this.HotKeys.Add(

@@ -24,14 +24,17 @@ namespace CSGO_Theme_Control
 {
     public sealed class FileLogger
     {
-        private static string GetLogDirectory()
+        public static string THROWN_LOG_EXT = ".crashlog";
+        public static string NORMAL_LOG_EXT = ".log";
+
+        public static string GetLogDirectory()
         {
             return ThemeControl.getExeDirectory() + ThemeControl.LOG_DIRECTORY + "\\";
         }
 
-        private static string CreateLogFullPath(bool logThrown)
+        public static string CreateLogFullPath(bool logThrown)
         {
-            string extension = (logThrown ? ".crashlog" : ".log");
+            string extension = (logThrown ? FileLogger.THROWN_LOG_EXT : FileLogger.NORMAL_LOG_EXT);
             string thrown = (logThrown ? "THROWN_" : "");
 
             String Date;
@@ -86,20 +89,16 @@ namespace CSGO_Theme_Control
             string logFileToday = CreateLogFullPath(false);
             string logDirectory = GetLogDirectory();
             string[] files      = Directory.GetFiles(logDirectory);
-            string[] files_copy = files;
 
-            //TODO: Make sure that this is safe to do.
-            for (int i = 0; i < files_copy.Length; i++)
+            for (int i = 0; i < files.Length; i++)
             {
-                if (cleanupThrownLogs && files[i] != "READ.txt")
+                string ext = HelperFunc.GetFileExtension(files[i]);
+                if (cleanupThrownLogs && (ext == NORMAL_LOG_EXT || ext == THROWN_LOG_EXT))
                     File.Delete(files[i]);
                 else
-                    if (!files[i].Contains("_THROWN_") && files[i] != "READ.txt")
+                    if (ext == NORMAL_LOG_EXT)
                         File.Delete(files[i]);
             }
-
-
-
         }
 
         public static List<string> ReadLog(string filepath)
@@ -109,37 +108,43 @@ namespace CSGO_Theme_Control
             StringBuilder sb = new StringBuilder();
             try
             {
-                bool readingContext         = false;
-                bool appendedContext        = false;
+                bool readingContext     = false;
+                bool appendedContext    = false;
 
-                while (sr.EndOfStream)
+                while (!sr.EndOfStream)
                 {
                     string line = sr.ReadLine();
-                    string startOfLine = line.Split('{')[0];
-                    string lineAfterBrace = line.Substring(line.IndexOf('{'));
+                    string startOfLine = line;
+                    string lineAfterBrace = line;
+
+                    if (line.Contains("{"))
+                    {
+                        startOfLine = line.Split('{')[0];
+                        lineAfterBrace = line.Substring(line.IndexOf('{') + 1);
+                    }
                     if (!readingContext)
                     {
                         switch (startOfLine)
                         {
-                            case ("[LOG]"):
+                            case("[LOG]"):
                                 break;
 
-                            case ("[DATE]"):
-                                sb.Append("[DATE], " + lineAfterBrace.Replace("}", ""));
+                            case("[DATE]"):
+                                sb.Append(HelperFunc.SurroundWith("\"", "[DATE]") + ", " + HelperFunc.SurroundWith("\"", lineAfterBrace.Replace("}", "")));
                                 break;
 
-                            case ("[VERSION]"):
-                                sb.Append("[VERSION], " + lineAfterBrace.Replace("}", ""));
+                            case("[VERSION]"):
+                                sb.Append(HelperFunc.SurroundWith("\"", "[VERSION]") + ", " + HelperFunc.SurroundWith("\"", lineAfterBrace.Replace("}", "")));
                                 break;
 
-                            case ("[CONTEXT]"):
+                            case("[CONTEXT]"):
                                 readingContext = true;
                                 break;
 
                             default:
-                            {
-                                break;
-                            }
+                                char[] c = new char[1000];
+                                sr.ReadBlock(c, 0, 999);
+                                throw new FileFormatException("Log was unreadable: " + new string(c));
                         }
 
                         if (sb.ToString() != String.Empty)
@@ -151,20 +156,20 @@ namespace CSGO_Theme_Control
                     {
                         if (!appendedContext)
                         {
-                            sb.Append("[CONTEXT], ");
+                            sb.Append(HelperFunc.SurroundWith("\"", "[CONTEXT]") + ", \"");
                             appendedContext = true;
                         }
 
-                        sb.Append(line);
+                        if (line != "}")
+                            sb.Append(line);
+                        else
+                        {
+                            sb.Append("\"");
+                            rows.Add(sb.ToString());
+                            sb.Clear();
+                        }
                     }
                 }
-            }
-            catch (Exception e) //TODO: make sure this what I want to do.
-            {
-                if (e is IOException)
-                    throw;
-
-                throw new FileFormatException("Log was unreadable: " + e.Message);
             }
             finally
             {
@@ -187,16 +192,16 @@ namespace CSGO_Theme_Control
             if (File.Exists(endpath))
                 append = true;
 
-            List<string> fileData;
+            List<string> fileData = new List<string>();
             try { fileData = ReadLog(filepath); } catch { return false; }
 
-            StreamWriter sw = new StreamWriter(filepath, append);
+            StreamWriter sw = new StreamWriter(endpath, append);
             try
             {
                 foreach (string row in fileData)
                     sw.WriteLine(row);
             }
-            catch (IOException e)
+            catch (IOException)
             {
                 succeeded = false;
             }

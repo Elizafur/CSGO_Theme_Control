@@ -50,7 +50,7 @@ namespace CSGO_Theme_Control
         /// 
         /// <param name="FullThemePath">Absolute path to the theme starting from the C: or equivalent drive.</param>
         /// 
-        /// <returns>A new string created at the last index of '.'</returns>
+        /// <returns>A new string created at the last index of '\\' which results in the filename of the given themepath.</returns>
         /// 
         /// <example>C:\\Windows\\Resources\\Ease of Access Themes\\hc1.theme => hc1.theme</example>
         public static string CreateShortHandTheme(string FullThemePath)
@@ -60,12 +60,25 @@ namespace CSGO_Theme_Control
         }
 
         /// <summary>
+        /// Returns the extension of a file.
+        /// </summary>
+        /// 
+        /// <param name="file">Path to the file.</param>
+        /// 
+        /// <returns>A new string created at the last index of '.' which results in the extension of the given file.</returns>
+        public static string GetFileExtension(string file)
+        {
+            int index = file.LastIndexOf(".");
+            return file.Substring(index);
+        }
+
+        /// <summary>
         /// Creates a string with the first character turned to uppercase.
         /// </summary>
         /// 
         /// <param name="s">String to make the first character uppercase.</param>
         /// 
-        /// <returns>A new string with the first character uppercase.</returns>
+        /// <returns>A new string with the first character transformed to uppercase.</returns>
         public static string UpperCaseFirstChar(string s)
         {
             if (String.IsNullOrEmpty(s))
@@ -74,6 +87,17 @@ namespace CSGO_Theme_Control
             }
 
             return char.ToUpper(s[0]) + s.Substring(1);
+        }
+
+        /// <summary>
+        /// Surrounds a string with the provided string.
+        /// </summary>
+        /// <param name="surrounding">The character/string to surround the string with</param>
+        /// <param name="toSurround">The string to be surrounded</param>
+        /// <returns>A new instance with the given string toSurround string by the given surrounding string.</returns>
+        public static string SurroundWith(string surrounding, string toSurround)
+        {
+            return surrounding + toSurround + surrounding;
         }
 
         /// <summary>
@@ -94,7 +118,7 @@ namespace CSGO_Theme_Control
             if (pLoc.X + (parent.Width / 2) < System.Windows.SystemParameters.FullPrimaryScreenWidth / 2)
                 child.Location = new Point(parent.Left + parent.Width, parent.Top);
             else
-                child.Location = new Point(parent.Left - (child.Width), parent.Top);
+                child.Location = new Point(parent.Left - child.Width, parent.Top);
         }
     }
 }
