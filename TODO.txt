@@ -1,3 +1,5 @@
 create a simple website?
 
 implement FileLogger CSV export and FileLogger Cleanup.
+
+update readme with regars to .NET framework requirements
