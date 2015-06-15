@@ -29,6 +29,9 @@ using CSGO_Theme_Control.Base_Classes.Helper;
 using CSGO_Theme_Control.Base_Classes.HotKey;
 using CSGO_Theme_Control.Base_Classes.Logger;
 using CSGO_Theme_Control.Base_Classes.Themes;
+using CSGO_Theme_Control.Form_Classes.AdvancedSettingsForm;
+using CSGO_Theme_Control.Form_Classes.PickHotKeyForm;
+using CSGO_Theme_Control.Form_Classes.RemoveHotKeyForm;
 
 namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
 {
@@ -37,9 +40,10 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
         private readonly bool   DebugMode;
         private bool            IsEnabled               = true;
         private bool            BootOnStart;
-        private bool            shouldChangeDeskTheme;
-        private bool            shouldChangeGameTheme;
-        private bool            registryBootWritten;
+        private bool            ShouldChangeDeskTheme;
+        private bool            ShouldChangeGameTheme;
+        private bool            RegistryBootWritten;
+        private bool            ShouldCleanupLogs;
 
         private string          DesktopThemePath;
         private string          GameThemePath;
@@ -113,23 +117,23 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             //Check appropriate boxes on forms that correlate with user settings.
             chkEnabled.Checked = IsEnabled;
             if (rk_StartupKey.GetValue(APP_NAME) == null) 
-                registryBootWritten = false;
+                RegistryBootWritten = false;
             else 
-                registryBootWritten = true;
+                RegistryBootWritten = true;
 
-            BootOnStart            = registryBootWritten;
-            chkStartOnBoot.Checked = registryBootWritten;
+            BootOnStart            = RegistryBootWritten;
+            chkStartOnBoot.Checked = RegistryBootWritten;
 
             //If CSGO is running when the program is started we should switch themes.
-            shouldChangeDeskTheme  = csgoIsRunning();
-            if (shouldChangeDeskTheme)
+            ShouldChangeDeskTheme  = csgoIsRunning();
+            if (ShouldChangeDeskTheme)
             {
                 if (GameThemePath != null)
                     changeTheme(GameThemePath);
                 else
                     changeTheme(true);
             }
-            shouldChangeGameTheme  = !shouldChangeDeskTheme;
+            ShouldChangeGameTheme  = !ShouldChangeDeskTheme;
 
             //Create new thread to determine if CSGO is ever started.
             t_IsCSGORunning = new Thread(CheckIfRunningForever) { IsBackground = true };
@@ -155,13 +159,18 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             WriteConfig();
             if (BootOnStart)
             {
-                if (!registryBootWritten)
+                if (!RegistryBootWritten)
                     createBootStartup();
             }
 
             if (HotKeys != null && HotKeys.Count > 0)
                 foreach (KeyValuePair<HotKey, ThemePathContainer> entry in HotKeys)
                     UnregisterHotKey(Handle, entry.Key.id);
+
+            if (ShouldCleanupLogs)
+            {
+                FileLogger.CleanLogsFolder();
+            }
         }
 
         protected override void WndProc(ref Message m)
@@ -185,8 +194,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
                 }
                 catch (Win32Exception e)
                 {
-                    FileLogger.Log(String.Format("File to theme could not be accessed.\nTheme: {0}\n", pathToTheme) + e.Message, false);
-                    log(String.Format("Theme file: {0} could not be accessed.", pathToTheme));
+                    FileLogger.Log($"File to theme could not be accessed.\nTheme: {pathToTheme}\n" + e.Message, false);
                 }
             }
         }
@@ -214,11 +222,13 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
                 "Version:"       + HelperFunc.CreateWhiteSpace(7) + VERSION_NUM,
                 "Is Enabled:"    + HelperFunc.CreateWhiteSpace(4) + IsEnabled,
                 "Boot on start:" + HelperFunc.CreateWhiteSpace(1) + BootOnStart,
+                "Cleanup Logs:"  + HelperFunc.CreateWhiteSpace(2) + ShouldCleanupLogs,
                 "Desktop theme:" + HelperFunc.CreateWhiteSpace(1) + desktopT,
                 "In-game theme:" + HelperFunc.CreateWhiteSpace(1) + gameT
             );
 
             log("Hotkeys<Key, Theme>:" + HelperFunc.CreateWhiteSpace(4) + "{");
+            //TODO: Do I even need to check if the Count is > 0 here?
             if (HotKeys != null && HotKeys.Count > 0)
             {
                 foreach (KeyValuePair<HotKey, ThemePathContainer> entry in HotKeys)
@@ -244,20 +254,20 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
         {
             string programExePathFolder = getExeDirectory();
 
-            StreamReader f = new StreamReader(programExePathFolder + Constants.APP_CONFIG_LOCATION);
+            StreamReader sr = new StreamReader(programExePathFolder + Constants.APP_CONFIG_LOCATION);
             try
             {
-                while (!f.EndOfStream)
+                while (!sr.EndOfStream)
                 {
-                    string line = f.ReadLine();
-                    if (line.StartsWith("//"))
+                    string line = sr.ReadLine();
+                    if (line.StartsWith("//") || line == "" || line == Environment.NewLine)
                         continue;
 
                     //Note(Eli): This LINQ will only split the line at whitespace OUTSIDE of quotation marks... I think.
                     List<string> split = line.Split('"')
-                        .Select((element, index) => index % 2 == 0                                     // If even index
-                            ? element.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)    // Split the item
-                            : new string[] { element })                                              // Keep the entire item
+                        .Select((element, index) => index % 2 == 0
+                            ? element.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                            : new string[] { element })
                         .SelectMany(element => element).ToList();
 
                     for (int i = 0; i < split.Count; i++)
@@ -273,90 +283,101 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
                     }
 
 
-                    for (int i = 0; i < split.Count; i++)
+                    var word = split[0].ToLower();
+                    if (word.Equals(nameof(IsEnabled).ToLower()))
                     {
-                        var word = split[i].ToLower();
-                        if (word.Equals("isenabled"))
+                        try
                         {
-                            try
-                            {
-                                IsEnabled = Convert.ToBoolean(split[i + 1].ToLower());
-                            }
-                            catch (IndexOutOfRangeException)
-                            {
-                                log("ERROR: CFG is in an invalid format and cannot be read.\nLine: " + line);
-                                IsEnabled = false;
-                            }
+                            IsEnabled = Convert.ToBoolean(split[1].ToLower());
                         }
-                        else if (word.Equals("desktopthemepath"))
+                        catch (IndexOutOfRangeException)
                         {
-                            try
-                            {
-                                DesktopThemePath = split[i + 1].ToLower();
-                                string[] splitTheme = DesktopThemePath.Split('\\');
-                                DesktopThemeName = HelperFunc.UpperCaseFirstChar(splitTheme[splitTheme.Length - 1].Replace(".theme", ""));
-                            }
-                            catch (IndexOutOfRangeException)
-                            {
-                                log("ERROR: CFG is in an invalid format and cannot be read.\nLine: " + line);
-                            }
+                            FileLogger.Log("ERROR: CFG is in an invalid format and cannot be read.\nLine: " + line);
+                            IsEnabled = false;
                         }
-                        else if (word.Equals("gamethemepath"))
+                    }
+                    else if (word.Equals(nameof(DesktopThemePath).ToLower()))
+                    {
+                        try
                         {
-                            try
-                            {
-                                GameThemePath = split[i + 1].ToLower();
-                                string[] splitTheme = GameThemePath.Split('\\');
-                                GameThemeName = HelperFunc.UpperCaseFirstChar(splitTheme[splitTheme.Length - 1].Replace(".theme", ""));
-                            }
-                            catch (IndexOutOfRangeException)
-                            {
-                                log("ERROR: CFG is in an invalid format and cannot be read.\nLine: " + line);
-                            }
+                            DesktopThemePath = split[1].ToLower();
+                            string[] splitTheme = DesktopThemePath.Split('\\');
+                            DesktopThemeName = HelperFunc.UpperCaseFirstChar(splitTheme[splitTheme.Length - 1].Replace(".theme", ""));
                         }
-                        else if (word.StartsWith("hotkey{"))
+                        catch (IndexOutOfRangeException)
                         {
-                            try
-                            {
-                                //using the split line stored in the variable 'split':
-                                //index 0 should be "Hotkey{" which is our identifier
-                                //index 1 should be the id of the key to assign.
-                                //index 2 should be the modifier of the key.
-                                //index 3 should be the key itself as a string.
-                                //index 4 should be the string path to the theme which will be activated.
-                                //index 5 should be the string path to the second theme or null.
+                            FileLogger.Log("ERROR: CFG is in an invalid format and cannot be read.\nLine: " + line);
+                        }
+                    }
+                    else if (word.Equals(nameof(GameThemePath).ToLower()))
+                    {
+                        try
+                        {
+                            GameThemePath = split[1].ToLower();
+                            string[] splitTheme = GameThemePath.Split('\\');
+                            GameThemeName = HelperFunc.UpperCaseFirstChar(splitTheme[splitTheme.Length - 1].Replace(".theme", ""));
+                        }
+                        catch (IndexOutOfRangeException)
+                        {
+                            FileLogger.Log("ERROR: CFG is in an invalid format and cannot be read.\nLine: " + line);
+                        }
+                    }
+                    else if (word.Equals(nameof(ShouldCleanupLogs).ToLower()))
+                    {
+                        try
+                        {
+                            ShouldCleanupLogs = Convert.ToBoolean(split[1]);
+                        }
+                        catch (IndexOutOfRangeException)
+                        {
+                            FileLogger.Log("ERROR: CFG is in an invalid format and cannot be read.\nLine: " + line);
+                        }
+                        catch (FormatException)
+                        {
+                            FileLogger.Log("ERROR: CFG is in an invalid format and cannot be read.\nLine: " + line);
+                        }
+                    }
+                    else if (word.StartsWith("hotkey{"))
+                    {
+                        try
+                        {
+                            //using the split line stored in the variable 'split':
+                            //index 0 should be "Hotkey{" which is our identifier
+                            //index 1 should be the id of the key to assign.
+                            //index 2 should be the modifier of the key.
+                            //index 3 should be the key itself as a string.
+                            //index 4 should be the string path to the theme which will be activated.
+                            //index 5 should be the string path to the second theme or null.
 
-                                try 
-                                {
-                                    //Add hotkey to global hotkey list.
-                                    HotKeys.Add(new HotKey(
-                                        Convert.ToInt32(split[1]),
-                                        Convert.ToInt32(split[2]),
-                                        (Keys)Enum.Parse(typeof(Keys), split[3], false)
-                                        ), new ThemePathContainer(split[4], (split[5] == "null") ? "" : split[5]));
-                                }
-                                catch (Exception e)
-                                {
-                                    if (e is ArgumentNullException || e is ArgumentException || e is OverflowException)
-                                    {
-                                        log("ERROR: CFG is in an invalid format and cannot be read.\nLine: " + line);
-                                    }
-                                    else
-                                    {
-                                        throw;
-                                    }
-                                }
-                            }
-                            catch (IndexOutOfRangeException)
+                            try 
                             {
-                                log("ERROR: CFG is in an invalid format and cannot be read.\nLine: " + line);
+                                //Add hotkey to global hotkey list.
+                                HotKeys.Add(new HotKey(
+                                    Convert.ToInt32(split[1]),
+                                    Convert.ToInt32(split[2]),
+                                    (Keys)Enum.Parse(typeof(Keys), split[3], false)
+                                    ), new ThemePathContainer(split[4], (split[5] == "null") ? "" : split[5]));
+                            }
+                            catch (Exception e)
+                            {
+                                if (e is ArgumentNullException || e is ArgumentException || e is OverflowException)
+                                {
+                                    FileLogger.Log("ERROR: CFG is in an invalid format and cannot be read.\nLine: " + line);
+                                }
+                                else
+                                {
+                                    throw;
+                                }
                             }
                         }
-                        else
+                        catch (IndexOutOfRangeException)
                         {
-                            //TODO: Look into why this isn't working.
-                            log("ERROR: CFG is in an invalid format and cannot be read.\nLine: " + line);
+                            FileLogger.Log("ERROR: CFG is in an invalid format and cannot be read.\nLine: " + line);
                         }
+                    }
+                    else
+                    {
+                        FileLogger.Log("ERROR: CFG is in an invalid format and cannot be read.\nLine: " + line);
                     }
                 }
             }
@@ -369,7 +390,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             }
             finally
             {
-                f.Close();
+                sr.Close();
             }
 
             logStatus();
@@ -383,15 +404,16 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             try
             {
                 sw.WriteLine("//Note to those reading:\n//Modifying this file could result in the breaking of your config.\n");
-                sw.WriteLine("IsEnabled " + HelperFunc.CreateWhiteSpace(8) + "\"" + IsEnabled.ToString() + "\"");
+                sw.WriteLine(nameof(IsEnabled) + HelperFunc.CreateWhiteSpace(9) + "\"" + IsEnabled.ToString() + "\"");
+                sw.WriteLine(nameof(ShouldCleanupLogs) + HelperFunc.CreateWhiteSpace(1) + "\"" + ShouldCleanupLogs.ToString() + "\"");
 
                 if (DesktopThemePath != null)
                 {
-                    sw.WriteLine("DesktopThemePath " + HelperFunc.CreateWhiteSpace(4) + "\"" + DesktopThemePath + "\"");
+                    sw.WriteLine(nameof(DesktopThemePath) + HelperFunc.CreateWhiteSpace(5) + "\"" + DesktopThemePath + "\"");
                 }
                 if (GameThemePath != null)
                 {
-                    sw.WriteLine("GameThemePath " + HelperFunc.CreateWhiteSpace(8) + "\"" + GameThemePath + "\"");
+                    sw.WriteLine(nameof(GameThemePath) + HelperFunc.CreateWhiteSpace(9) + "\"" + GameThemePath + "\"");
                 }
 
                 if (HotKeys != null)
@@ -439,7 +461,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
                     bool running = csgoIsRunning();
                     if (running)
                     {
-                        if (shouldChangeGameTheme)
+                        if (ShouldChangeGameTheme)
                         {
                             if (GameThemePath == null)
                             {
@@ -449,8 +471,8 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
                             {
                                 changeTheme(GameThemePath);
                             }
-                            shouldChangeGameTheme = false;
-                            shouldChangeDeskTheme = true;
+                            ShouldChangeGameTheme = false;
+                            ShouldChangeDeskTheme = true;
 
                             Thread.Sleep(500); //Wait so we don't alt tab to fast.
                             altTabIntoCSGO();
@@ -458,7 +480,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
                     }
                     else
                     {
-                        if (shouldChangeDeskTheme)
+                        if (ShouldChangeDeskTheme)
                         {
                             if (DesktopThemePath == null)
                             {
@@ -468,8 +490,8 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
                             {
                                 changeTheme(DesktopThemePath);
                             }
-                            shouldChangeGameTheme = true;
-                            shouldChangeDeskTheme = false;
+                            ShouldChangeGameTheme = true;
+                            ShouldChangeDeskTheme = false;
                         }
                     }          
                 }
@@ -522,7 +544,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             logStatus();
         }
 
-        private bool csgoIsRunning()
+        private static bool csgoIsRunning()
         {
             Process[] Processes = Process.GetProcesses();
             foreach (Process proc in Processes)
@@ -538,7 +560,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             return false;
         }
 
-        private void execCMDThemeChange(string PathToFile)
+        private static void execCMDThemeChange(string PathToFile)
         {
             //Note(Eli): PathToFile should be a full path from the C: directory to the .theme file.
             ProcessStartInfo startInfo = new ProcessStartInfo();
@@ -599,7 +621,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             }
         }
 
-        private void altTabIntoCSGO()
+        private static void altTabIntoCSGO()
         {
             if (Process.GetCurrentProcess().ProcessName.Equals("csgo")) return;
 
@@ -612,7 +634,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
                     if (proc.ProcessName.Equals(Constants.CSGO_PROC_NAME)) return;
                     else
                     {
-                        IntPtr csgohWnd = getCSGOhWnd();
+                        IntPtr csgohWnd = GetCSGOhWnd();
                         if (csgohWnd == IntPtr.Zero)
                             return;
 
@@ -623,11 +645,12 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             
         }
 
-        private IntPtr getCSGOhWnd()
+        private static IntPtr GetCSGOhWnd()
         {
-            foreach (Process proc in Process.GetProcesses())
+            //TODO: change from foreach to if or something. foreach doesn't really make sense here but it does work.
+            foreach (Process proc in Process.GetProcesses().Where(proc => proc.ProcessName.Equals(Constants.CSGO_PROC_NAME)))
             {
-                if (proc.ProcessName.Equals(Constants.CSGO_PROC_NAME)) return proc.MainWindowHandle;
+                return proc.MainWindowHandle;
             }
 
             return IntPtr.Zero;
@@ -704,10 +727,10 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             {
                 HotKeyDataHolder hkdh;
                 ThemeDataHolder tdh;
-                HotKeyPickerForm.HotKeyPickerForm hkpf = new HotKeyPickerForm.HotKeyPickerForm(&hkdh, &tdh, HotKeys);
+                HotKeyPickerForm hkpf = new HotKeyPickerForm(&hkdh, &tdh, HotKeys);
                 Form casted = hkpf;
                 HelperFunc.CreateFormStartPosition(ref casted, this);
-                hkpf = (HotKeyPickerForm.HotKeyPickerForm)casted;
+                hkpf = (HotKeyPickerForm)casted;
 
                 DialogResult result = hkpf.ShowDialog();
 
@@ -733,10 +756,10 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             unsafe
             {
                 HotKeyDataHolder hkdh;
-                HotKeyRemovalForm.HotKeyRemovalForm hkrf = new HotKeyRemovalForm.HotKeyRemovalForm(&hkdh, HotKeys);
+                HotKeyRemovalForm hkrf = new HotKeyRemovalForm(&hkdh, HotKeys);
                 Form casted = hkrf;
                 HelperFunc.CreateFormStartPosition(ref casted, this);
-                hkrf = (HotKeyRemovalForm.HotKeyRemovalForm)casted;
+                hkrf = (HotKeyRemovalForm)casted;
 
                 DialogResult result = hkrf.ShowDialog();
                 switch (result)
@@ -754,6 +777,18 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             }
 
             logStatus();
+        }
+
+        private void btnOpenAdvanced_Click(object sender, EventArgs e)
+        {
+            AdvancedUserSettingsForm f = new AdvancedUserSettingsForm(ShouldCleanupLogs);
+            DialogResult result = f.ShowDialog();
+
+            if (result == DialogResult.OK)
+            {
+                ShouldCleanupLogs = f.CleanLogs;
+                //TODO: Add more.
+            }
         }
 
         private static void DebugRunTests()

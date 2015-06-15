@@ -16,16 +16,17 @@
 
 using System;
 
-namespace CSGO_Theme_Control.Base_Classes.Themes
+namespace CSGO_Theme_Control.Base_Classes.Assertions
 {
     /// <summary>
-    /// Exception thrown when a provided Theme does not exist within a given ThemePathContainer instance.
-    /// <seealso cref="ThemePathContainer"/>
+    /// Exception thrown when an assertion fails.
     /// </summary>
-    public class ThemeDoesNotExistException : Exception
+    public class AssertionFailedException : Exception
     {
-        public ThemeDoesNotExistException(){}
-        public ThemeDoesNotExistException(string msg) : base(msg){}
-        public ThemeDoesNotExistException(string msg, Exception inner) : base(msg, inner){}
+        private const string ASSERTION_FAILED = "Assertion Failed: ";
+
+        public AssertionFailedException()                               : base(ASSERTION_FAILED + Environment.StackTrace) { }
+        public AssertionFailedException(string msg)                     : base(ASSERTION_FAILED + msg + Environment.NewLine + Environment.StackTrace) { }
+        public AssertionFailedException(string msg, Exception inner)    : base(ASSERTION_FAILED + msg + Environment.NewLine + Environment.StackTrace, inner) { }
     }
 }

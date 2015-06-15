@@ -61,6 +61,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             this.btnClearThemes = new System.Windows.Forms.Button();
             this.btnPickHotkeys = new System.Windows.Forms.Button();
             this.btnRemoveHotkey = new System.Windows.Forms.Button();
+            this.btnOpenAdvanced = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.contextMenu.SuspendLayout();
             this.SuspendLayout();
@@ -202,11 +203,22 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             this.btnRemoveHotkey.UseVisualStyleBackColor = true;
             this.btnRemoveHotkey.Click += new System.EventHandler(this.btnRemoveHotkey_Click);
             // 
+            // btnOpenAdvanced
+            // 
+            this.btnOpenAdvanced.Location = new System.Drawing.Point(233, 441);
+            this.btnOpenAdvanced.Name = "btnOpenAdvanced";
+            this.btnOpenAdvanced.Size = new System.Drawing.Size(115, 23);
+            this.btnOpenAdvanced.TabIndex = 10;
+            this.btnOpenAdvanced.Text = "Advanced Options";
+            this.btnOpenAdvanced.UseVisualStyleBackColor = true;
+            this.btnOpenAdvanced.Click += new System.EventHandler(this.btnOpenAdvanced_Click);
+            // 
             // ThemeControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(360, 468);
+            this.Controls.Add(this.btnOpenAdvanced);
             this.Controls.Add(this.btnRemoveHotkey);
             this.Controls.Add(this.btnPickHotkeys);
             this.Controls.Add(this.btnClearThemes);
@@ -246,6 +258,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
         private System.Windows.Forms.Button btnClearThemes;
         private System.Windows.Forms.Button btnPickHotkeys;
         private System.Windows.Forms.Button btnRemoveHotkey;
+        private System.Windows.Forms.Button btnOpenAdvanced;
     }
 }
 

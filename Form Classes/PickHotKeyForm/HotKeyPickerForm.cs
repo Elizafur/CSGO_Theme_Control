@@ -23,9 +23,9 @@ using CSGO_Theme_Control.Base_Classes.Constants;
 using CSGO_Theme_Control.Base_Classes.Helper;
 using CSGO_Theme_Control.Base_Classes.HotKey;
 using CSGO_Theme_Control.Base_Classes.Themes;
-using CSGO_Theme_Control.Form_Classes.HotKeyPickerForm.HotKeyDialogForm;
+using CSGO_Theme_Control.Form_Classes.PickHotKeyForm.HotKeyDialogForm;
 
-namespace CSGO_Theme_Control.Form_Classes.HotKeyPickerForm
+namespace CSGO_Theme_Control.Form_Classes.PickHotKeyForm
 {
     /// <summary>
     /// An unsafe class used to create new global HotKeys.

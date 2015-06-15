@@ -20,6 +20,7 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using CSGO_Theme_Control.Base_Classes.Helper;
+using CSGO_Theme_Control.Form_Classes.CloseAppForm;
 using CSGO_Theme_Control.Form_Classes.ThemeControlForm;
 
 namespace CSGO_Theme_Control.Base_Classes.Logger
@@ -54,7 +55,7 @@ namespace CSGO_Theme_Control.Base_Classes.Logger
             return GetLogDirectory() + "CSGO_THEME_CONTROL_" + thrown + Date + extension;
         }
 
-        public static void Log(string context, bool shouldThrow=true)
+        public static void Log(string context, bool shouldThrow=false)
         {
             string fullpath = CreateLogFullPath(shouldThrow);
 
@@ -77,10 +78,13 @@ namespace CSGO_Theme_Control.Base_Classes.Logger
             finally
             {
                 sw.Close();
-
-                if (shouldThrow)
-                    Application.Exit();
             }
+
+            if (!shouldThrow)
+                return;
+
+            AppMustCloseForm errorDisplay = new AppMustCloseForm("Due to an internal error the application must close.\nPlease check your log folder at " + GetLogDirectory() + " for a details pertaining to the crash.");
+            errorDisplay.ShowDialog();
         }
 
         public static void CleanLogsFolder(bool cleanupThrownLogs=false)

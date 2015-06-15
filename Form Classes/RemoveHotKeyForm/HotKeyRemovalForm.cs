@@ -20,7 +20,7 @@ using System.Windows.Forms;
 using CSGO_Theme_Control.Base_Classes.HotKey;
 using CSGO_Theme_Control.Base_Classes.Themes;
 
-namespace CSGO_Theme_Control.Form_Classes.HotKeyRemovalForm
+namespace CSGO_Theme_Control.Form_Classes.RemoveHotKeyForm
 {
     /// <summary>
     /// An unsafe class used to remove global hotkeys.

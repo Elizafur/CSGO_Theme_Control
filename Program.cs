@@ -15,7 +15,7 @@
 
 using System;
 using System.Windows.Forms;
-using CSGO_Theme_Control.Base_Classes.AssertionClass;
+using CSGO_Theme_Control.Base_Classes.Assertions;
 using CSGO_Theme_Control.Base_Classes.Logger;
 using CSGO_Theme_Control.Form_Classes.ThemeControlForm;
 
@@ -60,6 +60,17 @@ namespace CSGO_Theme_Control
                     {
                         throw new NotImplementedException("Class: " + args[1] + " has not been implemented in the tester yet.");
                     }
+
+                    //General Tests.
+                    bool AllGood = true;
+                    try
+                    {
+                        Assert.Bool(1 == 2);
+                        AllGood = false;        //Should not reach this code.
+                    }
+                    catch (AssertionFailedException){}
+
+                    FileLogger.Log($"Assertions are working {(AllGood ? "properly" : "badly")}.");
                 }
             }
         }

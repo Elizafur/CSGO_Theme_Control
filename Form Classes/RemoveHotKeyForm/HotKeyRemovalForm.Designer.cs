@@ -13,7 +13,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with CSGO Theme Control.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace CSGO_Theme_Control.Form_Classes.HotKeyRemovalForm
+namespace CSGO_Theme_Control.Form_Classes.RemoveHotKeyForm
 {
     partial class HotKeyRemovalForm
     {

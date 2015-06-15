@@ -18,7 +18,7 @@ using System;
 using System.Windows.Forms;
 using CSGO_Theme_Control.Base_Classes.Constants;
 
-namespace CSGO_Theme_Control.Form_Classes.HotKeyPickerForm.HotKeyDialogForm
+namespace CSGO_Theme_Control.Form_Classes.PickHotKeyForm.HotKeyDialogForm
 {
     /// <summary>
     /// A Form used to pick a new global hotkey.
