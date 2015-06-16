@@ -25,7 +25,7 @@ using CSGO_Theme_Control.Form_Classes.ThemeControlForm;
 
 namespace CSGO_Theme_Control.Base_Classes.Logger
 {
-    public sealed class FileLogger
+    public static class FileLogger
     {
         public static string THROWN_LOG_EXT = ".crashlog";
         public static string NORMAL_LOG_EXT = ".log";
@@ -121,7 +121,7 @@ namespace CSGO_Theme_Control.Base_Classes.Logger
 
             bool cleanupThrownLogs  = (lOptions.Contains(LoggerSettings.CleanupOptions.CLEANUP_THROWN_LOGS));
             bool cleanupBasedOnDate = (lOptions.Contains(LoggerSettings.CleanupOptions.CLEANUP_LOGS_ONLY_IF_BEFORE_TODAY));
-            string[] logsBeforeToday = FindAllLogsCreatedBefore(DateTime.Now);
+            string[] logsBeforeToday = FindAllLogsCreatedBefore(DateTime.Today);
 
             foreach (string file in files)
             {
