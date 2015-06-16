@@ -17,8 +17,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
-using System.Windows.Forms;
 using CSGO_Theme_Control.Base_Classes.Helper;
 using CSGO_Theme_Control.Form_Classes.CloseAppForm;
 using CSGO_Theme_Control.Form_Classes.ThemeControlForm;
@@ -43,7 +43,7 @@ namespace CSGO_Theme_Control.Base_Classes.Logger
             string Date;
             if (logThrown)    //Create a specific log if we are exiting the application.
             {
-                Date = (DateTime.Now.Year.ToString() + "-" + DateTime.Now.Month.ToString() + "-" + DateTime.Now.Day.ToString() + "_" + DateTime.Now.TimeOfDay.ToString()).Replace(":", "-");
+                Date = (DateTime.Now.Year.ToString() + "-" + DateTime.Now.Month.ToString() + "-" + DateTime.Now.Day.ToString() + "-" + DateTime.Now.TimeOfDay.ToString()).Replace(":", "-");
                 Date = Date.Remove(Date.LastIndexOf(".", StringComparison.Ordinal));
                 Date += DateTime.Now.ToString("tt");
             }
@@ -53,6 +53,33 @@ namespace CSGO_Theme_Control.Base_Classes.Logger
             }
 
             return GetLogDirectory() + "CSGO_THEME_CONTROL_" + thrown + Date + extension;
+        }
+
+        public static string[] FindAllLogsCreatedBefore(DateTime time)
+        {
+            string[] allFiles = Directory.GetFiles(GetLogDirectory());
+
+            /*
+            foreach (string file in allFiles)
+            {
+                string dateTimeStringWithExtension = file.Substring(file.LastIndexOf("_", StringComparison.Ordinal));
+                string dateTimeString = dateTimeStringWithExtension.Remove(dateTimeStringWithExtension.LastIndexOf(".", StringComparison.Ordinal));
+
+                Int64 ticks = Convert.ToDateTime(dateTimeString).Ticks;
+                if (ticks < time.Ticks)
+                    filesBeforeDate.Add(file);
+            }
+            return filesBeforeDate.ToArray();
+
+            //Note(Eli): The LINQ below used to be this. Im leaving the LINQ in simply because I'm amazed Resharper came up with it even though its barely readable.
+            */
+
+            //TODO(High): Could throw a FormatException. Need to handle it.
+            return (from file in allFiles
+                    let dateTimeStringWithExtension = file.Substring(file.LastIndexOf("_", StringComparison.Ordinal) + 1)
+                    let dateTimeString = dateTimeStringWithExtension.Remove(dateTimeStringWithExtension.LastIndexOf(".", StringComparison.Ordinal))
+                    let ticks = Convert.ToDateTime(dateTimeString).Ticks
+                    where ticks < time.Ticks select file).ToArray();
         }
 
         public static void Log(string context, bool shouldThrow=false)
@@ -87,19 +114,43 @@ namespace CSGO_Theme_Control.Base_Classes.Logger
             errorDisplay.ShowDialog();
         }
 
-        public static void CleanLogsFolder(bool cleanupThrownLogs=false)
+        public static void CleanLogsFolder(params LoggerSettings.CleanupOptions[] lOptions)
         {
             string logDirectory = GetLogDirectory();
             string[] files      = Directory.GetFiles(logDirectory);
 
+            bool cleanupThrownLogs  = (lOptions.Contains(LoggerSettings.CleanupOptions.CLEANUP_THROWN_LOGS));
+            bool cleanupBasedOnDate = (lOptions.Contains(LoggerSettings.CleanupOptions.CLEANUP_LOGS_ONLY_IF_BEFORE_TODAY));
+            string[] logsBeforeToday = FindAllLogsCreatedBefore(DateTime.Now);
+
             foreach (string file in files)
             {
+                bool fileMarkedForDeletion = false;
                 string ext = HelperFunc.GetFileExtension(file);
-                if (cleanupThrownLogs && (ext == NORMAL_LOG_EXT || ext == THROWN_LOG_EXT))
-                    File.Delete(file);
+
+                if (ext != NORMAL_LOG_EXT && ext != THROWN_LOG_EXT)
+                    continue;
+
+                //TODO(Medium): Fix this copy paste job. It works but the fact Im copy pasting code is bad news.
+                if (cleanupBasedOnDate && logsBeforeToday.Contains(file))
+                {
+                    if (cleanupThrownLogs)
+                        fileMarkedForDeletion = true;
+                    else
+                        if (ext != THROWN_LOG_EXT)
+                            fileMarkedForDeletion = true;
+                }
                 else
-                    if (ext == NORMAL_LOG_EXT)
-                        File.Delete(file);
+                {
+                    if(cleanupThrownLogs)
+                        fileMarkedForDeletion = true;
+                    else
+                        if (ext != THROWN_LOG_EXT)
+                            fileMarkedForDeletion = true;
+                }
+
+                if (fileMarkedForDeletion)
+                    File.Delete(file);
             }
         }
 

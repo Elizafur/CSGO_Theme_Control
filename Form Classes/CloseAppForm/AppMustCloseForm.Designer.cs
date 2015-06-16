@@ -35,8 +35,10 @@
             // 
             // txtDisplay
             // 
+            this.txtDisplay.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.txtDisplay.Location = new System.Drawing.Point(12, 12);
             this.txtDisplay.Name = "txtDisplay";
+            this.txtDisplay.ReadOnly = true;
             this.txtDisplay.Size = new System.Drawing.Size(259, 193);
             this.txtDisplay.TabIndex = 0;
             this.txtDisplay.Text = "";

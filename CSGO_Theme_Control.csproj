@@ -79,6 +79,7 @@
     <Compile Include="Base Classes\Logger\FileLogger.cs" />
     <Compile Include="Base Classes\Helper\HelperFunc.cs" />
     <Compile Include="Base Classes\HotKey\HotKey.cs" />
+    <Compile Include="Base Classes\Logger\LoggerSettings.cs" />
     <Compile Include="Base Classes\Themes\ThemeDataHolder.cs" />
     <Compile Include="Base Classes\Themes\ThemeDoesNotExistException.cs" />
     <Compile Include="Form Classes\AdvancedSettingsForm\AdvancedUserSettingsForm.cs">

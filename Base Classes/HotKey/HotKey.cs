@@ -95,7 +95,7 @@ namespace CSGO_Theme_Control.Base_Classes.HotKey
         public override int GetHashCode()
         {
 /*
-            TODO: Figure out if this is actually needed.
+            TODO(Low): Figure out if this is actually needed.
             if (this == null)
                 return 0;
 */

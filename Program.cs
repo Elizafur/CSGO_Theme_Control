@@ -50,7 +50,7 @@ namespace CSGO_Theme_Control
                         FileLogger.CleanLogsFolder();
                         Assert.NoFilesWithExtension(FileLogger.NORMAL_LOG_EXT, FileLogger.GetLogDirectory());
 
-                        FileLogger.CleanLogsFolder(true);
+                        FileLogger.CleanLogsFolder(LoggerSettings.CleanupOptions.CLEANUP_THROWN_LOGS);
                         Assert.NoFilesWithExtension(FileLogger.THROWN_LOG_EXT, FileLogger.GetLogDirectory());
 
                         FileLogger.Log("Test Export", false);

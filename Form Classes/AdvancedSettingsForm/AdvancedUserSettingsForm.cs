@@ -6,7 +6,7 @@ namespace CSGO_Theme_Control.Form_Classes.AdvancedSettingsForm
     public partial class AdvancedUserSettingsForm : Form
     {
         public bool CleanLogs;
-        //TODO: Expand settings.
+        //TODO(Medium): Expand settings.
 
         public AdvancedUserSettingsForm(bool preExistingCleanLogsSetting)
         {

@@ -52,7 +52,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
 
         private const string    EXE_NAME                = "CSGO_Theme_Control.exe";
         private const string    APP_NAME                = "CSGO_THEME_CONTROL";
-        public  const string    VERSION_NUM             = "1.2.0.0";
+        public  const string    VERSION_NUM             = "1.2.5.8";
         public  const string    LOG_DIRECTORY           = "log";
 
         private Thread               t_IsCSGORunning;
@@ -169,7 +169,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
 
             if (ShouldCleanupLogs)
             {
-                FileLogger.CleanLogsFolder();
+                FileLogger.CleanLogsFolder(LoggerSettings.CleanupOptions.CLEANUP_LOGS_ONLY_IF_BEFORE_TODAY); //TODO(High): Once we add new and more in depth settings for this we should change this.
             }
         }
 
@@ -228,7 +228,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             );
 
             log("Hotkeys<Key, Theme>:" + HelperFunc.CreateWhiteSpace(4) + "{");
-            //TODO: Do I even need to check if the Count is > 0 here?
+            //TODO(Low): Do I even need to check if the Count is > 0 here?
             if (HotKeys != null && HotKeys.Count > 0)
             {
                 foreach (KeyValuePair<HotKey, ThemePathContainer> entry in HotKeys)
@@ -647,7 +647,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
 
         private static IntPtr GetCSGOhWnd()
         {
-            //TODO: change from foreach to if or something. foreach doesn't really make sense here but it does work.
+            //TODO(Low): change from foreach to if or something. foreach doesn't really make sense here but it does work.
             foreach (Process proc in Process.GetProcesses().Where(proc => proc.ProcessName.Equals(Constants.CSGO_PROC_NAME)))
             {
                 return proc.MainWindowHandle;
@@ -787,7 +787,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             if (result == DialogResult.OK)
             {
                 ShouldCleanupLogs = f.CleanLogs;
-                //TODO: Add more.
+                //TODO(Medium): Be sure to update this if we add more advanced settings in the future..
             }
         }
 
