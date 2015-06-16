@@ -587,7 +587,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             }
         }
 
-        private void changeTheme(bool useClassic)
+        private static void changeTheme(bool useClassic)
         {
             string PATH;
             if (useClassic)
@@ -606,7 +606,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
         }
 
         //Used for custom themes.
-        private void changeTheme(string themePath)
+        private static void changeTheme(string themePath)
         {
             string PATH = themePath;
 
