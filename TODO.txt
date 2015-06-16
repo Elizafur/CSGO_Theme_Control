@@ -1,5 +1,7 @@
 create a simple website?
 
-implement FileLogger CSV export and FileLogger Cleanup.
+implement FileLogger CSV export somehow? or don't as users really dont need it.
+
+make user settings an enum so that when we eventually add more we dont have 10 bools to pass to every function.
 
 update readme with regards to .NET framework requirements
