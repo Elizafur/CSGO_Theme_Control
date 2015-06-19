@@ -74,11 +74,12 @@ namespace CSGO_Theme_Control.Base_Classes.Logger
             //Note(Eli): The LINQ below used to be this. Im leaving the LINQ in simply because I'm amazed Resharper came up with it even though its barely readable.
             */
 
-            //TODO(High): Could throw a FormatException. Need to handle it.
             return (from file in allFiles
                     let dateTimeStringWithExtension = file.Substring(file.LastIndexOf("_", StringComparison.Ordinal) + 1)
-                    let dateTimeString = dateTimeStringWithExtension.Remove(dateTimeStringWithExtension.LastIndexOf(".", StringComparison.Ordinal))
-                    let ticks = Convert.ToDateTime(dateTimeString).Ticks
+                    let dateTimeString              = dateTimeStringWithExtension
+                                                        .Remove(dateTimeStringWithExtension
+                                                        .LastIndexOf(".", StringComparison.Ordinal))
+                    let ticks                       = HelperFunc.TryConvertToDateTime(dateTimeString).Ticks
                     where ticks < time.Ticks select file).ToArray();
         }
 
@@ -110,7 +111,7 @@ namespace CSGO_Theme_Control.Base_Classes.Logger
             if (!shouldThrow)
                 return;
 
-            AppMustCloseForm errorDisplay = new AppMustCloseForm("Due to an internal error the application must close.\nPlease check your log folder at " + GetLogDirectory() + " for a details pertaining to the crash.");
+            AppMustCloseForm errorDisplay = new AppMustCloseForm("Due to an internal error the application must close.\nPlease check your log folder at " + GetLogDirectory() + " for details pertaining to the crash.");
             errorDisplay.ShowDialog();
         }
 
@@ -198,8 +199,9 @@ namespace CSGO_Theme_Control.Base_Classes.Logger
                                 break;
 
                             default:
-                                char[] c = new char[1000];
-                                sr.ReadBlock(c, 0, 999);
+                                //TODO:(High) Make sure this is safe to do and will not explode.
+                                char[] c = new char[sr.BaseStream.Length];
+                                sr.ReadBlock(c, 0, (int)sr.BaseStream.Length - 1);
                                 throw new FileFormatException("Log was unreadable: " + new string(c));
                         }
 

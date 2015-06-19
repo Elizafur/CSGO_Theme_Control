@@ -218,6 +218,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             string desktopT = (DesktopThemePath == null) ? "Aero" : DesktopThemeName;
             string gameT    = (GameThemePath == null) ? "High Contrast White" : GameThemeName;
 
+            //Note(Eli) Magic numbers for CreateWhiteSpace make these values line up in a monospaced font.
             log(
                 "Version:"       + HelperFunc.CreateWhiteSpace(7) + VERSION_NUM,
                 "Is Enabled:"    + HelperFunc.CreateWhiteSpace(4) + IsEnabled,
@@ -789,6 +790,8 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
                 ShouldCleanupLogs = f.CleanLogs;
                 //TODO(Medium): Be sure to update this if we add more advanced settings in the future..
             }
+
+            logStatus();
         }
 
         private static void DebugRunTests()

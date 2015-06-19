@@ -120,5 +120,24 @@ namespace CSGO_Theme_Control.Base_Classes.Helper
             else
                 child.Location = new Point(parent.Left - child.Width, parent.Top);
         }
+
+        /// <summary>
+        /// Attempts to convert the specified argument to a DateTime format. If the conversion fails DateTime.MaxValue is returned.
+        /// </summary>
+        /// <seealso cref="DateTime.MaxValue"/>
+        /// <typeparam name="T">Any type convertible to datetime.</typeparam>
+        /// <param name="toConvert">Value to convert</param>
+        /// <returns>A properly converted datetime or DateTime.MaxValue if conversion fails.</returns>
+        public static DateTime TryConvertToDateTime<T>(T toConvert)
+        {
+            try
+            {
+                return Convert.ToDateTime(toConvert);
+            }
+            catch (FormatException)
+            {
+                return DateTime.MaxValue;
+            }
+        }
     }
 }

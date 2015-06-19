@@ -31,6 +31,11 @@ namespace CSGO_Theme_Control.Form_Classes.CloseAppForm
 
         private void btnOK_Click(object sender, EventArgs e)
         {
+            DialogResult = DialogResult.OK;
+        }
+
+        private void AppMustCloseForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
             Application.Exit();
         }
     }

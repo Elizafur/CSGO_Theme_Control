@@ -45,6 +45,7 @@
             // 
             // btnOK
             // 
+            this.btnOK.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnOK.Location = new System.Drawing.Point(150, 211);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(121, 38);
@@ -63,6 +64,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "AppMustCloseForm";
             this.Text = "Error";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AppMustCloseForm_FormClosing);
             this.ResumeLayout(false);
 
         }
