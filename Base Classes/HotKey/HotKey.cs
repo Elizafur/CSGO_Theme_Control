@@ -94,12 +94,6 @@ namespace CSGO_Theme_Control.Base_Classes.HotKey
         /// <returns>The hash code of an instance of class HotKey.</returns>
         public override int GetHashCode()
         {
-/*
-            TODO(Low): Figure out if this is actually needed.
-            if (this == null)
-                return 0;
-*/
-
             int hash = 11;
             hash += (hash * 4) + id.GetHashCode();
             hash += (hash * 4) + keyModifier.GetHashCode();

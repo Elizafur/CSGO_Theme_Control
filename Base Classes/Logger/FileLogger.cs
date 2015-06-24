@@ -21,6 +21,7 @@ using System.Linq;
 using System.Text;
 using CSGO_Theme_Control.Base_Classes.Helper;
 using CSGO_Theme_Control.Form_Classes.CloseAppForm;
+using CSGO_Theme_Control.Form_Classes.ErrorForm;
 using CSGO_Theme_Control.Form_Classes.ThemeControlForm;
 
 namespace CSGO_Theme_Control.Base_Classes.Logger
@@ -83,8 +84,11 @@ namespace CSGO_Theme_Control.Base_Classes.Logger
                     where ticks < time.Ticks select file).ToArray();
         }
 
-        public static void Log(string context, bool shouldThrow=false)
+        public static void Log(string context, params LoggerSettings.LogOptions[] lOptions)
         {
+            bool shouldThrow  = lOptions.Contains(LoggerSettings.LogOptions.SHOULD_THROW);
+            bool displayErorr = lOptions.Contains(LoggerSettings.LogOptions.DISPLAY_ERROR);
+
             string fullpath = CreateLogFullPath(shouldThrow);
 
             //If we are going to throw after writing it should not be appended.
@@ -97,6 +101,9 @@ namespace CSGO_Theme_Control.Base_Classes.Logger
                 sw.WriteLine("[CONTEXT]{");
                 sw.Flush();
                 sw.WriteLine(context);
+                sw.WriteLine("STACKTRACE:\n");
+                sw.Flush();
+                sw.WriteLine(Environment.StackTrace);
                 sw.WriteLine("}");
             }
             catch (Exception e)
@@ -109,7 +116,15 @@ namespace CSGO_Theme_Control.Base_Classes.Logger
             }
 
             if (!shouldThrow)
+            {
+                if (displayErorr)
+                {
+                    MinorErrorForm error = new MinorErrorForm(context);
+                    error.ShowDialog();
+                }
+
                 return;
+            }
 
             AppMustCloseForm errorDisplay = new AppMustCloseForm("Due to an internal error the application must close.\nPlease check your log folder at " + GetLogDirectory() + " for details pertaining to the crash.");
             errorDisplay.ShowDialog();
@@ -187,11 +202,11 @@ namespace CSGO_Theme_Control.Base_Classes.Logger
                                 break;
 
                             case("[DATE]"):
-                                sb.Append(HelperFunc.SurroundWith("\"", "[DATE]") + ", " + HelperFunc.SurroundWith("\"", lineAfterBrace.Replace("}", "")));
+                                sb.Append("[DATE]".SurroundWith("\"") + ", " + lineAfterBrace.Replace("}", "").SurroundWith("\""));
                                 break;
 
                             case("[VERSION]"):
-                                sb.Append(HelperFunc.SurroundWith("\"", "[VERSION]") + ", " + HelperFunc.SurroundWith("\"", lineAfterBrace.Replace("}", "")));
+                                sb.Append("[VERSION]".SurroundWith("\"") + ", " + lineAfterBrace.Replace("}", "").SurroundWith("\""));
                                 break;
 
                             case("[CONTEXT]"):

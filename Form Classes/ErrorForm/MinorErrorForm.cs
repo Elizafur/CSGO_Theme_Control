@@ -14,22 +14,21 @@
 //    You should have received a copy of the GNU General Public License
 //    along with CSGO Theme Control.  If not, see <http://www.gnu.org/licenses/>.
 
+using System.Windows.Forms;
 
-namespace CSGO_Theme_Control.Base_Classes.Logger
+namespace CSGO_Theme_Control.Form_Classes.ErrorForm
 {
-    public static class LoggerSettings
+    public partial class MinorErrorForm : Form
     {
-        public enum CleanupOptions
+        public MinorErrorForm(string errorMessage)
         {
-            CLEANUP_THROWN_LOGS,
-            CLEANUP_LOGS_ONLY_IF_BEFORE_TODAY
+            InitializeComponent();
+            lblError.Text = errorMessage;
         }
 
-        public enum LogOptions
+        private void btnOK_Click(object sender, System.EventArgs e)
         {
-            DISPLAY_ERROR,  //Note(Eli): This is only used in the event that the log is not being thrown. A thrown log will always display an error and close the app.
-            SHOULD_THROW
+            DialogResult = DialogResult.OK;
         }
-
     }
 }

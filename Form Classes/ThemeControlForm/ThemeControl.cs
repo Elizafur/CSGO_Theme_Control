@@ -28,6 +28,7 @@ using CSGO_Theme_Control.Base_Classes.Constants;
 using CSGO_Theme_Control.Base_Classes.Helper;
 using CSGO_Theme_Control.Base_Classes.HotKey;
 using CSGO_Theme_Control.Base_Classes.Logger;
+using static CSGO_Theme_Control.Base_Classes.Logger.LoggerSettings;
 using CSGO_Theme_Control.Base_Classes.Themes;
 using CSGO_Theme_Control.Form_Classes.AdvancedSettingsForm;
 using CSGO_Theme_Control.Form_Classes.PickHotKeyForm;
@@ -110,16 +111,13 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             ReadConfig();
 
             //Register hotkeys.
-            if (HotKeys != null && HotKeys.Count > 0)
+            if (HotKeys != null)
                 foreach(KeyValuePair<HotKey, ThemePathContainer> entry in HotKeys)
                     RegisterHotKey(Handle, entry.Key.id, entry.Key.keyModifier, entry.Key.keyHashCode);
 
             //Check appropriate boxes on forms that correlate with user settings.
             chkEnabled.Checked = IsEnabled;
-            if (rk_StartupKey.GetValue(APP_NAME) == null) 
-                RegistryBootWritten = false;
-            else 
-                RegistryBootWritten = true;
+            RegistryBootWritten = rk_StartupKey.GetValue(APP_NAME) != null;
 
             BootOnStart            = RegistryBootWritten;
             chkStartOnBoot.Checked = RegistryBootWritten;
@@ -163,13 +161,13 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
                     createBootStartup();
             }
 
-            if (HotKeys != null && HotKeys.Count > 0)
+            if (HotKeys != null)
                 foreach (KeyValuePair<HotKey, ThemePathContainer> entry in HotKeys)
                     UnregisterHotKey(Handle, entry.Key.id);
 
             if (ShouldCleanupLogs)
             {
-                FileLogger.CleanLogsFolder(LoggerSettings.CleanupOptions.CLEANUP_LOGS_ONLY_IF_BEFORE_TODAY); //TODO(High): Once we add new and more in depth settings for this we should change this.
+                FileLogger.CleanLogsFolder(LoggerSettings.CleanupOptions.CLEANUP_LOGS_ONLY_IF_BEFORE_TODAY);
             }
         }
 
@@ -194,7 +192,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
                 }
                 catch (Win32Exception e)
                 {
-                    FileLogger.Log($"File to theme could not be accessed.\nTheme: {pathToTheme}\n" + e.Message, false);
+                    FileLogger.Log($"File to theme could not be accessed.\nTheme: {pathToTheme}\n" + e.Message, LogOptions.DISPLAY_ERROR);
                 }
             }
         }
@@ -229,8 +227,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             );
 
             log("Hotkeys<Key, Theme>:" + HelperFunc.CreateWhiteSpace(4) + "{");
-            //TODO(Low): Do I even need to check if the Count is > 0 here?
-            if (HotKeys != null && HotKeys.Count > 0)
+            if (HotKeys != null)
             {
                 foreach (KeyValuePair<HotKey, ThemePathContainer> entry in HotKeys)
                 {
@@ -385,9 +382,9 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             catch (Exception e)
             {
                 if (e is IOException || e is OutOfMemoryException)
-                    FileLogger.Log("Could not read CFG file: " + e.Message, false);
+                    FileLogger.Log("Could not read CFG file: " + e.Message, LogOptions.DISPLAY_ERROR);
                 else
-                    FileLogger.Log("Unknown exception caught while reading config file." + e.Message, true);
+                    FileLogger.Log("Unknown exception caught while reading config file." + e.Message, LogOptions.SHOULD_THROW);
             }
             finally
             {
@@ -429,9 +426,9 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             catch (Exception e)
             {
                 if (e is IOException)
-                    FileLogger.Log("Could not read CFG file: " + e.Message, false);
+                    FileLogger.Log("Could not read CFG file: " + e.Message, LogOptions.DISPLAY_ERROR);
                 else
-                    FileLogger.Log("Unknown exception caught while reading config file." + e.Message, true);
+                    FileLogger.Log("Unknown exception caught while reading config file." + e.Message, LogOptions.SHOULD_THROW);
             }
             finally
             {
@@ -512,10 +509,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             IsEnabled = chkEnabled.Checked;
             if (!IsEnabled)
             {
-                if (t_IsCSGORunning != null)
-                {
-                    t_IsCSGORunning.Abort();
-                }
+                t_IsCSGORunning?.Abort();
             }
             else
             {
@@ -547,29 +541,20 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
 
         private static bool csgoIsRunning()
         {
-            Process[] Processes = Process.GetProcesses();
-            foreach (Process proc in Processes)
-            {
-                string name = proc.ProcessName;
-                
-                if (name.Equals(Constants.CSGO_PROC_NAME))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return Process.GetProcesses().Select(proc => proc.ProcessName).Any(name => name.Equals(Constants.CSGO_PROC_NAME));
         }
 
         private static void execCMDThemeChange(string PathToFile)
         {
             //Note(Eli): PathToFile should be a full path from the C: directory to the .theme file.
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            startInfo.FileName = "cmd.exe";
-            startInfo.Arguments = String.Format(Constants.CMD_CHANGE_THEME, PathToFile);
-            Process process = new Process();
-            process.StartInfo = startInfo;
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                WindowStyle = ProcessWindowStyle.Hidden,
+                FileName = "cmd.exe",
+                Arguments = String.Format(Constants.CMD_CHANGE_THEME, PathToFile)
+            };
+
+            Process process = new Process {StartInfo = startInfo};
             process.Start();
 
             Thread.Sleep(500); //Sleep program until the dialog is actually open, so that we can close it.
@@ -590,11 +575,8 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
 
         private static void changeTheme(bool useClassic)
         {
-            string PATH;
-            if (useClassic)
-                PATH = Constants.WIN_THEME_CLASSIC;
-            else
-                PATH = Constants.WIN_THEME_AERO;
+            string PATH = useClassic ? Constants.WIN_THEME_CLASSIC 
+                                     : Constants.WIN_THEME_AERO;
 
             try
             {
@@ -602,7 +584,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             }
             catch (Win32Exception e)
             {
-               FileLogger.Log((String.Format("File to theme could not be accessed.\nTheme: {0}\n", PATH) + e.Message), false);
+               FileLogger.Log(($"File to theme could not be accessed.\nTheme: {PATH}\n" + e.Message), LogOptions.DISPLAY_ERROR);
             }
         }
 
@@ -618,30 +600,29 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             }
             catch (Win32Exception e)
             {
-                FileLogger.Log((String.Format("File to theme could not be accessed.\nTheme: {0}\n", PATH) + e.Message), false);
+                FileLogger.Log(($"File to theme could not be accessed.\nTheme: {PATH}\n" + e.Message), LogOptions.DISPLAY_ERROR);
             }
         }
 
         private static void altTabIntoCSGO()
         {
-            if (Process.GetCurrentProcess().ProcessName.Equals("csgo")) return;
+            if (Process.GetCurrentProcess().ProcessName.Equals("csgo"))
+                return;
 
+            //TODO(Low): should this even be a foreach loop anyway?
+            //This should probably just be an if check.
             IntPtr activeWindow = Process.GetCurrentProcess().MainWindowHandle;
 
-            foreach (Process proc in Process.GetProcesses())
+            foreach (Process proc in Process.GetProcesses().Where(proc => activeWindow == proc.MainWindowHandle))
             {
-                if (activeWindow == proc.MainWindowHandle)
-                {
-                    if (proc.ProcessName.Equals(Constants.CSGO_PROC_NAME)) return;
-                    else
-                    {
-                        IntPtr csgohWnd = GetCSGOhWnd();
-                        if (csgohWnd == IntPtr.Zero)
-                            return;
+                if (proc.ProcessName.Equals(Constants.CSGO_PROC_NAME))
+                    return;
 
-                        SetForegroundWindow(csgohWnd);
-                    }
-                }
+                IntPtr csgohWnd = GetCSGOhWnd();
+                if (csgohWnd == IntPtr.Zero)
+                    return;
+
+                SetForegroundWindow(csgohWnd);
             }
             
         }
@@ -649,6 +630,9 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
         private static IntPtr GetCSGOhWnd()
         {
             //TODO(Low): change from foreach to if or something. foreach doesn't really make sense here but it does work.
+            //Maybe this?: return Process.GetProcesses().Where(proc => proc.ProcessName.Equals(Constants.CSGO_PROC_NAME)).ToArray()[0].MainWindowHandle;
+            //Would need to handle an array out of bounds exception though.
+
             foreach (Process proc in Process.GetProcesses().Where(proc => proc.ProcessName.Equals(Constants.CSGO_PROC_NAME)))
             {
                 return proc.MainWindowHandle;
@@ -783,8 +767,11 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
         private void btnOpenAdvanced_Click(object sender, EventArgs e)
         {
             AdvancedUserSettingsForm f = new AdvancedUserSettingsForm(ShouldCleanupLogs);
-            DialogResult result = f.ShowDialog();
+            Form f_cast = f;
+            HelperFunc.CreateFormStartPosition(ref f_cast, this);
+            f = (AdvancedUserSettingsForm) f_cast;
 
+            DialogResult result = f.ShowDialog();
             if (result == DialogResult.OK)
             {
                 ShouldCleanupLogs = f.CleanLogs;
@@ -796,8 +783,8 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
 
         private static void DebugRunTests()
         {
-            FileLogger.Log("This is just a test crash dump. You should not be seeing this!", false);
-            FileLogger.Log("This is just a test crash dump. You should not be seeing this! This was thrown!", true);
+            FileLogger.Log("This is just a test crash dump. You should not be seeing this!", LogOptions.DISPLAY_ERROR);
+            FileLogger.Log("This is just a test crash dump. You should not be seeing this! This was thrown!", LogOptions.SHOULD_THROW);
             //Note(Eli): There really should be some other stuff here but I just don't know what else we could test due to the nature of the program.
         }
     }

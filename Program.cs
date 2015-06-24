@@ -17,6 +17,7 @@ using System;
 using System.Windows.Forms;
 using CSGO_Theme_Control.Base_Classes.Assertions;
 using CSGO_Theme_Control.Base_Classes.Logger;
+using static CSGO_Theme_Control.Base_Classes.Logger.LoggerSettings;
 using CSGO_Theme_Control.Form_Classes.ThemeControlForm;
 
 namespace CSGO_Theme_Control
@@ -45,15 +46,15 @@ namespace CSGO_Theme_Control
                     if (args[1] == "FileLogger.cs")
                     {
                         string file = FileLogger.CreateLogFullPath(false);
-                        FileLogger.Log("Test1", false);
-                        FileLogger.Log("Test2", false);
+                        FileLogger.Log("Test1", LogOptions.DISPLAY_ERROR);
+                        FileLogger.Log("Test2", LogOptions.DISPLAY_ERROR);
                         FileLogger.CleanLogsFolder();
                         Assert.NoFilesWithExtension(FileLogger.NORMAL_LOG_EXT, FileLogger.GetLogDirectory());
 
                         FileLogger.CleanLogsFolder(LoggerSettings.CleanupOptions.CLEANUP_THROWN_LOGS);
                         Assert.NoFilesWithExtension(FileLogger.THROWN_LOG_EXT, FileLogger.GetLogDirectory());
 
-                        FileLogger.Log("Test Export", false);
+                        FileLogger.Log("Test Export", LogOptions.DISPLAY_ERROR);
                         Assert.Bool(FileLogger.ExportLogToCSV(file, FileLogger.GetLogDirectory() + "exported.csv"));
                     }
                     else

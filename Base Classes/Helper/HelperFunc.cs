@@ -95,7 +95,7 @@ namespace CSGO_Theme_Control.Base_Classes.Helper
         /// <param name="surrounding">The character/string to surround the string with</param>
         /// <param name="toSurround">The string to be surrounded</param>
         /// <returns>A new instance with the given string toSurround string by the given surrounding string.</returns>
-        public static string SurroundWith(string surrounding, string toSurround)
+        public static string SurroundWith(this string toSurround, string surrounding)
         {
             return surrounding + toSurround + surrounding;
         }

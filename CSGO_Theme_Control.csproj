@@ -94,6 +94,12 @@
     <Compile Include="Form Classes\CloseAppForm\AppMustCloseForm.Designer.cs">
       <DependentUpon>AppMustCloseForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form Classes\ErrorForm\MinorErrorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form Classes\ErrorForm\MinorErrorForm.Designer.cs">
+      <DependentUpon>MinorErrorForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form Classes\PickHotKeyForm\HotKeyPickerForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -126,6 +132,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Form Classes\CloseAppForm\AppMustCloseForm.resx">
       <DependentUpon>AppMustCloseForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form Classes\ErrorForm\MinorErrorForm.resx">
+      <DependentUpon>MinorErrorForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form Classes\PickHotKeyForm\HotKeyPickerForm.resx">
       <DependentUpon>HotKeyPickerForm.cs</DependentUpon>
