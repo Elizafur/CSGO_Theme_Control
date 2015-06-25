@@ -20,6 +20,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using CSGO_Theme_Control.Base_Classes.Helper;
+using CSGO_Theme_Control.Base_Classes.UserSettingsEnum;
 using CSGO_Theme_Control.Form_Classes.CloseAppForm;
 using CSGO_Theme_Control.Form_Classes.ErrorForm;
 using CSGO_Theme_Control.Form_Classes.ThemeControlForm;
@@ -79,7 +80,7 @@ namespace CSGO_Theme_Control.Base_Classes.Logger
                     let dateTimeStringWithExtension = file.Substring(file.LastIndexOf("_", StringComparison.Ordinal) + 1)
                     let dateTimeString              = dateTimeStringWithExtension
                                                         .Remove(dateTimeStringWithExtension
-                                                        .LastIndexOf(".", StringComparison.Ordinal))
+                                                            .LastIndexOf(".", StringComparison.Ordinal))
                     let ticks                       = HelperFunc.TryConvertToDateTime(dateTimeString).Ticks
                     where ticks < time.Ticks select file).ToArray();
         }
@@ -130,13 +131,13 @@ namespace CSGO_Theme_Control.Base_Classes.Logger
             errorDisplay.ShowDialog();
         }
 
-        public static void CleanLogsFolder(params LoggerSettings.CleanupOptions[] lOptions)
+        public static void CleanLogsFolder(params UserSettings.Options[] lOptions)
         {
             string logDirectory = GetLogDirectory();
             string[] files      = Directory.GetFiles(logDirectory);
 
-            bool cleanupThrownLogs  = (lOptions.Contains(LoggerSettings.CleanupOptions.CLEANUP_THROWN_LOGS));
-            bool cleanupBasedOnDate = (lOptions.Contains(LoggerSettings.CleanupOptions.CLEANUP_LOGS_ONLY_IF_BEFORE_TODAY));
+            bool cleanupThrownLogs  = lOptions.Contains(UserSettings.Options.CLEAN_THROWN_LOGS);
+            bool cleanupBasedOnDate = lOptions.Contains(UserSettings.Options.CLEAN_LOGS_ONLY_BEFORE_TODAY);
             string[] logsBeforeToday = FindAllLogsCreatedBefore(DateTime.Today);
 
             foreach (string file in files)
@@ -229,7 +230,7 @@ namespace CSGO_Theme_Control.Base_Classes.Logger
                     {
                         if (!appendedContext)
                         {
-                            sb.Append(HelperFunc.SurroundWith("\"", "[CONTEXT]") + ", \"");
+                            sb.Append("[CONTEXT]".SurroundWith("\"") + ", \"");
                             appendedContext = true;
                         }
 

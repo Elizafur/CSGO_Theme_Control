@@ -82,6 +82,8 @@
     <Compile Include="Base Classes\Logger\LoggerSettings.cs" />
     <Compile Include="Base Classes\Themes\ThemeDataHolder.cs" />
     <Compile Include="Base Classes\Themes\ThemeDoesNotExistException.cs" />
+    <Compile Include="Base Classes\UserSettingsEnum\UserSettings.cs" />
+    <Compile Include="Base Classes\UserSettingsEnum\UserSettingsContainer.cs" />
     <Compile Include="Form Classes\AdvancedSettingsForm\AdvancedUserSettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>

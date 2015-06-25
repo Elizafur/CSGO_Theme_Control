@@ -14,15 +14,15 @@
 //    You should have received a copy of the GNU General Public License
 //    along with CSGO Theme Control.  If not, see <http://www.gnu.org/licenses/>.
 
-
-namespace CSGO_Theme_Control.Base_Classes.Logger
+namespace CSGO_Theme_Control.Base_Classes.UserSettingsEnum
 {
-    public static class LoggerSettings
+    public static class UserSettings
     {
-        public enum LogOptions
+        public enum Options
         {
-            DISPLAY_ERROR,  //Note(Eli): This is only used in the event that the log is not being thrown. A thrown log will always display an error and close the app.
-            SHOULD_THROW
+            CLEAN_LOGS,
+            CLEAN_THROWN_LOGS,
+            CLEAN_LOGS_ONLY_BEFORE_TODAY
         }
 
     }

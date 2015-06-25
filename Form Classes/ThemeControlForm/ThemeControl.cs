@@ -28,7 +28,9 @@ using CSGO_Theme_Control.Base_Classes.Constants;
 using CSGO_Theme_Control.Base_Classes.Helper;
 using CSGO_Theme_Control.Base_Classes.HotKey;
 using CSGO_Theme_Control.Base_Classes.Logger;
+using CSGO_Theme_Control.Base_Classes.UserSettingsEnum;
 using static CSGO_Theme_Control.Base_Classes.Logger.LoggerSettings;
+using static CSGO_Theme_Control.Base_Classes.UserSettingsEnum.UserSettings;
 using CSGO_Theme_Control.Base_Classes.Themes;
 using CSGO_Theme_Control.Form_Classes.AdvancedSettingsForm;
 using CSGO_Theme_Control.Form_Classes.PickHotKeyForm;
@@ -44,7 +46,8 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
         private bool            ShouldChangeDeskTheme;
         private bool            ShouldChangeGameTheme;
         private bool            RegistryBootWritten;
-        private bool            ShouldCleanupLogs;
+        private UserSettingsContainer 
+                                USettings               = new UserSettingsContainer();
 
         private string          DesktopThemePath;
         private string          GameThemePath;
@@ -165,10 +168,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
                 foreach (KeyValuePair<HotKey, ThemePathContainer> entry in HotKeys)
                     UnregisterHotKey(Handle, entry.Key.id);
 
-            if (ShouldCleanupLogs)
-            {
-                FileLogger.CleanLogsFolder(LoggerSettings.CleanupOptions.CLEANUP_LOGS_ONLY_IF_BEFORE_TODAY);
-            }
+            FileLogger.CleanLogsFolder(USettings.GetOptions());
         }
 
         protected override void WndProc(ref Message m)
@@ -206,7 +206,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
         {
             foreach (string cur in s)
             {
-                txtStatus.Text += cur + Environment.NewLine;
+                txtStatus.Text += cur + (cur != s[s.Length - 1] ? Environment.NewLine : "");
             }
         }
 
@@ -218,12 +218,13 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
 
             //Note(Eli) Magic numbers for CreateWhiteSpace make these values line up in a monospaced font.
             log(
-                "Version:"       + HelperFunc.CreateWhiteSpace(7) + VERSION_NUM,
-                "Is Enabled:"    + HelperFunc.CreateWhiteSpace(4) + IsEnabled,
-                "Boot on start:" + HelperFunc.CreateWhiteSpace(1) + BootOnStart,
-                "Cleanup Logs:"  + HelperFunc.CreateWhiteSpace(2) + ShouldCleanupLogs,
-                "Desktop theme:" + HelperFunc.CreateWhiteSpace(1) + desktopT,
-                "In-game theme:" + HelperFunc.CreateWhiteSpace(1) + gameT
+                "Version:"              + HelperFunc.CreateWhiteSpace(7) + VERSION_NUM,
+                "Is Enabled:"           + HelperFunc.CreateWhiteSpace(4) + IsEnabled,
+                "Boot on start:"        + HelperFunc.CreateWhiteSpace(1) + BootOnStart,
+                "",
+                "Desktop theme:"        + HelperFunc.CreateWhiteSpace(1) + desktopT,
+                "In-game theme:"        + HelperFunc.CreateWhiteSpace(1) + gameT,
+                "\n"
             );
 
             log("Hotkeys<Key, Theme>:" + HelperFunc.CreateWhiteSpace(4) + "{");
@@ -235,7 +236,13 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
                 }
             }
             log("}");
-            
+
+            log(
+                "",
+                "Clean Logs:" + HelperFunc.CreateWhiteSpace(8) + USettings.GetOptions().Contains(Options.CLEAN_LOGS),
+                "Clean Old Logs:" + HelperFunc.CreateWhiteSpace(4) + USettings.GetOptions().Contains(Options.CLEAN_LOGS_ONLY_BEFORE_TODAY),
+                "Clean Thrown Logs:" + HelperFunc.CreateWhiteSpace(1) + USettings.GetOptions().Contains(Options.CLEAN_THROWN_LOGS)
+            );
         }
 
         private void createBootStartup()
@@ -320,21 +327,6 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
                             FileLogger.Log("ERROR: CFG is in an invalid format and cannot be read.\nLine: " + line);
                         }
                     }
-                    else if (word.Equals(nameof(ShouldCleanupLogs).ToLower()))
-                    {
-                        try
-                        {
-                            ShouldCleanupLogs = Convert.ToBoolean(split[1]);
-                        }
-                        catch (IndexOutOfRangeException)
-                        {
-                            FileLogger.Log("ERROR: CFG is in an invalid format and cannot be read.\nLine: " + line);
-                        }
-                        catch (FormatException)
-                        {
-                            FileLogger.Log("ERROR: CFG is in an invalid format and cannot be read.\nLine: " + line);
-                        }
-                    }
                     else if (word.StartsWith("hotkey{"))
                     {
                         try
@@ -375,7 +367,37 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
                     }
                     else
                     {
-                        FileLogger.Log("ERROR: CFG is in an invalid format and cannot be read.\nLine: " + line);
+                        try
+                        {
+                            if (word.Equals(nameof(Options.CLEAN_LOGS).ToLower()))
+                            {
+                                if (Convert.ToBoolean(split[1]))
+                                    USettings.Add(Options.CLEAN_LOGS);
+                            }
+                            else if (word.Equals(nameof(Options.CLEAN_LOGS_ONLY_BEFORE_TODAY).ToLower()))
+                            {
+                                if (Convert.ToBoolean(split[1]))
+                                    USettings.Add(Options.CLEAN_LOGS_ONLY_BEFORE_TODAY);
+                            }
+                            else if (word.Equals(nameof(Options.CLEAN_THROWN_LOGS).ToLower()))
+                            {
+                                if (Convert.ToBoolean(split[1]))
+                                    USettings.Add(Options.CLEAN_THROWN_LOGS);
+                            }
+                            else
+                            {
+                                FileLogger.Log("ERROR: CFG is in an invalid format and cannot be read.\nLine: " + line);
+                            }
+                        }
+                        catch (IndexOutOfRangeException)
+                        {
+                            FileLogger.Log("ERROR: CFG is in an invalid format and cannot be read.\nLine: " + line);
+                        }
+                        catch (FormatException)
+                        {
+                            FileLogger.Log("ERROR: CFG is in an invalid format and cannot be read.\nLine: " + line);
+                        }
+
                     }
                 }
             }
@@ -403,7 +425,11 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             {
                 sw.WriteLine("//Note to those reading:\n//Modifying this file could result in the breaking of your config.\n");
                 sw.WriteLine(nameof(IsEnabled) + HelperFunc.CreateWhiteSpace(9) + "\"" + IsEnabled.ToString() + "\"");
-                sw.WriteLine(nameof(ShouldCleanupLogs) + HelperFunc.CreateWhiteSpace(1) + "\"" + ShouldCleanupLogs.ToString() + "\"");
+
+                foreach (Options o in USettings.GetOptions())
+                {
+                    sw.WriteLine(o.ToString() + HelperFunc.CreateWhiteSpace(4) + "\"True\"");
+                }
 
                 if (DesktopThemePath != null)
                 {
@@ -595,7 +621,6 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
 
             try
             {
-
                 execCMDThemeChange(PATH);
             }
             catch (Win32Exception e)
@@ -756,6 +781,9 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
                         break;
 
                     case DialogResult.Yes:
+                        foreach (KeyValuePair<HotKey, ThemePathContainer> entry in HotKeys)
+                            UnregisterHotKey(Handle, entry.Key.id);
+
                         HotKeys = new Dictionary<HotKey, ThemePathContainer>();
                         break;
                 }
@@ -766,7 +794,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
 
         private void btnOpenAdvanced_Click(object sender, EventArgs e)
         {
-            AdvancedUserSettingsForm f = new AdvancedUserSettingsForm(ShouldCleanupLogs);
+            AdvancedUserSettingsForm f = new AdvancedUserSettingsForm(USettings.GetOptions());
             Form f_cast = f;
             HelperFunc.CreateFormStartPosition(ref f_cast, this);
             f = (AdvancedUserSettingsForm) f_cast;
@@ -774,8 +802,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             DialogResult result = f.ShowDialog();
             if (result == DialogResult.OK)
             {
-                ShouldCleanupLogs = f.CleanLogs;
-                //TODO(Medium): Be sure to update this if we add more advanced settings in the future..
+                USettings = f.USettingsOptions;
             }
 
             logStatus();

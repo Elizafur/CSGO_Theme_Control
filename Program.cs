@@ -17,6 +17,7 @@ using System;
 using System.Windows.Forms;
 using CSGO_Theme_Control.Base_Classes.Assertions;
 using CSGO_Theme_Control.Base_Classes.Logger;
+using CSGO_Theme_Control.Base_Classes.UserSettingsEnum;
 using static CSGO_Theme_Control.Base_Classes.Logger.LoggerSettings;
 using CSGO_Theme_Control.Form_Classes.ThemeControlForm;
 
@@ -38,41 +39,42 @@ namespace CSGO_Theme_Control
             }
             else
             {
-                if (args[0] == "--test")
+                if (args[0] != "--test")
+                    throw new ArgumentException("Invalid argument provided: " + args[0] + ".\nAvailable arguments: --test.");
+                
+                if (args.Length < 2)
+                    throw new ArgumentException("Please enter a class to test.\nUsage: --test <Class.cs>");
+
+                if (args[1] == "FileLogger.cs")
                 {
-                    if (args.Length < 2)
-                        throw new ArgumentException("Please enter a class to test.\nUsage: --test <Class.cs>");
+                    string file = FileLogger.CreateLogFullPath(false);
+                    FileLogger.Log("Test1", LogOptions.DISPLAY_ERROR);
+                    FileLogger.Log("Test2", LogOptions.DISPLAY_ERROR);
+                    FileLogger.CleanLogsFolder();
+                    Assert.NoFilesWithExtension(FileLogger.NORMAL_LOG_EXT, FileLogger.GetLogDirectory());
 
-                    if (args[1] == "FileLogger.cs")
-                    {
-                        string file = FileLogger.CreateLogFullPath(false);
-                        FileLogger.Log("Test1", LogOptions.DISPLAY_ERROR);
-                        FileLogger.Log("Test2", LogOptions.DISPLAY_ERROR);
-                        FileLogger.CleanLogsFolder();
-                        Assert.NoFilesWithExtension(FileLogger.NORMAL_LOG_EXT, FileLogger.GetLogDirectory());
+                    FileLogger.CleanLogsFolder(UserSettings.Options.CLEAN_THROWN_LOGS);
+                    Assert.NoFilesWithExtension(FileLogger.THROWN_LOG_EXT, FileLogger.GetLogDirectory());
 
-                        FileLogger.CleanLogsFolder(LoggerSettings.CleanupOptions.CLEANUP_THROWN_LOGS);
-                        Assert.NoFilesWithExtension(FileLogger.THROWN_LOG_EXT, FileLogger.GetLogDirectory());
-
-                        FileLogger.Log("Test Export", LogOptions.DISPLAY_ERROR);
-                        Assert.Bool(FileLogger.ExportLogToCSV(file, FileLogger.GetLogDirectory() + "exported.csv"));
-                    }
-                    else
-                    {
-                        throw new NotImplementedException("Class: " + args[1] + " has not been implemented in the tester yet.");
-                    }
-
-                    //General Tests.
-                    bool AllGood = true;
-                    try
-                    {
-                        Assert.Bool(1 == 2);
-                        AllGood = false;        //Should not reach this code.
-                    }
-                    catch (AssertionFailedException){}
-
-                    FileLogger.Log($"Assertions are working {(AllGood ? "properly" : "badly")}.");
+                    FileLogger.Log("Test Export", LogOptions.DISPLAY_ERROR);
+                    Assert.Bool(FileLogger.ExportLogToCSV(file, FileLogger.GetLogDirectory() + "exported.csv"));
                 }
+                else
+                {
+                    throw new NotImplementedException("Class: " + args[1] + " has not been implemented in the tester yet.");
+                }
+
+                //General Tests.
+                bool AllGood = true;
+                try
+                {
+                    Assert.Bool(1 == 2);
+                    AllGood = false;        //Should not reach this code.
+                }
+                catch (AssertionFailedException){}
+
+                FileLogger.Log($"Assertions are working {(AllGood ? "properly" : "badly")}.");
+                
             }
         }
     }

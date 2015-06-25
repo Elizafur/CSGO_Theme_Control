@@ -16,30 +16,81 @@
 
 using System;
 using System.Windows.Forms;
+using CSGO_Theme_Control.Base_Classes.UserSettingsEnum;
+using System.Linq;
 
 namespace CSGO_Theme_Control.Form_Classes.AdvancedSettingsForm
 {
     public partial class AdvancedUserSettingsForm : Form
     {
-        public bool CleanLogs;
-        //TODO(Medium): Expand settings.
+        public readonly UserSettingsContainer USettingsOptions;
 
-        public AdvancedUserSettingsForm(bool preExistingCleanLogsSetting)
+        public AdvancedUserSettingsForm(params UserSettings.Options[] uOptions)
         {
             InitializeComponent();
 
-            CleanLogs = preExistingCleanLogsSetting;
-            chkCleanLogsFolder.Checked = CleanLogs;
+            USettingsOptions = new UserSettingsContainer(uOptions);
+
+            chkCleanLogsFolder.Checked = USettingsOptions.GetOptions().Contains(UserSettings.Options.CLEAN_LOGS);
+            DisableChecksBasedOnOptions();
+
         }
 
         private void chkCleanLogsFolder_CheckedChanged(object sender, EventArgs e)
         {
-            CleanLogs = chkCleanLogsFolder.Checked;
+            if (chkCleanLogsFolder.Checked)
+            {
+                USettingsOptions.Add(UserSettings.Options.CLEAN_LOGS);
+            }
+            else
+            {
+                USettingsOptions.Remove(UserSettings.Options.CLEAN_LOGS);
+            }
+
+            DisableChecksBasedOnOptions();
+        }
+
+        private void DisableChecksBasedOnOptions()  //Come up with a better name?
+        {
+            if (chkCleanLogsFolder.Checked)
+            {
+                chkCleanOldLogsOnly.Enabled = true;
+                chkCleanThrownLogs.Enabled = true;
+
+                chkCleanOldLogsOnly.Checked =
+                    USettingsOptions.GetOptions().Contains(UserSettings.Options.CLEAN_LOGS_ONLY_BEFORE_TODAY);
+                chkCleanThrownLogs.Checked  =
+                    USettingsOptions.GetOptions().Contains(UserSettings.Options.CLEAN_THROWN_LOGS);
+
+            }
+            else
+            {
+                chkCleanOldLogsOnly.Checked = false;
+                chkCleanThrownLogs.Checked = false;
+                chkCleanOldLogsOnly.Enabled = false;
+                chkCleanThrownLogs.Enabled = false;
+            }
         }
 
         private void btnFinish_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.OK;
+        }
+
+        private void chkCleanOldLogsOnly_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkCleanOldLogsOnly.Checked)
+                USettingsOptions.Add(UserSettings.Options.CLEAN_LOGS_ONLY_BEFORE_TODAY);
+            else
+                USettingsOptions.Remove(UserSettings.Options.CLEAN_LOGS_ONLY_BEFORE_TODAY);
+        }
+
+        private void chkCleanThrownLogs_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkCleanThrownLogs.Checked)
+                USettingsOptions.Add(UserSettings.Options.CLEAN_THROWN_LOGS);
+            else
+                USettingsOptions.Remove(UserSettings.Options.CLEAN_THROWN_LOGS);
         }
     }
 }
