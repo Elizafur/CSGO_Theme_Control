@@ -1,3 +1,5 @@
 create a simple website?
 
 update readmeAssets picture.
+
+go through and document stuff.
