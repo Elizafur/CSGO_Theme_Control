@@ -5,7 +5,7 @@ A Simple program to manage your current Windows theme when playing or not playin
 # Download
 --------------------------
 ## Requirements
-- [.NET Framework 4.6 RC](http://www.microsoft.com/en-US/download/details.aspx?id=44928 "Download Link") (4.5.1 May work but isn't actively supported.)
+- [.NET Framework 4.6 RC](http://www.microsoft.com/en-US/download/details.aspx?id=44928 "Download Link") (.NET 4.5.1 may work but isn't actively supported.)
 
 ## Link
 - [CSGO Theme Control can be downloaded at this link. Once downloaded simply unzip the file and run the exe.](https://www.dropbox.com/s/spaczmuk2slp36o/CSGO_Theme_Control_Release.rar?dl=1 "Download Link")
