@@ -2,4 +2,4 @@ create a simple website?
 
 make user settings an enum so that when we eventually add more we dont have 10 bools to pass to every function.
 
-update readme with regards to .NET framework requirements
+update readmeAssets picture.
