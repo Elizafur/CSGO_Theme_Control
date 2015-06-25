@@ -16,8 +16,8 @@
 
 using System;
 using System.Windows.Forms;
-using CSGO_Theme_Control.Base_Classes.UserSettingsEnum;
 using System.Linq;
+using CSGO_Theme_Control.Base_Classes.UserSettings;
 
 namespace CSGO_Theme_Control.Form_Classes.AdvancedSettingsForm
 {
@@ -25,13 +25,13 @@ namespace CSGO_Theme_Control.Form_Classes.AdvancedSettingsForm
     {
         public readonly UserSettingsContainer USettingsOptions;
 
-        public AdvancedUserSettingsForm(params UserSettings.Options[] uOptions)
+        public AdvancedUserSettingsForm(params UserSettingsEnum.Options[] uOptions)
         {
             InitializeComponent();
 
             USettingsOptions = new UserSettingsContainer(uOptions);
 
-            chkCleanLogsFolder.Checked = USettingsOptions.GetOptions().Contains(UserSettings.Options.CLEAN_LOGS);
+            chkCleanLogsFolder.Checked = USettingsOptions.GetOptions().Contains(UserSettingsEnum.Options.CLEAN_LOGS);
             DisableChecksBasedOnOptions();
 
         }
@@ -40,11 +40,11 @@ namespace CSGO_Theme_Control.Form_Classes.AdvancedSettingsForm
         {
             if (chkCleanLogsFolder.Checked)
             {
-                USettingsOptions.Add(UserSettings.Options.CLEAN_LOGS);
+                USettingsOptions.Add(UserSettingsEnum.Options.CLEAN_LOGS);
             }
             else
             {
-                USettingsOptions.Remove(UserSettings.Options.CLEAN_LOGS);
+                USettingsOptions.Remove(UserSettingsEnum.Options.CLEAN_LOGS);
             }
 
             DisableChecksBasedOnOptions();
@@ -58,9 +58,9 @@ namespace CSGO_Theme_Control.Form_Classes.AdvancedSettingsForm
                 chkCleanThrownLogs.Enabled = true;
 
                 chkCleanOldLogsOnly.Checked =
-                    USettingsOptions.GetOptions().Contains(UserSettings.Options.CLEAN_LOGS_ONLY_BEFORE_TODAY);
+                    USettingsOptions.GetOptions().Contains(UserSettingsEnum.Options.CLEAN_LOGS_ONLY_BEFORE_TODAY);
                 chkCleanThrownLogs.Checked  =
-                    USettingsOptions.GetOptions().Contains(UserSettings.Options.CLEAN_THROWN_LOGS);
+                    USettingsOptions.GetOptions().Contains(UserSettingsEnum.Options.CLEAN_FATAL_LOGS);
 
             }
             else
@@ -80,17 +80,17 @@ namespace CSGO_Theme_Control.Form_Classes.AdvancedSettingsForm
         private void chkCleanOldLogsOnly_CheckedChanged(object sender, EventArgs e)
         {
             if (chkCleanOldLogsOnly.Checked)
-                USettingsOptions.Add(UserSettings.Options.CLEAN_LOGS_ONLY_BEFORE_TODAY);
+                USettingsOptions.Add(UserSettingsEnum.Options.CLEAN_LOGS_ONLY_BEFORE_TODAY);
             else
-                USettingsOptions.Remove(UserSettings.Options.CLEAN_LOGS_ONLY_BEFORE_TODAY);
+                USettingsOptions.Remove(UserSettingsEnum.Options.CLEAN_LOGS_ONLY_BEFORE_TODAY);
         }
 
         private void chkCleanThrownLogs_CheckedChanged(object sender, EventArgs e)
         {
             if (chkCleanThrownLogs.Checked)
-                USettingsOptions.Add(UserSettings.Options.CLEAN_THROWN_LOGS);
+                USettingsOptions.Add(UserSettingsEnum.Options.CLEAN_FATAL_LOGS);
             else
-                USettingsOptions.Remove(UserSettings.Options.CLEAN_THROWN_LOGS);
+                USettingsOptions.Remove(UserSettingsEnum.Options.CLEAN_FATAL_LOGS);
         }
     }
 }

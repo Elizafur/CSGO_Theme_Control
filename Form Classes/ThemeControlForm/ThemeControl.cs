@@ -28,10 +28,10 @@ using CSGO_Theme_Control.Base_Classes.Constants;
 using CSGO_Theme_Control.Base_Classes.Helper;
 using CSGO_Theme_Control.Base_Classes.HotKey;
 using CSGO_Theme_Control.Base_Classes.Logger;
-using CSGO_Theme_Control.Base_Classes.UserSettingsEnum;
 using static CSGO_Theme_Control.Base_Classes.Logger.LoggerSettings;
-using static CSGO_Theme_Control.Base_Classes.UserSettingsEnum.UserSettings;
+using static CSGO_Theme_Control.Base_Classes.UserSettings.UserSettingsEnum;
 using CSGO_Theme_Control.Base_Classes.Themes;
+using CSGO_Theme_Control.Base_Classes.UserSettings;
 using CSGO_Theme_Control.Form_Classes.AdvancedSettingsForm;
 using CSGO_Theme_Control.Form_Classes.PickHotKeyForm;
 using CSGO_Theme_Control.Form_Classes.RemoveHotKeyForm;
@@ -40,7 +40,6 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
 {
     public partial class ThemeControl : Form
     {
-        private readonly bool   DebugMode;
         private bool            IsEnabled               = true;
         private bool            BootOnStart;
         private bool            ShouldChangeDeskTheme;
@@ -56,7 +55,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
 
         private const string    EXE_NAME                = "CSGO_Theme_Control.exe";
         private const string    APP_NAME                = "CSGO_THEME_CONTROL";
-        public  const string    VERSION_NUM             = "1.2.9.5";
+        public  const string    VERSION_NUM             = "1.2.9.9";
         public  const string    LOG_DIRECTORY           = "log";
 
         private Thread               t_IsCSGORunning;
@@ -103,10 +102,6 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
         {
             InitializeComponent();
             NotificationIcon.Icon = new System.Drawing.Icon(getExeDirectory() + "resources\\Gaben_santa.ico");
-            
-            //TODO: <- dont remove this.
-            //Always set DebugMode to false before release.
-            DebugMode = false;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -119,7 +114,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
                     RegisterHotKey(Handle, entry.Key.id, entry.Key.keyModifier, entry.Key.keyHashCode);
 
             //Check appropriate boxes on forms that correlate with user settings.
-            chkEnabled.Checked = IsEnabled;
+            chkEnabled.Checked  = IsEnabled;
             RegistryBootWritten = rk_StartupKey.GetValue(APP_NAME) != null;
 
             BootOnStart            = RegistryBootWritten;
@@ -142,12 +137,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
         }
 
         private void ThemeControl_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (DebugMode)
-            {
-                DebugRunTests();
-            }
-
+        {   
             if (t_IsCSGORunning != null)
             {
                 if (t_IsCSGORunning.IsAlive)
@@ -216,7 +206,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             string desktopT = (DesktopThemePath == null) ? "Aero" : DesktopThemeName;
             string gameT    = (GameThemePath == null) ? "High Contrast White" : GameThemeName;
 
-            //Note(Eli) Magic numbers for CreateWhiteSpace make these values line up in a monospaced font.
+            //Note(Eli): Magic numbers for CreateWhiteSpace make these values line up in a monospaced font.
             log(
                 "Version:"              + HelperFunc.CreateWhiteSpace(7) + VERSION_NUM,
                 "Is Enabled:"           + HelperFunc.CreateWhiteSpace(4) + IsEnabled,
@@ -239,9 +229,9 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
 
             log(
                 "",
-                "Clean Logs:" + HelperFunc.CreateWhiteSpace(8) + USettings.GetOptions().Contains(Options.CLEAN_LOGS),
-                "Clean Old Logs:" + HelperFunc.CreateWhiteSpace(4) + USettings.GetOptions().Contains(Options.CLEAN_LOGS_ONLY_BEFORE_TODAY),
-                "Clean Thrown Logs:" + HelperFunc.CreateWhiteSpace(1) + USettings.GetOptions().Contains(Options.CLEAN_THROWN_LOGS)
+                "Clean Logs:"       + HelperFunc.CreateWhiteSpace(8) + USettings.GetOptions().Contains(Options.CLEAN_LOGS),
+                "Clean Old Logs:"   + HelperFunc.CreateWhiteSpace(4) + USettings.GetOptions().Contains(Options.CLEAN_LOGS_ONLY_BEFORE_TODAY),
+                "Clean Fatal Logs:" + HelperFunc.CreateWhiteSpace(2) + USettings.GetOptions().Contains(Options.CLEAN_FATAL_LOGS)
             );
         }
 
@@ -379,10 +369,10 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
                                 if (Convert.ToBoolean(split[1]))
                                     USettings.Add(Options.CLEAN_LOGS_ONLY_BEFORE_TODAY);
                             }
-                            else if (word.Equals(nameof(Options.CLEAN_THROWN_LOGS).ToLower()))
+                            else if (word.Equals(nameof(Options.CLEAN_FATAL_LOGS).ToLower()))
                             {
                                 if (Convert.ToBoolean(split[1]))
-                                    USettings.Add(Options.CLEAN_THROWN_LOGS);
+                                    USettings.Add(Options.CLEAN_FATAL_LOGS);
                             }
                             else
                             {
@@ -424,20 +414,20 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             try
             {
                 sw.WriteLine("//Note to those reading:\n//Modifying this file could result in the breaking of your config.\n");
-                sw.WriteLine(nameof(IsEnabled) + HelperFunc.CreateWhiteSpace(9) + "\"" + IsEnabled.ToString() + "\"");
+                sw.WriteLine(nameof(IsEnabled) + HelperFunc.CreateWhiteSpace(1) + "\"" + IsEnabled.ToString() + "\"");
 
                 foreach (Options o in USettings.GetOptions())
                 {
-                    sw.WriteLine(o.ToString() + HelperFunc.CreateWhiteSpace(4) + "\"True\"");
+                    sw.WriteLine(o.ToString() + HelperFunc.CreateWhiteSpace(1) + "\"True\"");
                 }
 
                 if (DesktopThemePath != null)
                 {
-                    sw.WriteLine(nameof(DesktopThemePath) + HelperFunc.CreateWhiteSpace(5) + "\"" + DesktopThemePath + "\"");
+                    sw.WriteLine(nameof(DesktopThemePath) + HelperFunc.CreateWhiteSpace(1) + "\"" + DesktopThemePath + "\"");
                 }
                 if (GameThemePath != null)
                 {
-                    sw.WriteLine(nameof(GameThemePath) + HelperFunc.CreateWhiteSpace(9) + "\"" + GameThemePath + "\"");
+                    sw.WriteLine(nameof(GameThemePath) + HelperFunc.CreateWhiteSpace(1) + "\"" + GameThemePath + "\"");
                 }
 
                 if (HotKeys != null)
@@ -808,11 +798,9 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             logStatus();
         }
 
-        private static void DebugRunTests()
+        private void lblLinkToGithub_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            FileLogger.Log("This is just a test crash dump. You should not be seeing this!", LogOptions.DISPLAY_ERROR);
-            FileLogger.Log("This is just a test crash dump. You should not be seeing this! This was thrown!", LogOptions.SHOULD_THROW);
-            //Note(Eli): There really should be some other stuff here but I just don't know what else we could test due to the nature of the program.
+            Process.Start("https://github.com/Eli45/CSGO_Theme_Control");
         }
     }
 }

@@ -14,14 +14,14 @@
 //    You should have received a copy of the GNU General Public License
 //    along with CSGO Theme Control.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace CSGO_Theme_Control.Base_Classes.UserSettingsEnum
+namespace CSGO_Theme_Control.Base_Classes.UserSettings
 {
-    public static class UserSettings
+    public static class UserSettingsEnum
     {
         public enum Options
         {
             CLEAN_LOGS,
-            CLEAN_THROWN_LOGS,
+            CLEAN_FATAL_LOGS,
             CLEAN_LOGS_ONLY_BEFORE_TODAY
         }
 

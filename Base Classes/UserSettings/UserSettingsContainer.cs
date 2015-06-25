@@ -17,13 +17,13 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CSGO_Theme_Control.Base_Classes.UserSettingsEnum
+namespace CSGO_Theme_Control.Base_Classes.UserSettings
 {
     public class UserSettingsContainer
     {
-        private readonly List<UserSettings.Options> OptList = new List<UserSettings.Options>(); 
+        private readonly List<UserSettingsEnum.Options> OptList = new List<UserSettingsEnum.Options>(); 
 
-        public UserSettingsContainer(params UserSettings.Options[] uOptions)
+        public UserSettingsContainer(params UserSettingsEnum.Options[] uOptions)
         {
             foreach (var option in uOptions)
                 OptList.Add(option);
@@ -32,18 +32,18 @@ namespace CSGO_Theme_Control.Base_Classes.UserSettingsEnum
             OptList = OptList.Distinct().ToList();
         }
 
-        public void Add(UserSettings.Options o)
+        public void Add(UserSettingsEnum.Options o)
         {
             if (!OptList.Contains(o))
                 OptList.Add(o);
         }
 
-        public void Remove(UserSettings.Options o)
+        public void Remove(UserSettingsEnum.Options o)
         {
             OptList.Remove(o);
         }
 
-        public UserSettings.Options[] GetOptions()
+        public UserSettingsEnum.Options[] GetOptions()
         {
             return OptList.ToArray();
         }

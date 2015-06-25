@@ -17,8 +17,8 @@ using System;
 using System.Windows.Forms;
 using CSGO_Theme_Control.Base_Classes.Assertions;
 using CSGO_Theme_Control.Base_Classes.Logger;
-using CSGO_Theme_Control.Base_Classes.UserSettingsEnum;
 using static CSGO_Theme_Control.Base_Classes.Logger.LoggerSettings;
+using static CSGO_Theme_Control.Base_Classes.UserSettings.UserSettingsEnum;
 using CSGO_Theme_Control.Form_Classes.ThemeControlForm;
 
 namespace CSGO_Theme_Control
@@ -53,7 +53,7 @@ namespace CSGO_Theme_Control
                     FileLogger.CleanLogsFolder();
                     Assert.NoFilesWithExtension(FileLogger.NORMAL_LOG_EXT, FileLogger.GetLogDirectory());
 
-                    FileLogger.CleanLogsFolder(UserSettings.Options.CLEAN_THROWN_LOGS);
+                    FileLogger.CleanLogsFolder(Options.CLEAN_FATAL_LOGS);
                     Assert.NoFilesWithExtension(FileLogger.THROWN_LOG_EXT, FileLogger.GetLogDirectory());
 
                     FileLogger.Log("Test Export", LogOptions.DISPLAY_ERROR);

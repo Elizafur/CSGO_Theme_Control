@@ -50,7 +50,6 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             this.chkStartOnBoot = new System.Windows.Forms.CheckBox();
             this.txtStatus = new System.Windows.Forms.RichTextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.NotificationIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.contextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.GitHubItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -62,6 +61,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             this.btnPickHotkeys = new System.Windows.Forms.Button();
             this.btnRemoveHotkey = new System.Windows.Forms.Button();
             this.btnOpenAdvanced = new System.Windows.Forms.Button();
+            this.lblLinkToGithub = new System.Windows.Forms.LinkLabel();
             this.groupBox1.SuspendLayout();
             this.contextMenu.SuspendLayout();
             this.SuspendLayout();
@@ -108,15 +108,6 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Program Status";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(9, 446);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(194, 13);
-            this.label1.TabIndex = 4;
-            this.label1.Text = "Head over to Eli45.github.io for updates";
             // 
             // NotificationIcon
             // 
@@ -213,18 +204,29 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             this.btnOpenAdvanced.UseVisualStyleBackColor = true;
             this.btnOpenAdvanced.Click += new System.EventHandler(this.btnOpenAdvanced_Click);
             // 
+            // lblLinkToGithub
+            // 
+            this.lblLinkToGithub.AutoSize = true;
+            this.lblLinkToGithub.Location = new System.Drawing.Point(9, 446);
+            this.lblLinkToGithub.Name = "lblLinkToGithub";
+            this.lblLinkToGithub.Size = new System.Drawing.Size(175, 13);
+            this.lblLinkToGithub.TabIndex = 11;
+            this.lblLinkToGithub.TabStop = true;
+            this.lblLinkToGithub.Text = "Head over to my Github for updates";
+            this.lblLinkToGithub.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lblLinkToGithub_LinkClicked);
+            // 
             // ThemeControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(360, 468);
+            this.Controls.Add(this.lblLinkToGithub);
             this.Controls.Add(this.btnOpenAdvanced);
             this.Controls.Add(this.btnRemoveHotkey);
             this.Controls.Add(this.btnPickHotkeys);
             this.Controls.Add(this.btnClearThemes);
             this.Controls.Add(this.btnChooseIngame);
             this.Controls.Add(this.btnChooseDesktop);
-            this.Controls.Add(this.label1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.chkStartOnBoot);
             this.Controls.Add(this.chkEnabled);
@@ -247,7 +249,6 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
         private System.Windows.Forms.CheckBox chkStartOnBoot;
         private System.Windows.Forms.RichTextBox txtStatus;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.NotifyIcon NotificationIcon;
         private System.Windows.Forms.ContextMenuStrip contextMenu;
         private System.Windows.Forms.ToolStripMenuItem GitHubItemToolStripMenuItem;
@@ -259,6 +260,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
         private System.Windows.Forms.Button btnPickHotkeys;
         private System.Windows.Forms.Button btnRemoveHotkey;
         private System.Windows.Forms.Button btnOpenAdvanced;
+        private System.Windows.Forms.LinkLabel lblLinkToGithub;
     }
 }
 

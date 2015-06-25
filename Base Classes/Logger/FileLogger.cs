@@ -20,7 +20,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using CSGO_Theme_Control.Base_Classes.Helper;
-using CSGO_Theme_Control.Base_Classes.UserSettingsEnum;
+using CSGO_Theme_Control.Base_Classes.UserSettings;
 using CSGO_Theme_Control.Form_Classes.CloseAppForm;
 using CSGO_Theme_Control.Form_Classes.ErrorForm;
 using CSGO_Theme_Control.Form_Classes.ThemeControlForm;
@@ -131,13 +131,13 @@ namespace CSGO_Theme_Control.Base_Classes.Logger
             errorDisplay.ShowDialog();
         }
 
-        public static void CleanLogsFolder(params UserSettings.Options[] lOptions)
+        public static void CleanLogsFolder(params UserSettingsEnum.Options[] lOptions)
         {
             string logDirectory = GetLogDirectory();
             string[] files      = Directory.GetFiles(logDirectory);
 
-            bool cleanupThrownLogs  = lOptions.Contains(UserSettings.Options.CLEAN_THROWN_LOGS);
-            bool cleanupBasedOnDate = lOptions.Contains(UserSettings.Options.CLEAN_LOGS_ONLY_BEFORE_TODAY);
+            bool cleanupThrownLogs  = lOptions.Contains(UserSettingsEnum.Options.CLEAN_FATAL_LOGS);
+            bool cleanupBasedOnDate = lOptions.Contains(UserSettingsEnum.Options.CLEAN_LOGS_ONLY_BEFORE_TODAY);
             string[] logsBeforeToday = FindAllLogsCreatedBefore(DateTime.Today);
 
             foreach (string file in files)
