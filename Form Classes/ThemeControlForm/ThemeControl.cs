@@ -56,7 +56,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
 
         private const string    EXE_NAME                = "CSGO_Theme_Control.exe";
         private const string    APP_NAME                = "CSGO_THEME_CONTROL";
-        public  const string    VERSION_NUM             = "1.2.5.8";
+        public  const string    VERSION_NUM             = "1.2.9.5";
         public  const string    LOG_DIRECTORY           = "log";
 
         private Thread               t_IsCSGORunning;
