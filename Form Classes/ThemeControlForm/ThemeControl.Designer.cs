@@ -90,7 +90,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             // 
             // txtStatus
             // 
-            this.txtStatus.Font = new System.Drawing.Font("Courier New", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtStatus.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtStatus.Location = new System.Drawing.Point(6, 19);
             this.txtStatus.Name = "txtStatus";
             this.txtStatus.ReadOnly = true;
@@ -122,19 +122,21 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             this.GitHubItemToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.contextMenu.Name = "contextMenu";
-            this.contextMenu.Size = new System.Drawing.Size(140, 48);
+            this.contextMenu.Size = new System.Drawing.Size(153, 70);
             // 
             // GitHubItemToolStripMenuItem
             // 
+            this.GitHubItemToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("GitHubItemToolStripMenuItem.Image")));
             this.GitHubItemToolStripMenuItem.Name = "GitHubItemToolStripMenuItem";
-            this.GitHubItemToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.GitHubItemToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.GitHubItemToolStripMenuItem.Text = "Goto Github";
             this.GitHubItemToolStripMenuItem.Click += new System.EventHandler(this.GitHubItemToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
+            this.exitToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("exitToolStripMenuItem.Image")));
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
