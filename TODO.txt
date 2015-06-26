@@ -1,7 +1,5 @@
 create a simple website?
 
-update readmeAssets picture.
-
 go through and document stuff.
 
 fix the finickyness of clicking on the right click system tray context menu buttons.
