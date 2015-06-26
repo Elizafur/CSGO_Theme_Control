@@ -23,7 +23,7 @@ namespace CSGO_Theme_Control.Form_Classes.ErrorForm
         public MinorErrorForm(string errorMessage)
         {
             InitializeComponent();
-            lblError.Text = errorMessage;
+            txtError.Text = errorMessage;
         }
 
         private void btnOK_Click(object sender, System.EventArgs e)

@@ -28,10 +28,10 @@ using CSGO_Theme_Control.Base_Classes.Constants;
 using CSGO_Theme_Control.Base_Classes.Helper;
 using CSGO_Theme_Control.Base_Classes.HotKey;
 using CSGO_Theme_Control.Base_Classes.Logger;
-using static CSGO_Theme_Control.Base_Classes.Logger.LoggerSettings;
-using static CSGO_Theme_Control.Base_Classes.UserSettings.UserSettingsEnum;
 using CSGO_Theme_Control.Base_Classes.Themes;
 using CSGO_Theme_Control.Base_Classes.UserSettings;
+using static CSGO_Theme_Control.Base_Classes.Logger.LoggerSettings;
+using static CSGO_Theme_Control.Base_Classes.UserSettings.UserSettingsEnum;
 using CSGO_Theme_Control.Form_Classes.AdvancedSettingsForm;
 using CSGO_Theme_Control.Form_Classes.PickHotKeyForm;
 using CSGO_Theme_Control.Form_Classes.RemoveHotKeyForm;
@@ -62,7 +62,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
         private readonly RegistryKey rk_StartupKey      = Registry.CurrentUser.OpenSubKey(
             "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 
-        //Note(Eli): The value in this dictionary should be the absolute path to the theme to change to.
+        //Note(Eli): The value in this dictionary should be a ThemePathContainer that will be activated when the given hotkey is pressed.
         private Dictionary<HotKey, ThemePathContainer> HotKeys = new Dictionary<HotKey, ThemePathContainer>();
 
         [DllImport("user32.dll")]
@@ -444,7 +444,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
                 if (e is IOException)
                     FileLogger.Log("Could not read CFG file: " + e.Message, LogOptions.DISPLAY_ERROR);
                 else
-                    FileLogger.Log("Unknown exception caught while reading config file." + e.Message, LogOptions.SHOULD_THROW);
+                    FileLogger.Log("Unknown exception caught while reading config file: " + e.Message, LogOptions.SHOULD_THROW);
             }
             finally
             {

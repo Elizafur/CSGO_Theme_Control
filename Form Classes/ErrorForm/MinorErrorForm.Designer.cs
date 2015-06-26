@@ -45,19 +45,9 @@ namespace CSGO_Theme_Control.Form_Classes.ErrorForm
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MinorErrorForm));
-            this.lblError = new System.Windows.Forms.Label();
             this.btnOK = new System.Windows.Forms.Button();
+            this.txtError = new System.Windows.Forms.RichTextBox();
             this.SuspendLayout();
-            // 
-            // lblError
-            // 
-            this.lblError.AutoSize = true;
-            this.lblError.Location = new System.Drawing.Point(110, 48);
-            this.lblError.Name = "lblError";
-            this.lblError.Size = new System.Drawing.Size(82, 13);
-            this.lblError.TabIndex = 0;
-            this.lblError.Text = "placeholder text";
-            this.lblError.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // btnOK
             // 
@@ -70,25 +60,32 @@ namespace CSGO_Theme_Control.Form_Classes.ErrorForm
             this.btnOK.UseVisualStyleBackColor = true;
             this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
             // 
+            // txtError
+            // 
+            this.txtError.Location = new System.Drawing.Point(4, 1);
+            this.txtError.Name = "txtError";
+            this.txtError.ReadOnly = true;
+            this.txtError.Size = new System.Drawing.Size(307, 62);
+            this.txtError.TabIndex = 2;
+            this.txtError.Text = "";
+            // 
             // MinorErrorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(319, 104);
+            this.Controls.Add(this.txtError);
             this.Controls.Add(this.btnOK);
-            this.Controls.Add(this.lblError);
             this.Cursor = System.Windows.Forms.Cursors.Default;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MinorErrorForm";
             this.Text = "Error";
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.Label lblError;
         private System.Windows.Forms.Button btnOK;
+        private System.Windows.Forms.RichTextBox txtError;
     }
 }
