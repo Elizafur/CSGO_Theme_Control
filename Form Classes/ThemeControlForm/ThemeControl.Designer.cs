@@ -208,7 +208,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             // 
             // btnHelp
             // 
-            this.btnHelp.Location = new System.Drawing.Point(12, 440);
+            this.btnHelp.Location = new System.Drawing.Point(12, 441);
             this.btnHelp.Name = "btnHelp";
             this.btnHelp.Size = new System.Drawing.Size(66, 23);
             this.btnHelp.TabIndex = 11;
