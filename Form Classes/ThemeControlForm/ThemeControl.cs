@@ -798,9 +798,14 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             logStatus();
         }
 
-        private void lblLinkToGithub_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private void btnHelp_Click(object sender, EventArgs e)
         {
-            Process.Start("https://github.com/Eli45/CSGO_Theme_Control");
+            HelpUserForm.HelpForm f = new HelpUserForm.HelpForm();
+            Form f_cast = f;
+            HelperFunc.CreateFormStartPosition(ref f_cast, this);
+            f = (HelpUserForm.HelpForm)f_cast;
+
+            f.ShowDialog();
         }
     }
 }

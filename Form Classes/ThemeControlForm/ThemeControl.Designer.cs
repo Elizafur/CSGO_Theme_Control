@@ -61,7 +61,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             this.btnPickHotkeys = new System.Windows.Forms.Button();
             this.btnRemoveHotkey = new System.Windows.Forms.Button();
             this.btnOpenAdvanced = new System.Windows.Forms.Button();
-            this.lblLinkToGithub = new System.Windows.Forms.LinkLabel();
+            this.btnHelp = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.contextMenu.SuspendLayout();
             this.SuspendLayout();
@@ -122,13 +122,13 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             this.GitHubItemToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.contextMenu.Name = "contextMenu";
-            this.contextMenu.Size = new System.Drawing.Size(153, 70);
+            this.contextMenu.Size = new System.Drawing.Size(140, 48);
             // 
             // GitHubItemToolStripMenuItem
             // 
             this.GitHubItemToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("GitHubItemToolStripMenuItem.Image")));
             this.GitHubItemToolStripMenuItem.Name = "GitHubItemToolStripMenuItem";
-            this.GitHubItemToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.GitHubItemToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
             this.GitHubItemToolStripMenuItem.Text = "Goto Github";
             this.GitHubItemToolStripMenuItem.Click += new System.EventHandler(this.GitHubItemToolStripMenuItem_Click);
             // 
@@ -136,7 +136,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             // 
             this.exitToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("exitToolStripMenuItem.Image")));
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -148,7 +148,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             // 
             // btnChooseDesktop
             // 
-            this.btnChooseDesktop.Location = new System.Drawing.Point(13, 298);
+            this.btnChooseDesktop.Location = new System.Drawing.Point(12, 298);
             this.btnChooseDesktop.Name = "btnChooseDesktop";
             this.btnChooseDesktop.Size = new System.Drawing.Size(136, 23);
             this.btnChooseDesktop.TabIndex = 5;
@@ -160,7 +160,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             // 
             this.btnChooseIngame.Location = new System.Drawing.Point(12, 327);
             this.btnChooseIngame.Name = "btnChooseIngame";
-            this.btnChooseIngame.Size = new System.Drawing.Size(137, 23);
+            this.btnChooseIngame.Size = new System.Drawing.Size(136, 23);
             this.btnChooseIngame.TabIndex = 6;
             this.btnChooseIngame.Text = "Choose ingame theme";
             this.btnChooseIngame.UseVisualStyleBackColor = true;
@@ -168,7 +168,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             // 
             // btnClearThemes
             // 
-            this.btnClearThemes.Location = new System.Drawing.Point(13, 378);
+            this.btnClearThemes.Location = new System.Drawing.Point(12, 377);
             this.btnClearThemes.Name = "btnClearThemes";
             this.btnClearThemes.Size = new System.Drawing.Size(136, 23);
             this.btnClearThemes.TabIndex = 7;
@@ -206,23 +206,22 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             this.btnOpenAdvanced.UseVisualStyleBackColor = true;
             this.btnOpenAdvanced.Click += new System.EventHandler(this.btnOpenAdvanced_Click);
             // 
-            // lblLinkToGithub
+            // btnHelp
             // 
-            this.lblLinkToGithub.AutoSize = true;
-            this.lblLinkToGithub.Location = new System.Drawing.Point(9, 446);
-            this.lblLinkToGithub.Name = "lblLinkToGithub";
-            this.lblLinkToGithub.Size = new System.Drawing.Size(175, 13);
-            this.lblLinkToGithub.TabIndex = 11;
-            this.lblLinkToGithub.TabStop = true;
-            this.lblLinkToGithub.Text = "Head over to my Github for updates";
-            this.lblLinkToGithub.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lblLinkToGithub_LinkClicked);
+            this.btnHelp.Location = new System.Drawing.Point(12, 440);
+            this.btnHelp.Name = "btnHelp";
+            this.btnHelp.Size = new System.Drawing.Size(66, 23);
+            this.btnHelp.TabIndex = 11;
+            this.btnHelp.Text = "Help";
+            this.btnHelp.UseVisualStyleBackColor = true;
+            this.btnHelp.Click += new System.EventHandler(this.btnHelp_Click);
             // 
             // ThemeControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(360, 468);
-            this.Controls.Add(this.lblLinkToGithub);
+            this.Controls.Add(this.btnHelp);
             this.Controls.Add(this.btnOpenAdvanced);
             this.Controls.Add(this.btnRemoveHotkey);
             this.Controls.Add(this.btnPickHotkeys);
@@ -262,7 +261,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
         private System.Windows.Forms.Button btnPickHotkeys;
         private System.Windows.Forms.Button btnRemoveHotkey;
         private System.Windows.Forms.Button btnOpenAdvanced;
-        private System.Windows.Forms.LinkLabel lblLinkToGithub;
+        private System.Windows.Forms.Button btnHelp;
     }
 }
 
