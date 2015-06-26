@@ -5,3 +5,5 @@ update readmeAssets picture.
 go through and document stuff.
 
 fix the finickyness of clicking on the right click system tray context menu buttons.
+
+Sometimes the personalization window is left up after the game is exited and the desktop theme is applied. Investigate why.
