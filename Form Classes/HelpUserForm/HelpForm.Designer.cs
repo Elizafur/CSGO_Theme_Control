@@ -36,6 +36,7 @@
             this.txtUserThemePath = new System.Windows.Forms.RichTextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.txtTroubleShoot = new System.Windows.Forms.RichTextBox();
             this.SuspendLayout();
             // 
             // lblLinkToGithub
@@ -52,10 +53,10 @@
             // txtHelpBox
             // 
             this.txtHelpBox.BackColor = System.Drawing.SystemColors.Control;
-            this.txtHelpBox.Location = new System.Drawing.Point(12, 147);
+            this.txtHelpBox.Location = new System.Drawing.Point(12, 116);
             this.txtHelpBox.Name = "txtHelpBox";
             this.txtHelpBox.ReadOnly = true;
-            this.txtHelpBox.Size = new System.Drawing.Size(352, 182);
+            this.txtHelpBox.Size = new System.Drawing.Size(352, 79);
             this.txtHelpBox.TabIndex = 1;
             this.txtHelpBox.Text = "";
             // 
@@ -82,11 +83,10 @@
             // 
             // txtUserThemePath
             // 
-            this.txtUserThemePath.Location = new System.Drawing.Point(101, 47);
-            this.txtUserThemePath.Multiline = false;
+            this.txtUserThemePath.Location = new System.Drawing.Point(101, 31);
             this.txtUserThemePath.Name = "txtUserThemePath";
             this.txtUserThemePath.ReadOnly = true;
-            this.txtUserThemePath.Size = new System.Drawing.Size(229, 20);
+            this.txtUserThemePath.Size = new System.Drawing.Size(228, 42);
             this.txtUserThemePath.TabIndex = 4;
             this.txtUserThemePath.Text = "";
             this.txtUserThemePath.WordWrap = false;
@@ -94,7 +94,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(9, 47);
+            this.label1.Location = new System.Drawing.Point(8, 31);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(86, 13);
             this.label1.TabIndex = 5;
@@ -109,11 +109,23 @@
             this.label2.TabIndex = 6;
             this.label2.Text = "Default Themes:";
             // 
+            // txtTroubleShoot
+            // 
+            this.txtTroubleShoot.BackColor = System.Drawing.SystemColors.Control;
+            this.txtTroubleShoot.Location = new System.Drawing.Point(12, 201);
+            this.txtTroubleShoot.Name = "txtTroubleShoot";
+            this.txtTroubleShoot.ReadOnly = true;
+            this.txtTroubleShoot.Size = new System.Drawing.Size(352, 139);
+            this.txtTroubleShoot.TabIndex = 7;
+            this.txtTroubleShoot.Text = "";
+            this.txtTroubleShoot.WordWrap = false;
+            // 
             // HelpForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(376, 389);
+            this.Controls.Add(this.txtTroubleShoot);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txtUserThemePath);
@@ -138,5 +150,6 @@
         private System.Windows.Forms.RichTextBox txtUserThemePath;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.RichTextBox txtTroubleShoot;
     }
 }

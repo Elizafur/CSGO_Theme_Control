@@ -34,7 +34,7 @@ namespace CSGO_Theme_Control.Base_Classes.Logger
 
         public static string GetLogDirectory()
         {
-            return ThemeControl.getExeDirectory() + ThemeControl.LOG_DIRECTORY + "\\";
+            return ThemeControl.GetExeDirectory() + ThemeControl.LOG_DIRECTORY + "\\";
         }
 
         public static string CreateLogFullPath(bool logThrown)

@@ -101,7 +101,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
         public ThemeControl()
         {
             InitializeComponent();
-            NotificationIcon.Icon = new System.Drawing.Icon(getExeDirectory() + "resources\\Gaben_santa.ico");
+            NotificationIcon.Icon = new System.Drawing.Icon(GetExeDirectory() + "resources\\Gaben_santa.ico");
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -247,7 +247,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
 
         private void ReadConfig()
         {
-            string programExePathFolder = getExeDirectory();
+            string programExePathFolder = GetExeDirectory();
 
             StreamReader sr = new StreamReader(programExePathFolder + Constants.APP_CONFIG_LOCATION);
             try
@@ -408,7 +408,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
 
         private void WriteConfig()
         {
-            string programExePathFolder = getExeDirectory();
+            string programExePathFolder = GetExeDirectory();
 
             StreamWriter sw = new StreamWriter(programExePathFolder + Constants.APP_CONFIG_LOCATION);
             try
@@ -452,7 +452,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             }
         }
 
-        public static string getExeDirectory()
+        public static string GetExeDirectory()
         {
             string[] programExePath_split = System.Reflection.Assembly.GetEntryAssembly().Location.Split('\\');
             for (int i = 0; i < programExePath_split.Length; i++)
