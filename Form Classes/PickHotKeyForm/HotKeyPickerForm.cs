@@ -33,10 +33,10 @@ namespace CSGO_Theme_Control.Form_Classes.PickHotKeyForm
     unsafe public partial class HotKeyPickerForm : Form
     {
         private readonly Dictionary<HotKey, ThemePathContainer> HotKeys;
-        private string                                          ThemeToExecute;
-        private string                                          Theme2ToExecute;
-        private Keys                                            HKKey;
-        private Constants.KeyModifier                           HKKeyMod;
+        private          string                                 ThemeToExecute;
+        private          string                                 Theme2ToExecute;
+        private          Keys                                   HKKey;
+        private          Constants.KeyModifier                  HKKeyMod;
         private readonly Int32                                  HKID;
         private readonly HotKeyDataHolder*                      HKAddress;
         private readonly ThemeDataHolder*                       ThemeData;
@@ -135,9 +135,7 @@ namespace CSGO_Theme_Control.Form_Classes.PickHotKeyForm
         private void btnPickHotKey_Click(object sender, EventArgs e)
         {
             PickHotKeyDialog phkd = new PickHotKeyDialog();
-            Form casted = phkd;
-            HelperFunc.CreateFormStartPosition(ref casted, this);
-            phkd = (PickHotKeyDialog)casted;
+            HelperFunc.CreateFormStartPosition(ref phkd, this);
 
             DialogResult result = phkd.ShowDialog();
 

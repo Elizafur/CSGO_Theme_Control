@@ -137,9 +137,9 @@ namespace CSGO_Theme_Control.Base_Classes.HotKey
         }
 
         /// <summary>
-        /// Used to get a string representation of this HotKey instance's key member. 
+        /// Used to get a string representation of this HotKey instance's key member with the modifier prepended.. 
         /// </summary>
-        /// <returns>A string representation of the HotKey instance's key member. </returns>
+        /// <returns>A string representation of the HotKey instance's key member with the modifier prepended.</returns>
         public override string ToString()
         {
             string s = KeyModToString((Constants.Constants.KeyModifier)keyModifier);

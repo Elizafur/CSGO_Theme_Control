@@ -36,6 +36,7 @@ using CSGO_Theme_Control.Form_Classes.AdvancedSettingsForm;
 using CSGO_Theme_Control.Form_Classes.PickHotKeyForm;
 using CSGO_Theme_Control.Form_Classes.RemoveHotKeyForm;
 
+//TODO(High): Move all static methods used to change theme/detect if csgo is running etc into the HelperFunc namespace. It doesn't make much sense to have them in a Form class.
 namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
 {
     public partial class ThemeControl : Form
@@ -45,8 +46,6 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
         private bool            ShouldChangeDeskTheme;
         private bool            ShouldChangeGameTheme;
         private bool            RegistryBootWritten;
-        private UserSettingsContainer 
-                                USettings               = new UserSettingsContainer();
 
         private string          DesktopThemePath;
         private string          GameThemePath;
@@ -58,9 +57,11 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
         public  const string    VERSION_NUM             = "1.3.0.0";
         public  const string    LOG_DIRECTORY           = "log";
 
-        private Thread               t_IsCSGORunning;
-        private readonly RegistryKey rk_StartupKey      = Registry.CurrentUser.OpenSubKey(
+        private Thread                t_IsCSGORunning;
+        private readonly RegistryKey  rk_StartupKey      = Registry.CurrentUser.OpenSubKey(
             "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+
+        private UserSettingsContainer USettings          = new UserSettingsContainer();
 
         //Note(Eli): The value in this dictionary should be a ThemePathContainer that will be activated when the given hotkey is pressed.
         private Dictionary<HotKey, ThemePathContainer> HotKeys = new Dictionary<HotKey, ThemePathContainer>();
@@ -173,8 +174,8 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
                 Constants.KeyModifier modifier  = (Constants.KeyModifier)((int)m.LParam & 0xFFFF);
                 int id                          = m.WParam.ToInt32();
 
-                HotKey local = new HotKey(id, (int)modifier, key);
-                string pathToTheme = HotKeys[local].GetNextTheme();
+                HotKey local        = new HotKey(id, (int)modifier, key);
+                string pathToTheme  = HotKeys[local].GetNextTheme();
 
                 try
                 {
@@ -297,7 +298,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
                         {
                             DesktopThemePath = split[1].ToLower();
                             string[] splitTheme = DesktopThemePath.Split('\\');
-                            DesktopThemeName = HelperFunc.UpperCaseFirstChar(splitTheme[splitTheme.Length - 1].Replace(".theme", ""));
+                            DesktopThemeName = splitTheme[splitTheme.Length - 1].Replace(".theme", "").UpperCaseFirstChar();
                         }
                         catch (IndexOutOfRangeException)
                         {
@@ -310,7 +311,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
                         {
                             GameThemePath = split[1].ToLower();
                             string[] splitTheme = GameThemePath.Split('\\');
-                            GameThemeName = HelperFunc.UpperCaseFirstChar(splitTheme[splitTheme.Length - 1].Replace(".theme", ""));
+                            GameThemeName = splitTheme[splitTheme.Length - 1].Replace(".theme", "").UpperCaseFirstChar();
                         }
                         catch (IndexOutOfRangeException)
                         {
@@ -696,7 +697,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
                 string filepath = openFileDialog.FileName;
                 DesktopThemePath = filepath;
                 string[] split = filepath.Split('\\');
-                DesktopThemeName = HelperFunc.UpperCaseFirstChar(split[split.Length - 1].Replace(".theme", ""));
+                DesktopThemeName = split[split.Length - 1].Replace(".theme", "").UpperCaseFirstChar();
             }
             logStatus();
         }
@@ -709,7 +710,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
                 string filepath = openFileDialog.FileName;
                 GameThemePath = filepath;
                 string[] split = filepath.Split('\\');
-                GameThemeName = HelperFunc.UpperCaseFirstChar(split[split.Length - 1].Replace(".theme", ""));
+                GameThemeName = split[split.Length - 1].Replace(".theme", "").UpperCaseFirstChar();
             }
             logStatus();
         }
@@ -728,9 +729,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
                 HotKeyDataHolder hkdh;
                 ThemeDataHolder tdh;
                 HotKeyPickerForm hkpf = new HotKeyPickerForm(&hkdh, &tdh, HotKeys);
-                Form casted = hkpf;
-                HelperFunc.CreateFormStartPosition(ref casted, this);
-                hkpf = (HotKeyPickerForm)casted;
+                HelperFunc.CreateFormStartPosition(ref hkpf, this);
 
                 DialogResult result = hkpf.ShowDialog();
 
@@ -757,9 +756,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
             {
                 HotKeyDataHolder hkdh;
                 HotKeyRemovalForm hkrf = new HotKeyRemovalForm(&hkdh, HotKeys);
-                Form casted = hkrf;
-                HelperFunc.CreateFormStartPosition(ref casted, this);
-                hkrf = (HotKeyRemovalForm)casted;
+                HelperFunc.CreateFormStartPosition(ref hkrf, this);
 
                 DialogResult result = hkrf.ShowDialog();
                 switch (result)
@@ -785,9 +782,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
         private void btnOpenAdvanced_Click(object sender, EventArgs e)
         {
             AdvancedUserSettingsForm f = new AdvancedUserSettingsForm(USettings.GetOptions());
-            Form f_cast = f;
-            HelperFunc.CreateFormStartPosition(ref f_cast, this);
-            f = (AdvancedUserSettingsForm) f_cast;
+            HelperFunc.CreateFormStartPosition(ref f, this);
 
             DialogResult result = f.ShowDialog();
             if (result == DialogResult.OK)
@@ -801,9 +796,7 @@ namespace CSGO_Theme_Control.Form_Classes.ThemeControlForm
         private void btnHelp_Click(object sender, EventArgs e)
         {
             HelpUserForm.HelpForm f = new HelpUserForm.HelpForm();
-            Form f_cast = f;
-            HelperFunc.CreateFormStartPosition(ref f_cast, this);
-            f = (HelpUserForm.HelpForm)f_cast;
+            HelperFunc.CreateFormStartPosition(ref f, this);
 
             f.ShowDialog();
         }

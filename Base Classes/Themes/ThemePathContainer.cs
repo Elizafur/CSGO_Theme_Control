@@ -27,7 +27,7 @@ namespace CSGO_Theme_Control.Base_Classes.Themes
     /// </summary>
     public class ThemePathContainer
     {
-        private readonly string[] Themes = new string[] { null, null };
+        private readonly string[] Themes   = new string[] { null, null };
         private int CurrentlySelectedTheme = 1; //Note(Eli): Set to 1 so our method GetNextTheme will return the first element in Themes on first run.
 
         /// <summary>
@@ -62,16 +62,15 @@ namespace CSGO_Theme_Control.Base_Classes.Themes
         {
             if (Themes[1] == null || Themes[1] == string.Empty)
             {
+                //If both themes are bad we need to throw.
                 if (Themes[0] == null || Themes[0] == string.Empty)
-                    throw new ThemeDoesNotExistException("Both themes initialized in this instance were null or empty and thus none were deemed usable." +
-                                                         // ReSharper disable once ArrangeThisQualifier 
-                                                         $"\nThemes: {this.ToAbsoluteString()}");
+                    throw new ThemeDoesNotExistException("Both themes initialized in this instance were null or empty and thus none were deemed usable." + 
+                                                         $"\nThemes: {ToAbsoluteString()}");
 
                 return Themes[0];
             }
 
-            //Ternary operator because C# is dumb and apparantly cannot implicitly convert from bool to int without long drawn out code.
-            return Themes[CurrentlySelectedTheme = CurrentlySelectedTheme = (CurrentlySelectedTheme == 0) ? 1 : 0];
+            return Themes[CurrentlySelectedTheme = (CurrentlySelectedTheme == 0) ? 1 : 0];
         }
 
         /// <summary>

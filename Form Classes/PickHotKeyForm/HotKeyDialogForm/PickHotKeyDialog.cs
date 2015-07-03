@@ -26,8 +26,8 @@ namespace CSGO_Theme_Control.Form_Classes.PickHotKeyForm.HotKeyDialogForm
     /// </summary>
     public partial class PickHotKeyDialog : Form
     {
-        public Keys                     Key;
-        public Constants.KeyModifier    KeyMod;
+        public  Keys                    Key;
+        public  Constants.KeyModifier   KeyMod;
         private bool                    KeyPressed;
 
         public PickHotKeyDialog()
@@ -47,6 +47,8 @@ namespace CSGO_Theme_Control.Form_Classes.PickHotKeyForm.HotKeyDialogForm
             }
         }
 
+        //Note(Eli): This is done because the function keys when casted to characters do not display properly and 
+        //instead map to various keys around the keyboard.
         private string getKeyString(Keys k)
         {
             switch (Key)

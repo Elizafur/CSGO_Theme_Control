@@ -30,7 +30,6 @@ namespace CSGO_Theme_Control.Base_Classes.Assertions
         /// </summary>
         private static bool  IsStrict = true;
 
-
         /// <summary>
         /// Asserts that a file exists.
         /// </summary>

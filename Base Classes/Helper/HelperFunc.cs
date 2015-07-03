@@ -79,7 +79,7 @@ namespace CSGO_Theme_Control.Base_Classes.Helper
         /// <param name="s">String to make the first character uppercase.</param>
         /// 
         /// <returns>A new string with the first character transformed to uppercase.</returns>
-        public static string UpperCaseFirstChar(string s)
+        public static string UpperCaseFirstChar(this string s)
         {
             if (String.IsNullOrEmpty(s))
             {
@@ -109,7 +109,7 @@ namespace CSGO_Theme_Control.Base_Classes.Helper
         /// <param name="child">The child form which will be mutated.</param>
         /// 
         /// <param name="parent">The parent form to base the child's location on.</param>
-        public static void CreateFormStartPosition(ref Form child, Form parent)
+        public static void CreateFormStartPosition<T>(ref T child, Form parent) where T : Form
         {
             child.StartPosition = FormStartPosition.Manual;
             Point pLoc = parent.Location;
